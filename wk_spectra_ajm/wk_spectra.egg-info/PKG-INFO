@@ -1,0 +1,64 @@
+Metadata-Version: 2.1
+Name: wk-spectra
+Version: 0.1.1
+Summary: A Python package for the construction of the Wheeler-Kiladis Space-Time Spectra.
+Home-page: https://github.com/ajaramillomoreno/wk_spectra
+Author: Alejandro Jaramillo
+Author-email: ajaramillomoreno@gmail.com
+License: BSD license
+Download-URL: https://github.com/ajaramillomoreno/wk_spectra/tarball/0.1.1
+Description: =================
+        wk_spectra_python
+        =================
+        
+        
+        .. image:: https://img.shields.io/pypi/v/wheeler_kiladis_python.svg
+                :target: https://pypi.python.org/pypi/wheeler_kiladis_python
+        
+        .. image:: https://img.shields.io/travis/ajaramillomoreno/wheeler_kiladis_python.svg
+                :target: https://travis-ci.org/ajaramillomoreno/wheeler_kiladis_python
+        
+        .. image:: https://readthedocs.org/projects/wheeler-kiladis-python/badge/?version=latest
+                :target: https://wheeler-kiladis-python.readthedocs.io/en/latest/?badge=latest
+                :alt: Documentation Status
+        
+        
+        
+        
+        A Python package for the construction of the Wheeler-Kiladis Space-Time Spectra.
+        
+        
+        * Free software: BSD license
+        * Documentation: https://wheeler-kiladis-python.readthedocs.io.
+        
+        
+        Features
+        --------
+        
+        * TODO
+        
+        Credits
+        -------
+        
+        This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+        
+        .. _Cookiecutter: https://github.com/audreyr/cookiecutter
+        .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+        
+        
+        History
+        =======
+        
+        0.1.1 (2018-10-11)
+        ------------------
+        
+        * Test release on PyPI.
+        
+Keywords: wk_spectra,CCEWs
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Education
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3.6
+Description-Content-Type: text/markdown
