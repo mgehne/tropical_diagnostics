@@ -370,10 +370,10 @@ def plot_power(Pow,symmetry=("symm"),source="",var1="",plotpath="./",flim=0.5,nW
         # generate matsuno mode dispersion curves
         if Symmetry=="midlat":
             He = [3000,7000,10000]
-            matsuno_modes = matsuno_modes_wk_bg(he=He,n=N,latitude=0.,max_wn=nWavePlt,n_wn=500,u=25)
+            matsuno_modes = mp.matsuno_modes_wk_bg(he=He,n=N,latitude=0.,max_wn=nWavePlt,n_wn=500,u=25)
         else:
             He = [12,25,50]
-            matsuno_modes = matsuno_modes_wk(he=He,n=N,latitude=0.,max_wn=nWavePlt,n_wn=500)
+            matsuno_modes = mp.matsuno_modes_wk(he=He,n=N,latitude=0.,max_wn=nWavePlt,n_wn=500)
         
         
         # add polylines for dispersion curves
