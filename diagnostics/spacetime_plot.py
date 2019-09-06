@@ -232,7 +232,7 @@ def panel_resources(nplot=4,abc=['a','b','c','d']):
 
     return resP
 
-def plot_coherence(Coh2,Phs1,Phs2,symmetry=("symm"),source="",var1="",var2="",plotpath,flim=0.5,nWavePlt=20,cmin=0.05,cmax=0.55,cspc=0.05,nplot=1,N=[1,2]):
+def plot_coherence(Coh2,Phs1,Phs2,symmetry=("symm"),source="",var1="",var2="",plotpath="./",flim=0.5,nWavePlt=20,cmin=0.05,cmax=0.55,cspc=0.05,nplot=1,N=[1,2]):
     fspace = 0.05
     fspaceminor = 0.01
     nclev = int((flim-0.)/fspaceminor+fspace/fspaceminor)
@@ -321,7 +321,7 @@ def plot_coherence(Coh2,Phs1,Phs2,symmetry=("symm"),source="",var1="",var2="",pl
     
     return
 
-def plot_power(Pow,symmetry=("symm"),source="",var1="",plotpath,flim=0.5,nWavePlt=20,cmin=0.05,cmax=0.55,cspc=0.05,nplot=1,N=[1,2]):
+def plot_power(Pow,symmetry=("symm"),source="",var1="",plotpath="./",flim=0.5,nWavePlt=20,cmin=0.05,cmax=0.55,cspc=0.05,nplot=1,N=[1,2]):
     fspace = 0.05
     fspaceminor = 0.01
     nclev = int((flim-0.)/fspaceminor+fspace/fspaceminor)
