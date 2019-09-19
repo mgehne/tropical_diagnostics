@@ -2,11 +2,9 @@
 
 from setuptools import setup
 
-setup(name='tropical_diagnostics',
-      version='1.0',
+setup(name='tropical-diagnostics',
+      version='0.1',
       # list folders, not files
       packages=['diagnostics',
                 'utils'],
-      scripts=['examples/*.py'],
-      package_data={'diagnostics': ['data/*.nc']},
       )
