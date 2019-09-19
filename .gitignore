@@ -1,2 +1,4 @@
 # .gitignore
 __pycache__
+data/
+plots/
