@@ -7,4 +7,5 @@ setup(name='tropical-diagnostics',
       # list folders, not files
       packages=['diagnostics',
                 'utils'],
+      package_data={'diagnostics': ['data']}
       )
