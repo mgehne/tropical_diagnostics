@@ -1,12 +1,11 @@
-import Ngl as ngl
 import numpy as np
-from tropical_diagnostics.diagnostics import spacetime_plot as stp
-import string
+from diagnostics import spacetime_plot as stp
+import xarray
 
 from netCDF4 import Dataset
 
-pathdata = './data/'
-plotpath = './plots/'
+pathdata = '../data/'
+plotpath = '../plots/'
 
 # plot layout parameters
 flim = 0.5            # maximum frequency in cpd for plotting
