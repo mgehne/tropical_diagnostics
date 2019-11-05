@@ -1,11 +1,11 @@
+import xarray as xr
 """
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
-from utils.readdata import readdata
 from tropical_diagnostics.diagnostics.spacetime import mjo_cross
 from tropical_diagnostics.diagnostics.spacetime import get_symmasymm
-from tropical_diagnostics.diagnostics.utils.save_netcdf import save_Spectra
+from tropical_diagnostics.utils.save_netcdf import save_Spectra
 
 """
 Set parameters for the spectra calculation.
@@ -28,17 +28,23 @@ latMax =  15.
 print("reading data from file:")
 """ 
 Read in data here. Example:
-x, latA, lonA, timeA = readdata(var1,lev1,source1,"",datestrt,datelast,spd)
-y, latB, lonB, timeB = readdata(var2,lev2,source2,"",datestrt,datelast,spd)  
+ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/precip.erai.sfc.1p5.2x.1979-2016.nc')
+x = ds.u
+x = x.sel(lat=slice(latMin,latMax)) 
 """
-x, latA, lonA, timeA = readdata("precip",-1,"ERAI","",2015010100,2016033100,spd)
-y, latB, lonB, timeB = readdata("div",850,"ERAI","",2015010100,2016033100,spd)  
+ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/precip.erai.sfc.1p5.2x.1979-2016.nc')
+x = ds.precip
+x = x.sel(lat=slice(latMin,latMax))
+x = x.squeeze()
+latA = ds.lat.sel(lat=slice(latMin,latMax))
+ds.close()
 
-print("extracting latitude bands:")
-x = x[:,(latMin<=latA) & (latA<=latMax),:]
-y = y[:,(latMin<=latB) & (latB<=latMax),:]
-latA = latA[(latMin<=latA) & (latA<=latMax)]
-latB = latB[(latMin<=latB) & (latB<=latMax)]
+ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/div.erai.850.1p5.2x.1979-2016.nc')
+y = ds.div
+y = y.sel(lat=slice(latMin,latMax))
+y = y.squeeze()
+latB = ds.lat.sel(lat=slice(latMin,latMax))
+
 if any(latA-latB)!=0:
   print("Latitudes must be the same for both variables! Check latitude ordering.")
 

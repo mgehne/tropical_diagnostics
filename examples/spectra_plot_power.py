@@ -5,19 +5,19 @@ import string
 
 from netCDF4 import Dataset
 
-pathdata = '../data/'
-plotpath = '../plots/'
+pathdata = './data/'
+plotpath = './plots/'
 
 # plot layout parameters
 flim = 0.5            # maximum frequency in cpd for plotting
-nWavePlt = 20         # maximum wavenumber for plotting
-contourmin = -5.8     # contour minimum
-contourmax = -4.      # contour maximum
-contourspace = 0.2    # contour spacing
+nWavePlt = 15         # maximum wavenumber for plotting
+contourmin = -5     # contour minimum
+contourmax = -1.      # contour maximum
+contourspace = 0.5    # contour spacing
 N = [1,2]             # wave modes for plotting
-source = "ERAI"
-var1 = "P"
-var2 = "D850"
+source = "KWmodel"
+var1 = "U"
+spd = 4
 
 symmetry = ("symm","asymm","latband")
 nplot = len(symmetry)
@@ -26,7 +26,7 @@ pp = 0
 while pp<nplot:
 
 # read data from file
-    fin = Dataset(pathdata+'SpaceTimeSpectra_'+symmetry[pp]+'_2spd.nc',"r")
+    fin = Dataset(pathdata+'SpaceTimeSpectra_'+symmetry[pp]+'_'+str(spd)+'spd.nc',"r")
     STC = fin['STC'][:,:,:]
     wnum = fin['wnum']
     freq = fin['freq']
