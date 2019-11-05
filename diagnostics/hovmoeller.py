@@ -11,6 +11,9 @@ import Ngl as ngl
 import string
 
 def hov_resources(time,lon,pltvarname,wks,FillMode="AreaFill",cmin=[],cmax=[],cspc=[]):
+    
+    res = ngl.Resources()
+
     if ((not cmin) or (not cmax) or (not cspc)):
         if pltvarname=='precip':
             clevels = [0.2, 0.4, 0.6, 0.8, 1.1, 1.5]
@@ -37,10 +40,10 @@ def hov_resources(time,lon,pltvarname,wks,FillMode="AreaFill",cmin=[],cmax=[],cs
         fillpalette = "BlueWhiteOrangeRed"
         res.cnFillPalette = fillpalette
         
-    date = num2date(time,time.units)
+    ts = (time - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 'h')
+    date = num2date(ts,'hours since 1970-01-01T00:00:00Z')
     timestr = [i.strftime("%Y-%m-%d %H:%M") for i in date]
-    
-    res = ngl.Resources()
+
     res.nglDraw  = False
     res.nglFrame = False
     res.cnLinesOn = False
@@ -106,10 +109,10 @@ def hovmoeller(A,lon,time,datestrt,datelast,spd,source,pltvarname,plotpath,latS,
 
     # plot resources
     res  = hov_resources(time,lon,pltvarname,wks,FillMode,cmin,cmax,cspc)
-    resP = panel_resources(res,1,latS,latN,A.units)
+    resP = panel_resources(res,1,latS,latN,A.attrs['units'])
     
     # plot hovmoeller
-    plot = ngl.contour(wks,A,res)
+    plot = ngl.contour(wks,A.values,res)
     plots.append(plot)
     
     # panel plots    
