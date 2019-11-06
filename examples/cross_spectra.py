@@ -3,7 +3,6 @@ import xarray as xr
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
-from .context import tropical_diagnostics
 from tropical_diagnostics.diagnostics.spacetime import mjo_cross
 from tropical_diagnostics.diagnostics.spacetime import get_symmasymm
 from tropical_diagnostics.utils.save_netcdf import save_Spectra
