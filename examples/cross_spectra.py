@@ -3,6 +3,7 @@ import xarray as xr
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
+from .context import tropical_diagnostics
 from tropical_diagnostics.diagnostics.spacetime import mjo_cross
 from tropical_diagnostics.diagnostics.spacetime import get_symmasymm
 from tropical_diagnostics.utils.save_netcdf import save_Spectra
@@ -31,6 +32,7 @@ Read in data here. Example:
 ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/precip.erai.sfc.1p5.2x.1979-2016.nc')
 x = ds.u
 x = x.sel(lat=slice(latMin,latMax)) 
+x = x.squeeze()
 """
 ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/precip.erai.sfc.1p5.2x.1979-2016.nc')
 x = ds.precip
@@ -85,6 +87,6 @@ wnum = result['wave']
 # save spectra in netcdf file
 
 fileout = 'SpaceTimeSpectra_'+Symmetry+'_'+str(spd)+'spd'
-pathout = './data/'
+pathout = '../data/'
 print('saving spectra to file: '+pathout+fileout+'.nc')
 save_Spectra(STC,freq,wnum,fileout,pathout)
