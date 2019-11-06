@@ -1,12 +1,14 @@
 import numpy as np
 import xarray as xr
+import sys
+sys.path.append('../../')
 """
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
 from tropical_diagnostics.diagnostics.hovmoeller import hovmoeller
 
-plotpath = './plots/'
+plotpath = '../plots/'
 
 """
 Parameters to set for the Hovmoeller diagrams.
@@ -15,7 +17,7 @@ spd = 2               # number of obs per day
 source = "ERAI"      # data source
 var1 = "precip"       # variable to plot
 datestrt = 2016010100 # plot start date, format: yyyymmddhh 
-datelast = 2016123100 # plot end date, format: yyyymmddhh
+datelast = 2016033100 # plot end date, format: yyyymmddhh
 contourmin = 0.001     # contour minimum
 contourmax = 0.01      # contour maximum
 contourspace = 0.001    # contour spacing

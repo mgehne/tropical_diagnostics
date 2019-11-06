@@ -1,11 +1,12 @@
 import numpy as np
 from diagnostics import spacetime_plot as stp
 import xarray
-
+import sys
+sys.path.append('../../')
 from netCDF4 import Dataset
 
-pathdata = './data/'
-plotpath = './plots/'
+pathdata = '../data/'
+plotpath = '../plots/'
 
 # plot layout parameters
 flim = 0.5            # maximum frequency in cpd for plotting
