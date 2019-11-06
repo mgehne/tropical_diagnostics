@@ -23,7 +23,7 @@ latMax:      Maximum latitude to include.
 spd = 2
 nperseg = 90*spd
 segOverLap = -30*spd
-Symmetry = "asymm"
+Symmetry = "latband"
 latMin = -15.
 latMax =  15.
 

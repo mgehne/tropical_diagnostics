@@ -13,12 +13,12 @@ plotpath = '../plots/'
 # plot layout parameters
 flim = 0.5  # maximum frequency in cpd for plotting
 nWavePlt = 15  # maximum wavenumber for plotting
-contourmin = -5  # contour minimum
-contourmax = -1.  # contour maximum
-contourspace = 0.5  # contour spacing
+contourmin = -10  # contour minimum
+contourmax = -8.  # contour maximum
+contourspace = 0.2  # contour spacing
 N = [1, 2]  # wave modes for plotting
 source = "ERAI"
-var1 = "div"
+var1 = "precip"
 spd = 2
 
 symmetry = ("symm", "asymm", "latband")
@@ -51,7 +51,8 @@ while pp < nplot:
     Pow1[pp, :, :] = np.log10(pow1)
     Pow2[pp, :, :] = np.log10(pow2)
 
+
     pp += 1
 
-stp.plot_power(Pow1, symmetry, source, var1, plotpath, flim, 20)  #, contourmin,contourmax,contourspace,nplot,N)
+stp.plot_power(Pow1, symmetry, source, var1, plotpath, flim, 20, contourmin,contourmax,contourspace,nplot,N)
 exit()
