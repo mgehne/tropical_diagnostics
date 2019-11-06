@@ -16,8 +16,8 @@ Parameters to set for the Hovmoeller diagrams.
 spd = 2               # number of obs per day
 source = "ERAI"      # data source
 var1 = "precip"       # variable to plot
-datestrt = 2016010100 # plot start date, format: yyyymmddhh 
-datelast = 2016033100 # plot end date, format: yyyymmddhh
+datestrt = '2016-01-01' # plot start date, format: yyyymmddhh
+datelast = '2016-03-31' # plot end date, format: yyyymmddhh
 contourmin = 0.001     # contour minimum
 contourmax = 0.01      # contour maximum
 contourspace = 0.001    # contour spacing
@@ -32,9 +32,9 @@ print("extracting latitude bands:")
 A = A.sel(lat=slice(latMin,latMax))
 A = A.squeeze()
 latA = ds.lat.sel(lat=slice(latMin,latMax))
-A = A.sel(time=slice('2016-01-01','2016-12-31'))
+A = A.sel(time=slice(datestrt,datelast))
 A = A.squeeze()
-timeA = ds.time.sel(time=slice('2016-01-01','2016-12-31'))
+timeA = ds.time.sel(time=slice(datestrt,datelast))
 ds.close()
 
 print(timeA)
