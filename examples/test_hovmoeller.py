@@ -32,20 +32,17 @@ print("extracting latitude bands:")
 A = A.sel(lat=slice(latMin,latMax))
 A = A.squeeze()
 latA = ds.lat.sel(lat=slice(latMin,latMax))
+print("extracting time period:")
 A = A.sel(time=slice(datestrt,datelast))
 A = A.squeeze()
 timeA = ds.time.sel(time=slice(datestrt,datelast))
 ds.close()
 
-print(timeA)
-    
 print("average over latitude band:")
 units = A.attrs['units']
 A = A.mean(dim='lat')
 A = A*1000/4
 A.attrs['units'] = 'mm/day'
-
-A.min(), A.max()
 
 print("plot hovmoeller diagram:")
 hovmoeller(A,lonA,timeA,datestrt,datelast,spd,source,var1,plotpath,latMin,latMax)
