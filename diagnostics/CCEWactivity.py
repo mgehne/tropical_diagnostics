@@ -31,22 +31,21 @@ def waveact(data: object, wave: str, eofpath: str, opt=False):
         eofname = 'EOF_1-4_60-220E_-21S-21N_persiann_cdr_1p5_fillmiss8314_1983-2016_ERband_'
 
     ds = xr.open_dataset(eofpath + eofname + '01.nc')
-    eoflat = ds.lat
-    eoflon = ds.lon
-    nlat = len(eoflat)
-    nlon = len(eoflon)
+    nlat = len(ds.lat)
+    nlon = len(ds.lon)
     eofnum = np.arange(4) + 1
     neof = 4
     month = np.arange(12) + 1
     nmon = 12
     ntim = len(data['time'])
 
-    eofseas = xr.DataArray(0., coords=[month, eofnum, eoflat, eoflon], dims=['month', 'eofnum', 'lat', 'lon'])
+    eofseas = xr.DataArray(0., coords=[month, eofnum, ds.lat, ds.lon], dims=['month', 'eofnum', 'lat', 'lon'])
 
     for ss in month:
         monthnum = f"{ss:02d}"
         ds = xr.open_dataset(eofpath + eofname + monthnum + '.nc')
         eofseas[ss - 1, :, :, :] = ds.eof
+    ds.close()
 
     # remove mean annual cycle
     data_anom = rem_seas_cyc(data)
@@ -57,6 +56,8 @@ def waveact(data: object, wave: str, eofpath: str, opt=False):
     # compute activity
     waveact = xr.DataArray(0., coords=[data_anom.time], dims=['time'])
     waveact.values = np.sum(np.square(tswave), 0)
+
+    del data, data_anom
 
     return waveact
 
