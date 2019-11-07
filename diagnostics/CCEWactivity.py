@@ -3,9 +3,11 @@ Contains functions to project data onto CCEW EOFs.
 
 List of functions:
 
-proj:
+waveact:
 
-comp_anom:
+rem_seas_cyc:
+
+waveproj:
 
 """
 
@@ -53,7 +55,7 @@ def waveact(data: object, wave: str, eofpath: str, opt=False):
     tswave = waveproj(data_anom, eofseas)
 
     # compute activity
-    waveact = xr.DataArray('empty', coords=[data_anom.time], dims=['time'])
+    waveact = xr.DataArray(0., coords=[data_anom.time], dims=['time'])
     waveact.values = np.sum(np.square(tswave), 0)
 
     return waveact
