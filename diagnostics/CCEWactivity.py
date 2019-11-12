@@ -15,7 +15,7 @@ import numpy as np
 import xarray as xr
 
 
-def waveact(data: object, wave: str, eofpath: str, opt=False):
+def waveact(data: object, wave: str, eofpath: str, spd: int, opt=False):
     """
     Main script to compute the wave activity index.
     :param data: DataArray containing the raw data 
@@ -48,14 +48,22 @@ def waveact(data: object, wave: str, eofpath: str, opt=False):
     ds.close()
 
     # remove mean annual cycle
-    data_anom = rem_seas_cyc(data)
+    doy = data['time.dayofyear']
+    doy_oad = doy[0::spd]
+    nd = len(doy_oad) - len(np.unique(doy_oad))
+    if nd > 0:
+        data_anom = rem_seas_cyc(data)
+    else:
+        data_anom = rem_seas_mean(data)
 
     # compute projection
     tswave = waveproj(data_anom, eofseas)
 
     # compute activity
     waveact = xr.DataArray(0., coords=[data_anom.time], dims=['time'])
-    waveact.values = np.sum(np.square(tswave), 0)
+    waveact.values = np.sqrt(np.sum(np.square(tswave), 0))
+    waveact.attrs['units'] = data.attrs['units']
+    waveact.attrs['name'] = wave+' activity'
 
     del data, data_anom
 
@@ -85,6 +93,29 @@ def rem_seas_cyc(data: object, opt: object = False) -> object:
 
     return data_anom
 
+def rem_seas_mean(data: object, opt: object = False) -> object:
+    """
+    Read in a xarray data array with time coordinate containing daily data. Compute anomalies from time mean.
+    :type data: xr.DataArray
+    :param data: xarray
+    :param opt: optional parameter, not currently used
+    :return: xr.DataArray containing anomalies from daily climatology
+    """
+    da = xr.DataArray(np.arange(len(data['time'])), coords=[data['time']], dims=['time'])
+    #month_day_str = xr.DataArray(da.indexes['time'].strftime('%m-%d'), coords=da.coords, name='month_day_str')
+    time = data['time']
+
+    #data = data.rename({'time': 'month_day_str'})
+    #month_day_str = month_day_str.rename({'time': 'month_day_str'})
+    #data = data.assign_coords(month_day_str=month_day_str)
+    clim = data.mean('time')
+
+    data_anom = data - clim
+    #data_anom = data_anom.rename({'month_day_str': 'time'})
+    #data_anom = data_anom.assign_coords(time=time)
+
+    return data_anom
+
 
 def waveproj(data_anom: object, eofseas: object):
     """
@@ -98,10 +129,11 @@ def waveproj(data_anom: object, eofseas: object):
     mm = data_anom.time.dt.month
     ntim = len(data_anom.time)
     neof = len(eofseas.eofnum)
-    tswave: object = xr.DataArray(0., coords=[eofseas.eofnum, data_anom.time], dims=['eofnum', 'time'])
+    proj_wave: object = xr.DataArray(0., coords=[eofseas.eofnum, data_anom.time], dims=['eofnum', 'time'])
+    tswave: object = xr.DataArray(0., coords=[data_anom.time], dims=['time'])
     for tt in range(ntim):
         eof = eofseas[mm[tt] - 1, :, :, :]
         for ee in range(neof):
-            tswave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
+            proj_wave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
 
-    return tswave
+    return proj_wave
