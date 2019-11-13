@@ -1,7 +1,6 @@
 import numpy as np
 import xarray as xr
 import sys
-
 sys.path.append('../../')
 """
 local scripts, if loading from a different directory include that with a '.' between
@@ -9,8 +8,11 @@ directory name and script name
 """
 from tropical_diagnostics.diagnostics import CCEWactivity
 
+"""
+paths to plot and data directories
+"""
 plotpath = '../plots/'
-eofpath  = '../data/EOF/'
+eofpath = '../data/EOF/'
 
 """
 Parameters to set for plotting Kelvin activity index.
@@ -31,6 +33,10 @@ ds.close()
 A = A * 1000
 A.attrs['units'] = 'mm/h'
 
+print("project data onto wave EOFs")
+waveactA = CCEWactivity.waveact(A, wave, eofpath, spd)
+
+
 print("reading PERSIANN data from file:")
 spd = 1
 ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/persiann_cdr_1p5_fillmiss8314_1983-2016.nc')
@@ -44,9 +50,10 @@ B = B / 24
 B.attrs['units'] = 'mm/h'
 
 print("project data onto wave EOFs")
-waveactA = CCEWactivity.waveact(A, wave, eofpath, spd)
-print(waveactA)
 waveactB = CCEWactivity.waveact(B, wave, eofpath, spd)
+
+
+print(waveactA)
 print(waveactB)
 
 print("plot activity")

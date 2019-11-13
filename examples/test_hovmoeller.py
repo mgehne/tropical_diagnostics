@@ -7,7 +7,7 @@ sys.path.append('../../')
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
-from tropical_diagnostics.diagnostics.hovmoeller import hovmoeller
+from tropical_diagnostics.diagnostics.hovmoeller_plotly import hovmoeller
 
 plotpath = '../plots/'
 
@@ -19,9 +19,9 @@ source = "ERAI"  # data source
 var1 = "precip"  # variable to plot
 datestrt = '2016-01-01'  # plot start date, format: yyyymmddhh
 datelast = '2016-03-31'  # plot end date, format: yyyymmddhh
-contourmin = 0.001  # contour minimum
-contourmax = 0.01  # contour maximum
-contourspace = 0.001  # contour spacing
+contourmin = 0.2  # contour minimum
+contourmax = 1.2  # contour maximum
+contourspace = 0.2  # contour spacing
 latMax = 5.  # maximum latitude for the average
 latMin = -5.  # minimum latitude for the average
 
@@ -46,5 +46,5 @@ A = A * 1000 / 4
 A.attrs['units'] = 'mm/day'
 
 print("plot hovmoeller diagram:")
-hovmoeller(A, lonA, timeA, datestrt, datelast, spd, source, var1, plotpath, latMin, latMax)
-# hovmoeller(A,lonA,timeA,datestrt,datelast,spd,source,var1,plotpath,latMin,latMax,contourmin,contourmax,contourspace)
+hovmoeller(A, lonA, timeA, datestrt, datelast, spd, source, var1, plotpath, latMin, latMax,
+           contourmin, contourmax, contourspace)

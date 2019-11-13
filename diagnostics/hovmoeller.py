@@ -84,9 +84,6 @@ def panel_resources(res,nplot=4,latS=None,latN=None,units=[]):
     resP.nglFrame            = True
     resP.nglMaximize         = True
     resP.nglPanelLabelBar    = True
-    #resP.nglPanelRight = 0.9
-    #resP.nglPanelLeft = 0.15
-    #resP.nglPanelBottom = 0.05
     resP.lbOrientation     = "vertical"
     resP.lbTitleString     = units
     resP.lbLabelStrings    = ["{0:0.2f}".format(i) for i in res.cnLevels]
