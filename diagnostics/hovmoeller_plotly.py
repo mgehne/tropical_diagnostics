@@ -1,6 +1,5 @@
 """
-Scripts for generating Hovmoeller diagrams.
-
+Hovmoeller plots using plotly module.
 """
 
 import numpy as np
@@ -8,10 +7,15 @@ import plotly.graph_objects as go
 from netCDF4 import num2date
 
 
-def hov_resources(time, lon, pltvarname, FillMode="AreaFill", cmin=[], cmax=[], cspc=[]):
+def hov_resources(pltvarname):
+    """
+    Set the colormap to be used for the Hovmoeller plot.
+    :param pltvarname: name of variable to be plotted
+    :type pltvarname: string
+    :return: rgb string colorscale
+    :rtype: color string
+    """
     if pltvarname == 'precip':
-        clevels = [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]
-        # cmap = ["white", "lightskyblue", "dodgerblue", "blue2", "slateblue1", "mediumpurple1", "purple2"]
         cmap_rgb = [[0, "rgb(255, 255, 255)"], [0.14, "rgb(255, 255, 255)"],
                     [0.14, "rgb(135, 206, 250)"], [0.28, "rgb(135, 206, 250)"],
                     [0.28, "rgb(30, 144, 255)"], [0.42, "rgb(30, 144, 255)"],
@@ -19,85 +23,235 @@ def hov_resources(time, lon, pltvarname, FillMode="AreaFill", cmin=[], cmax=[], 
                     [0.56, "rgb(131, 111, 255)"], [0.71, "rgb(131, 111, 255)"],
                     [0.71, "rgb(171, 130, 255)"], [0.85, "rgb(171, 130, 255)"],
                     [0.85, "rgb(145, 44, 238)"], [1, "rgb(145, 44, 238)"]]
-    if pltvarname == 'uwnd':
-        clevels = [-30, -20, -14, -10, -7, -4, -2, -1, 1, 2, 4, 7, 10, 14, 20, 30]
-        fillpalette = "BlueWhiteOrangeRed"
-    if pltvarname == 'vwnd':
-        clevels = [-30, -20, -14, -10, -7, -4, -2, -1, 1, 2, 4, 7, 10, 14, 20, 30]
-        fillpalette = "BlueWhiteOrangeRed"
-    if pltvarname == 'div':
-        clevels = [-0.00002, -0.00001, -0.000005, -0.000001, 0.000001, 0.000005, 0.00001, 0.00002]
-        fillpalette = "BlueWhiteOrangeRed"
-    if pltvarname == 'olr':
-        clevels = [160, 170, 190, 210, 230, 260]
-        # cmap = ["purple2", "mediumpurple1", "slateblue1", "blue2", "dodgerblue", "lightskyblue", "white"]
-        cmap_rgb = [[145, 44, 238], [171, 130, 255], [131, 111, 255], [0, 0, 238],
-                    [30, 144, 255], [135, 206, 250], [255, 255, 255]]
+    elif pltvarname == 'uwnd':
+        cmap_rgb = [[0.0, "rgb(49,54,149)"],
+                    [0.1111111111111111, "rgb(69,117,180)"],
+                    [0.2222222222222222, "rgb(116,173,209)"],
+                    [0.3333333333333333, "rgb(171,217,233)"],
+                    [0.4444444444444444, "rgb(224,243,248)"],
+                    [0.5, "rgb(255,255,255)"],
+                    [0.5555555555555556, "rgb(254,224,144)"],
+                    [0.6666666666666666, "rgb(253,174,97)"],
+                    [0.7777777777777778, "rgb(244,109,67)"],
+                    [0.8888888888888888, "rgb(215,48,39)"],
+                    [1.0, "rgb(165,0,38)"]]
+    elif pltvarname == 'vwnd':
+        cmap_rgb = [[0.0, "rgb(49,54,149)"],
+                    [0.1111111111111111, "rgb(69,117,180)"],
+                    [0.2222222222222222, "rgb(116,173,209)"],
+                    [0.3333333333333333, "rgb(171,217,233)"],
+                    [0.4444444444444444, "rgb(224,243,248)"],
+                    [0.5, "rgb(255,255,255)"],
+                    [0.5555555555555556, "rgb(254,224,144)"],
+                    [0.6666666666666666, "rgb(253,174,97)"],
+                    [0.7777777777777778, "rgb(244,109,67)"],
+                    [0.8888888888888888, "rgb(215,48,39)"],
+                    [1.0, "rgb(165,0,38)"]]
+    elif pltvarname == 'div':
+        cmap_rgb = [[0.0, "rgb(49,54,149)"],
+                    [0.1111111111111111, "rgb(69,117,180)"],
+                    [0.2222222222222222, "rgb(116,173,209)"],
+                    [0.3333333333333333, "rgb(171,217,233)"],
+                    [0.4444444444444444, "rgb(224,243,248)"],
+                    [0.5, "rgb(255,255,255)"],
+                    [0.5555555555555556, "rgb(254,224,144)"],
+                    [0.6666666666666666, "rgb(253,174,97)"],
+                    [0.7777777777777778, "rgb(244,109,67)"],
+                    [0.8888888888888888, "rgb(215,48,39)"],
+                    [1.0, "rgb(165,0,38)"]]
+    elif pltvarname == 'olr':
+        cmap_rgb = [[0, "rgb(145, 44, 238)"], [0.14, "rgb(145, 44, 238)"],
+                    [0.14, "rgb(171, 130, 255)"], [0.28, "rgb(171, 130, 255)"],
+                    [0.28, "rgb(131, 111, 255)"], [0.42, "rgb(131, 111, 255)"],
+                    [0.42, "rgb(0, 0, 238)"], [0.56, "rgb(0, 0, 238)"],
+                    [0.56, "rgb(30, 144, 255)"], [0.71, "rgb(30, 144, 255)"],
+                    [0.71, "rgb(135, 206, 250)"], [0.85, "rgb(135, 206, 250)"],
+                    [0.85, "rgb(255, 255, 255)"], [1, "rgb(255, 255, 255)"]]
+    else:
+        cmap_rgb = [[0.0, "rgb(49,54,149)"],
+                    [0.1111111111111111, "rgb(69,117,180)"],
+                    [0.2222222222222222, "rgb(116,173,209)"],
+                    [0.3333333333333333, "rgb(171,217,233)"],
+                    [0.4444444444444444, "rgb(224,243,248)"],
+                    [0.5, "rgb(255,255,255)"],
+                    [0.5555555555555556, "rgb(254,224,144)"],
+                    [0.6666666666666666, "rgb(253,174,97)"],
+                    [0.7777777777777778, "rgb(244,109,67)"],
+                    [0.8888888888888888, "rgb(215,48,39)"],
+                    [1.0, "rgb(165,0,38)"]]
 
+    return cmap_rgb
+
+
+def get_clevels(pltvarname):
+    """
+    Set contour levels for given variable.
+    :param pltvarname: name of variable to be plotted
+    :type pltvarname: string
+    :return: cmin, cmax, cspc
+    :rtype: float
+    """
+    if pltvarname == "precip":
+        cmin = 0.2
+        cmax = 1.2
+        cspc = 0.2
+    elif (pltvarname == 'uwnd') or (pltvarname == 'vwnd'):
+        cmin = -21.
+        cmax = 21.
+        cspc = 2.
+    elif pltvarname == 'div':
+        cmin = -0.000011
+        cmax = 0.000011
+        cspc = 0.000002
+    elif pltvarname == 'olr':
+        cmin = 160.
+        cmax = 240.
+        cspc = 20.
+    else:
+        print('Warning: Not a default variable name (' + pltvarname + '). To ensure best plotting results please '
+                                                                      'specify min, max and spacing for contour levels.')
+        cmin = -21.
+        cmax = 21.
+        cspc = 2.
+
+    return cmin, cmax, cspc
+
+
+def get_timestr(time):
+    """
+    Generate time string for y-axis labels.
+    :param time: time coordinate
+    :type time: datetime object
+    :return: timestr
+    :rtype: str
+    """
     ts = (time - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 'h')
     date = num2date(ts, 'hours since 1970-01-01T00:00:00Z')
     timestr = [i.strftime("%Y-%m-%d %H:%M") for i in date]
 
+    return timestr
 
-    return cmap_rgb, timestr
 
-
-"""
-def panel_resources(res, nplot=4, latS=None, latN=None, units=[]):
-    if latS < 0:
-        hemS = 'S'
-        latS = -latS
+def get_latstring(lats, latn):
+    """
+    Generate string describing the latitude band averaged over.
+    :param lats: southern latitude limit of the average
+    :type lats: float
+    :param latn: northern latitude limit of the average
+    :type latn: float
+    :return: latstr
+    :rtype: str
+    """
+    if lats < 0:
+        hems = 'S'
+        lats = -lats
     else:
-        hemS = 'N'
-    if latN < 0:
-        hemN = 'S'
-        latN = -latN
+        hems = 'N'
+    if latn < 0:
+        hemn = 'S'
+        latn = -latn
     else:
-        hemN = 'N'
-    resP = ngl.Resources()
-    resP.nglFrame = True
-    resP.nglMaximize = True
-    resP.nglPanelLabelBar = True
-    resP.lbOrientation = "vertical"
-    resP.lbTitleString = units
-    resP.lbLabelStrings = ["{0:0.2f}".format(i) for i in res.cnLevels]
-    resP.nglPanelLabelBarLabelFontHeightF = 0.02
-    resP.nglPanelLabelBarHeightF = 0.37
-    resP.nglPanelLabelBarParallelPosF = 0.025
-    resP.nglPanelFigureStrings = [str(latS) + hemS + " - " + str(latN) + hemN]
-    resP.nglPanelFigureStringsJust = "TopRight"
+        hemn = 'N'
 
-    return resP
-"""
+    latstr = str(lats) + hems + " - " + str(latn) + hemn
+
+    return latstr
 
 
-def hovmoeller(data, lon, time, datestrt, datelast, spd, source, pltvarname, plotpath, latS, latN, cmin=[], cmax=[],
-               cspc=[]):
-    # open plot workstation
+def hovmoeller(data, lon, time, datestrt, datelast, plotpath, lats, latn, spd, source, pltvarname, lev=[],
+               cmin=[], cmax=[], cspc=[]):
+    """
+    Main driver for plotting Hovmoeller diagrams.
+    :param data: input data, should be (time, lon)
+    :type data: numeric
+    :param lon: longitude coordinate of data
+    :type lon: float
+    :param time: time coordinate of data
+    :type time: datetime
+    :param datestrt: start date for Hovmoeller, used in plot file name
+    :type datestrt: str
+    :param datelast: end date for Hovmoeller, used in plot file name
+    :type datelast: str
+    :param plotpath: path for saving the figure
+    :type plotpath: str
+    :param lats: southern latitude limit of the average
+    :type lats: float
+    :param latn: northern latitude limit of the average
+    :type latn: float
+    :param spd: number of observations per day
+    :type spd: int
+    :param source: source of the data, e.g. (ERAI, TRMM, ...), used in plot file name
+    :type source: str
+    :param pltvarname: name of variable to be plotted
+    :type pltvarname: str
+    :param lev: vertical level of data (optional)
+    :type lev: str
+    :param cmin: contour level minimum (optional)
+    :type cmin: float
+    :param cmax: contour level maximum (optional)
+    :type cmax: float
+    :param cspc: contour spacing (optional)
+    :type cspc: float
+    :return: none
+    :rtype: none
+    """
+
+    """
+    Set plot type and plot file name.
+    """
     plttype = "png"
-    plotname = plotpath + "Hovmoeller_" + source + pltvarname + "_" + str(datestrt) + "-" + str(
+    plotname = plotpath + "Hovmoeller_" + source + pltvarname + lev + "_" + str(datestrt) + "-" + str(
         datelast) + "." + plttype
 
-    # plot resources
-    cmap_rgb, timestr = hov_resources(time, lon, pltvarname, cmin, cmax, cspc)
-    # resP = panel_resources(res, 1, latS, latN, data.attrs['units'])
+    """
+    Set plot resources: colormap, time string, contour levels, latitude band string
+    """
+    cmap_rgb = hov_resources(pltvarname)
 
-    # plot hovmoeller
+    timestr = get_timestr(time)
+
+    if (not cmin) or (not cmax) or (not cspc):
+        cmin, cmax, cspc = get_clevels(pltvarname)
+
+    latstring = get_latstring(lats, latn)
+
+    """
+    Generate the Hovmoeller plot.
+    """
     fig = go.Figure()
 
-    fig.add_trace(go.Contour(
-        z=data.values,
-        x=lon,
-        y=timestr,
-        colorscale=cmap_rgb,
-        contours=dict(start=cmin, end=cmax, size=cspc,
-                      showlines=False)
-    ))
+    fig.add_trace(
+        go.Contour(
+            z=data.values,
+            x=lon,
+            y=timestr,
+            colorscale=cmap_rgb,
+            contours=dict(start=cmin, end=cmax, size=cspc,
+                          showlines=False),
+            colorbar=dict(title=data.attrs['units'],
+                          len=0.6,
+                          lenmode='fraction')
+        )
+    )
 
     fig.update_layout(
-        title=source + " " + pltvarname,
+        title=source + " " + pltvarname + lev,
         width=600,
-        height=900)
+        height=900,
+        annotations=[
+            go.layout.Annotation(
+                x=300,
+                y=timestr[5],
+                xref="x",
+                yref="y",
+                text=latstring,
+                showarrow=False,
+                bgcolor="white",
+                opacity=0.9,
+                font=dict(size=16)
+            )
+        ]
+    )
 
     fig.update_xaxes(ticks="inside", tick0=0, dtick=30, title_text='longitude')
     fig.update_yaxes(autorange="reversed", ticks="inside", nticks=11)
