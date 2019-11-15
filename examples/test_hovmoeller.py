@@ -8,6 +8,7 @@ local scripts, if loading from a different directory include that with a '.' bet
 directory name and script name
 """
 from tropical_diagnostics.diagnostics.hovmoeller_plotly import hovmoeller
+from tropical_diagnostics.diagnostics.hovmoeller_calc import lat_avg
 
 plotpath = '../plots/'
 
@@ -30,22 +31,15 @@ print("reading data from file:")
 ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/precip.erai.sfc.1p5.2x.1979-2016.nc')
 A = ds.precip
 lonA = ds.lon
-print("extracting latitude bands:")
-A = A.sel(lat=slice(latMin, latMax))
-A = A.squeeze()
-latA = ds.lat.sel(lat=slice(latMin, latMax))
 print("extracting time period:")
 A = A.sel(time=slice(datestrt, datelast))
-A = A.squeeze()
 timeA = ds.time.sel(time=slice(datestrt, datelast))
 ds.close()
 
 print("average over latitude band:")
-units = A.attrs['units']
-A = A.mean(dim='lat')
-A.attrs['units'] = units
 A = A * 1000 / 4
 A.attrs['units'] = 'mm/day'
+A = lat_avg(A, latmin=latMin, latmax=latMax)
 
 print("plot hovmoeller diagram:")
 #hovmoeller(A, lonA, timeA, datestrt, datelast, plotpath, latMin, latMax, spd, source, var, lev,
