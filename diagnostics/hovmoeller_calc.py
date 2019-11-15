@@ -1,6 +1,5 @@
 import numpy as np
 import xarray as xr
-#from scipy import signal
 
 """
 Routines used to compute Hovmoeller diagrams and pattern correlation.

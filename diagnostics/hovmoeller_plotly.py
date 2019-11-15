@@ -4,6 +4,7 @@ Hovmoeller plots using plotly module.
 
 import numpy as np
 import plotly.graph_objects as go
+import plotly.express as px
 from netCDF4 import num2date
 
 
@@ -259,3 +260,34 @@ def hovmoeller(data, lon, time, datestrt, datelast, plotpath, lats, latn, spd, s
     fig.write_image(plotname)
 
     return
+
+
+def plot_pattcorr(PC, labels, plotpath):
+    """
+    Plot pattern correlation curves as a function of lead time.
+    :param PC:
+    :type PC:
+    :param labels:
+    :type labels:
+    :return:
+    :rtype:
+    """
+
+    plttype = "png"
+    plotname = plotpath + "PatternCorrelationHovmoeller." + plttype
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 0],
+                             mode='lines',
+                             name=labels[0]))
+    fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 1],
+                             mode='lines',
+                             name=labels[1]))
+    fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 2],
+                             mode='lines',
+                             name=labels[2]))
+
+    fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='lead time (h)')
+    fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='correlation')
+
+    fig.write_image(plotname)
