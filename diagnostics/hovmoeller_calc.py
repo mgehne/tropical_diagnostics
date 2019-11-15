@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-from scipy import signal
+#from scipy import signal
 
 """
 Routines used to compute Hovmoeller diagrams and pattern correlation.
@@ -29,6 +29,7 @@ def lat_avg(data, latmin, latmax):
     units = data.attrs['units']
     data = data.mean(dim='lat')
     data.attrs['units'] = units
+    data = data.squeeze()
 
     return data
 
@@ -43,7 +44,10 @@ def pattern_corr(a, b):
     :return: correlation
     :rtype: float
     """
+    a1d = a.stack(lt=('time', 'lon'))
+    b1d = b.stack(lt=('time', 'lon'))
 
-    corr = signal.correlate2d(a, b, mode='full')
+    corr = np.corrcoef(a1d, b1d)
+    corr = corr[0, 1]
 
     return corr
