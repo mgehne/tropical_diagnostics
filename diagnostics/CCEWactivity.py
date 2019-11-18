@@ -13,6 +13,8 @@ waveproj:
 
 import numpy as np
 import xarray as xr
+import plotly.graph_objects as go
+from netCDF4 import num2date
 
 
 def waveact(data: object, wave: str, eofpath: str, spd: int, opt=False):
@@ -26,9 +28,9 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, opt=False):
     """
     # read EOFs from file
     if (wave == 'Kelvin' or wave == 'kelvin'):
-        eofname = 'EOF_1-4_130-270E_-15S-15N_persiann_cdr_1p5_fillmiss8314_1983-2016_Kelvinband_'
+        eofname = 'EOF_1-4_130-270E_-15S-15N_persiann_cdr_1p0_fillmiss8314_1983-2016_Kelvinband_'
     elif (wave == 'ER' or wave == 'er'):
-        eofname = 'EOF_1-4_60-220E_-21S-21N_persiann_cdr_1p5_fillmiss8314_1983-2016_ERband_'
+        eofname = 'EOF_1-4_60-220E_-21S-21N_persiann_cdr_1p0_fillmiss8314_1983-2016_ERband_'
 
     ds = xr.open_dataset(eofpath + eofname + '01.nc')
     nlat = len(ds.lat)
@@ -137,3 +139,104 @@ def waveproj(data_anom: object, eofseas: object):
             proj_wave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
 
     return proj_wave
+
+
+def wave_skill(act):
+    """
+
+    :param act:
+    :type act:
+    :return:
+    :rtype:
+    """
+    nfchr, nlines, ntim = act.shape
+    skill = act[:, 1::, 0].squeeze()
+
+    for ff in np.arange(nfchr):
+        for ll in np.arange(nlines-1):
+            tmpskill = np.corrcoef(act[ff, ll+1, :], act[ff, 0, :])
+            skill[ff, ll] = tmpskill[0, 1]
+
+    return skill
+
+def get_timestr(time):
+    """
+    Generate time string for y-axis labels.
+    :param time: time coordinate
+    :type time: datetime object
+    :return: timestr
+    :rtype: str
+    """
+    ts = (time - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 'h')
+    date = num2date(ts, 'hours since 1970-01-01T00:00:00Z')
+    timestr = [i.strftime("%Y-%m-%d %H:%M") for i in date]
+
+    return timestr
+
+
+def plot_activity(act, wavename, labels, plotpath, fchr=[]):
+    """
+    Plot pattern correlation curves as a function of lead time.
+    :param act:
+    :type act:
+    :param labels:
+    :type labels:
+    :return:
+    :rtype:
+    """
+
+    plttype = "png"
+    plotname = plotpath + wavename + "Activity." + plttype
+    if fchr:
+        plotname = plotpath + wavename + "Activity_f" + f"{fchr:03d}" + "." + plttype
+
+    nlines, ntim = act.shape
+
+    timestr = get_timestr(act['time'])
+
+    fig = go.Figure()
+    for ll in np.arange(nlines):
+        fig.add_trace(go.Scatter(x=timestr, y=act[ll, :].values,
+                                mode='lines',
+                                name=labels[ll]))
+
+    fig.update_layout(
+        title=wavename + " FH" + f"{fchr:03d}",
+        yaxis=dict(range=[0, 25]))
+
+    #fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='date')
+    fig.update_yaxes(ticks="", tick0=0, dtick=1., title_text='activity')
+
+    fig.write_image(plotname)
+
+
+def plot_skill(skill, wavename, labels, plotpath):
+    """
+    Plot pattern correlation curves as a function of lead time.
+    :param skill:
+    :type skill:
+    :param labels:
+    :type labels:
+    :return:
+    :rtype:
+    """
+
+    plttype = "png"
+    plotname = plotpath + wavename + "Skill." + plttype
+
+    nfchr, nlines = skill.shape
+
+    fig = go.Figure()
+    for ll in np.arange(nlines):
+        fig.add_trace(go.Scatter(x=skill['fchrs'], y=skill[:, ll],
+                                mode='lines',
+                                name=labels[ll]))
+
+    fig.update_layout(
+        title=wavename,
+        yaxis=dict(range=[0, 1]))
+
+    fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='lead time (h)')
+    fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='skill correlation')
+
+    fig.write_image(plotname)
