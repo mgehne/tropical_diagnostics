@@ -13,6 +13,8 @@ import pandas as pd
 import Ngl as ngl
 import string
 import utils.matsuno_plot as mp
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 pi = np.pi
 re = 6.371008e6  # Earth's radius in meters
@@ -276,15 +278,30 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="",
     res_p = panel_resources(nplot, abc)
 
     # plot contours and phase arrows
+    fig = make_subplots(
+        rows=2, cols=2,
+        subplot_titles=source + "    coh^2(" + var1 + "," + var2 + ")           " + symmetry)
     pp = 0
     while pp < nplot:
         coh2 = cohsq[pp, :, :]
         phs1 = phase1[pp, :, :]
         phs2 = phase2[pp, :, :]
-        Symmetry = symmetry[pp]
 
-        res.tiMainString = source + "    coh^2(" + var1 + "," + var2 + ")           " + Symmetry
-        plot = ngl.contour(wks, coh2, res)
+        #plot = ngl.contour(wks, coh2, res)
+        fig.add_trace(
+            go.Contour(
+                z=coh2,
+                x=coh2['wave'],
+                y=coh2['freq'],
+                colorscale=cmap_rgb,
+                contours=dict(start=cmin, end=cmax, size=cspc,
+                              showlines=False),
+                colorbar=dict(title=data.attrs['units'],
+                              len=0.6,
+                              lenmode='fraction')
+            ),
+            row=1, col=1
+        )
         plot_a = ngl.vector(wks, phs1, phs2, res_a)
         ngl.overlay(plot, plot_a)
 
