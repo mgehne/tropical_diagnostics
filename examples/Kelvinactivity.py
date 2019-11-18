@@ -39,22 +39,22 @@ waveactA = CCEWactivity.waveact(A, wave, eofpath, spd)
 
 print(waveactA.shape)
 
-"""
+
 print("reading PERSIANN data from file:")
-spd = 1
-ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/persiann_cdr_1p0_fillmiss8314_1983-2016.nc')
+spd = 2
+ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/precip.trmm.2x.1p0.v7a.fillmiss.comp.1998-2016.nc')
 B = ds.precip
 print("extracting time period:")
 B = B.sel(time=slice(datestrt, datelast))
 B = B.squeeze()
 timeB = ds.time.sel(time=slice(datestrt, datelast))
 ds.close()
-B = B / 24
-B.attrs['units'] = 'mm/h'
+B = B * 24
+B.attrs['units'] = 'mm/d'
 
 print("project data onto wave EOFs")
 waveactB = CCEWactivity.waveact(B, wave, eofpath, spd)
-"""
+
 
 print('reading model forecast from file:')
 spd = 2
@@ -67,8 +67,8 @@ filebase2 = 'prate_ave_1p0_f'
 
 fchrs = np.arange(0, 121, 12)
 nfchr = len(fchrs)
-exps = [0, 1, 2]
-explabels = ['obs', res1, res2]
+exps = [0, 1, 2, 3]
+explabels = ['erai', 'trmm', res1, res2]
 
 fi = 0
 for ff in fchrs:
@@ -90,12 +90,13 @@ for ff in fchrs:
     if fi == 0:
         act = xr.DataArray(0., coords=[fchrs, exps, wact1['time']], dims=['fchrs', 'exps', 'time'])
 
-    act[fi, 1, :] = wact1.values
-    act[fi, 2, :] = wact2.values
+    act[fi, 2, :] = wact1.values
+    act[fi, 3, :] = wact2.values
     act[fi, 0, :] = waveactA.values
+    act[fi, 1, :] = waveactA.values
 
-    #print("plot activity")
-    #CCEWactivity.plot_activity(act[fi, :, :], wave, explabels, plotpath, ff)
+    print("plot activity")
+    CCEWactivity.plot_activity(act[fi, :, :], wave, explabels, plotpath, ff)
 
     fi += 1
 

@@ -233,7 +233,7 @@ def plot_skill(skill, wavename, labels, plotpath):
                                 name=labels[ll]))
 
     fig.update_layout(
-        title=wavename,
+        title=wavename + " skill",
         yaxis=dict(range=[0, 1]))
 
     fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='lead time (h)')

@@ -62,4 +62,4 @@ for ff in fchrs:
     PC[fi,1] = corr
     fi += 1
 
-plot_pattcorr(PC, explabels, plotpath)
+plot_pattcorr(PC, explabels, plotpath, lats=latMin, latn=latMax)

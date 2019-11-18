@@ -262,16 +262,22 @@ def hovmoeller(data, lon, time, datestrt, datelast, plotpath, lats, latn, spd, s
     return
 
 
-def plot_pattcorr(PC, labels, plotpath):
+def plot_pattcorr(PC, labels, plotpath, lats, latn):
     """
     Plot pattern correlation curves as a function of lead time.
     :param PC:
     :type PC:
     :param labels:
     :type labels:
+    :param plotpath:
+    :type plotpath:
+    :param region:
+    :type region: str
     :return:
     :rtype:
     """
+
+    latstring = get_latstring(lats, latn)
 
     plttype = "png"
     plotname = plotpath + "PatternCorrelationHovmoeller." + plttype
@@ -286,6 +292,8 @@ def plot_pattcorr(PC, labels, plotpath):
     fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 2],
                              mode='lines',
                              name=labels[2]))
+
+    fig.update_layout(title=latstring)
 
     fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='lead time (h)')
     fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='correlation')
