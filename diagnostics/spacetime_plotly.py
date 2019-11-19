@@ -12,9 +12,10 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
-import utils.matsuno_plot as mp
+import tropical_diagnostics.utils.matsuno_plot as mp
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 
 pi = np.pi
 re = 6.371008e6  # Earth's radius in meters
@@ -246,7 +247,7 @@ def panel_resources(nplot=4, abc=['a', 'b', 'c', 'd']):
     return res_p
 
 
-def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="", var2="", plotpath="./", flim=0.5,
+def plot_coherence(cohsq, phase1, phase2, k, w, symmetry=("symm"), source="", var1="", var2="", plotpath="./", flim=0.5,
                    nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, nplot=1, N=[1, 2]):
     FillMode = "AreaFill"
 
@@ -254,9 +255,8 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="",
     abc = list(string.ascii_lowercase)
 
     # plot resources
-    wkstype = "png"
-    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_" + source + var1 + var2)
-    plots = []
+    plttype = "png"
+    plotname = plotpath + plotpath + "SpaceTimeCoherence_" + source + var1 + var2 + "." + plttype
 
     # coherence2 plot resources
     res = coh_resources(cmin, cmax, cspc, FillMode, flim, nwaveplt)
@@ -280,32 +280,40 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="",
     # plot contours and phase arrows
     fig = make_subplots(
         rows=2, cols=2,
-        subplot_titles=source + "    coh^2(" + var1 + "," + var2 + ")           " + symmetry)
+        subplot_titles=source + "    coh^2(" + var1 + "," + var2 + ")           " + symmetry[0])
     pp = 0
     while pp < nplot:
+        Symmetry = symmetry[pp]
         coh2 = cohsq[pp, :, :]
         phs1 = phase1[pp, :, :]
         phs2 = phase2[pp, :, :]
 
         #plot = ngl.contour(wks, coh2, res)
+        # plot_a = ngl.vector(wks, phs1, phs2, res_a)
+        # ngl.overlay(plot, plot_a)
+        fig = go.Figure()
+
         fig.add_trace(
             go.Contour(
                 z=coh2,
-                x=coh2['wave'],
-                y=coh2['freq'],
-                colorscale=cmap_rgb,
+                x=k,
+                y=w,
+                colorscale='YlOrRd',
                 contours=dict(start=cmin, end=cmax, size=cspc,
                               showlines=False),
-                colorbar=dict(title=data.attrs['units'],
-                              len=0.6,
+                colorbar=dict(len=0.6,
                               lenmode='fraction')
-            ),
-            row=1, col=1
+            )
         )
-        plot_a = ngl.vector(wks, phs1, phs2, res_a)
-        ngl.overlay(plot, plot_a)
+        kk, ww = np.meshgrid(k, w)
+        skip = 10
+        f = ff.create_quiver(kk[::skip, ::skip], ww[::skip, ::skip], phs1[::skip, ::skip], phs2[::skip, ::skip])
+        trace1 = f.data[0]
+        #data = [trace1, trace2]
+        #fig = go.FigureWidget(data, row=1, col=1)
+        fig.add_trace(trace1)
 
-        (matsuno_names, textlabels, textlocsX, textlocsY) = text_labels(Symmetry)
+        (matsuno_names, textlabels, textlocsX, textlocsY) = text_labels(symmetry[pp])
         nlabel = len(textlocsX)
 
         # generate matsuno mode dispersion curves
@@ -326,21 +334,23 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="",
                         wave = df[wavename].values
                         wnwave = wn[~np.isnan(wave)]
                         wave = wave[~np.isnan(wave)]
-                        ngl.add_polyline(wks, plot, wnwave, wave, dcres)
+                        #ngl.add_polyline(wks, plot, wnwave, wave, dcres)
 
         # add text boxes
-        ll = 0
-        while ll < nlabel:
-            ngl.add_text(wks, plot, textlabels[ll], textlocsX[ll], textlocsY[ll], txres)
-            ll += 1
+        #ll = 0
+        #while ll < nlabel:
+        #    ngl.add_text(wks, plot, textlabels[ll], textlocsX[ll], textlocsY[ll], txres)
+        #    ll += 1
 
-        plots.append(plot)
-        pp += 1
+        #plots.append(plot)
+        #pp += 1
 
         # panel plots
-    ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], res_p)
+    #ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], res_p)
 
-    ngl.end()
+    #ngl.end()
+
+    fig.write_image(plotname)
 
     return
 
