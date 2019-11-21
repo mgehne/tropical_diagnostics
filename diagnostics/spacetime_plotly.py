@@ -291,10 +291,8 @@ def plot_coherence(cohsq, phase1, phase2, k, w, symmetry=("symm"), source="", va
         #plot = ngl.contour(wks, coh2, res)
         # plot_a = ngl.vector(wks, phs1, phs2, res_a)
         # ngl.overlay(plot, plot_a)
-        fig = go.Figure()
 
-        fig.add_trace(
-            go.Contour(
+        trace2 = go.Contour(
                 z=coh2,
                 x=k,
                 y=w,
@@ -304,13 +302,11 @@ def plot_coherence(cohsq, phase1, phase2, k, w, symmetry=("symm"), source="", va
                 colorbar=dict(len=0.6,
                               lenmode='fraction')
             )
-        )
         kk, ww = np.meshgrid(k, w)
         skip = 10
         f = ff.create_quiver(kk[::skip, ::skip], ww[::skip, ::skip], phs1[::skip, ::skip], phs2[::skip, ::skip])
         trace1 = f.data[0]
-        #data = [trace1, trace2]
-        #fig = go.FigureWidget(data, row=1, col=1)
+        fig.add_trace(trace2)
         fig.add_trace(trace1)
 
         (matsuno_names, textlabels, textlocsX, textlocsY) = text_labels(symmetry[pp])
