@@ -50,6 +50,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, opt=False):
     ds.close()
 
     # remove mean annual cycle
+    print("remove annual cycle")
     doy = data['time.dayofyear']
     doy_oad = doy[0::spd]
     nd = len(doy_oad) - len(np.unique(doy_oad))
@@ -59,6 +60,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, opt=False):
         data_anom = rem_seas_mean(data)
 
     # compute projection
+    print("project onto EOFs")
     tswave = waveproj(data_anom, eofseas)
 
     # compute activity
@@ -103,18 +105,8 @@ def rem_seas_mean(data: object, opt: object = False) -> object:
     :param opt: optional parameter, not currently used
     :return: xr.DataArray containing anomalies from daily climatology
     """
-    da = xr.DataArray(np.arange(len(data['time'])), coords=[data['time']], dims=['time'])
-    #month_day_str = xr.DataArray(da.indexes['time'].strftime('%m-%d'), coords=da.coords, name='month_day_str')
-    time = data['time']
-
-    #data = data.rename({'time': 'month_day_str'})
-    #month_day_str = month_day_str.rename({'time': 'month_day_str'})
-    #data = data.assign_coords(month_day_str=month_day_str)
     clim = data.mean('time')
-
     data_anom = data - clim
-    #data_anom = data_anom.rename({'month_day_str': 'time'})
-    #data_anom = data_anom.assign_coords(time=time)
 
     return data_anom
 
