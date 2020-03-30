@@ -55,10 +55,10 @@ waveactB = CCEWactivity.waveact(B, wave, eofpath, spd)
 print(waveactB.min(), waveactB.max())
 
 print('reading model forecast from file:')
-spd = 4
+spd = 1
 res1 = 'C128'
 path1 = '/data/mgehne/FV3/replay_exps/C128/ERAI_free-forecast_C128/STREAM_2015103100/MODEL_DATA/SST_INITANOMALY2CLIMO-90DY/ALLDAYS/'
-filebase1 = 'prcp_avg24h_fhr'  #720_C128_180x360.nc
+filebase1 = 'prcp_avg6h_fhr'  #720_C128_180x360.nc
 
 fchrs = np.arange(0, 720, 24)
 nfchr = len(fchrs)
