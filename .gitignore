@@ -4,3 +4,4 @@ data/
 plots/
 tropical_diagnostics.egg-info
 diagnostics.egg-info
+.DS_Store
