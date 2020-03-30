@@ -18,8 +18,8 @@ eofpath = '../data/EOF/'
 Parameters to set for plotting Kelvin activity index.
 """
 wave = 'Kelvin'
-datestrt = '2016-01-06 00:00:00'
-datelast = '2016-03-29 13:00:00'
+datestrt = '2016-01-06 00:00'
+datelast = '2016-03-29 13:00'
 
 
 print("reading ERAI data from file:")
@@ -72,6 +72,7 @@ for ff in fchrs:
     print('Reading fhr='+fstr)
     ds = xr.open_dataset(path1 + filebase1 + fstr + '_C128_180x360.nc')
     data1 = ds.prcp
+    print(ds.time)
     data1 = data1.sel(time=slice(datestrt, datelast))
     ds.close()
 
