@@ -35,7 +35,7 @@ A = A * 1000/4
 A.attrs['units'] = 'mm/d'
 
 print("project data onto wave EOFs")
-waveactA = CCEWactivity.waveact(A, wave, eofpath, spd)
+waveactA = CCEWactivity.waveact(A, wave, eofpath, spd, '1p0', 181)
 print(waveactA.min(), waveactA.max())
 
 
@@ -51,7 +51,7 @@ ds.close()
 B.attrs['units'] = 'mm/d'
 
 print("project data onto wave EOFs")
-waveactB = CCEWactivity.waveact(B, wave, eofpath, spd)
+waveactB = CCEWactivity.waveact(B, wave, eofpath, spd, '1p0', 181)
 print(waveactB.min(), waveactB.max())
 
 print('reading model forecast from file:')
@@ -76,7 +76,7 @@ for ff in fchrs:
     ds.close()
 
     print('computing activity')
-    wact1 = CCEWactivity.waveact(data1, wave, eofpath, spd)
+    wact1 = CCEWactivity.waveact(data1, wave, eofpath, spd, '1p0', 180)
 
     if fi == 0:
         act = xr.DataArray(0., coords=[fchrs, exps, wact1['time']], dims=['fchrs', 'exps', 'time'])
