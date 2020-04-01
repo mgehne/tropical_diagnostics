@@ -69,7 +69,10 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     # compute activity
     waveact = xr.DataArray(0., coords=[data_anom.time], dims=['time'])
     waveact.values = np.sqrt(np.sum(np.square(tswave), 0))
-    waveact.attrs['units'] = data.attrs['units']
+    try:
+        waveact.attrs['units'] = data.attrs['units']
+    except KeyError:
+        print('Data has not units attribute, cannot attach units to activity')
     waveact.attrs['name'] = wave+' activity'
 
     del data, data_anom
