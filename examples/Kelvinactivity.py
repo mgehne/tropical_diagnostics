@@ -23,7 +23,7 @@ datelast = '2016-03-29 13:00:00'
 
 
 print("reading ERAI data from file:")
-spd = 2
+spd = 1
 ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/precip.erai.sfc.1p0.'+str(spd)+'x.1979-2016.nc')
 A = ds.precip
 print("extracting time period:")
@@ -40,7 +40,7 @@ print(waveactA.min(), waveactA.max())
 
 
 print("reading observed precipitation data from file:")
-spd = 2
+spd = 1
 ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/precip.trmm.'+str(spd)+'x.1p0.v7a.fillmiss.comp.1998-2016.nc')
 B = ds.precip
 print("extracting time period:")
@@ -50,17 +50,19 @@ timeB = ds.time.sel(time=slice(datestrt, datelast))
 ds.close()
 B.attrs['units'] = 'mm/d'
 
+print(B.shape())
+
 print("project data onto wave EOFs")
 waveactB = CCEWactivity.waveact(B, wave, eofpath, spd, '1p0', 181)
 print(waveactB.min(), waveactB.max())
 
 print('reading model forecast from file:')
-spd = 2
+spd = 1
 res1 = 'C128'
 path1 = '/data/mgehne/FV3/replay_exps/C128/ERAI_free-forecast_C128/STREAM_2015103100/MODEL_DATA/SST_INITANOMALY2CLIMO-90DY/ALLDAYS/'
 filebase1 = 'prcp_avg6h_fhr'  #720_C128_180x360.nc
 
-fchrs = np.arange(0, 720, 12)
+fchrs = np.arange(0, 720, 24)
 nfchr = len(fchrs)
 exps = [0, 1, 2]
 explabels = ['trmm', 'erai', res1]
@@ -74,6 +76,8 @@ for ff in fchrs:
     data1 = ds.prcp
     data1 = data1.sel(time=slice(datestrt, datelast))
     ds.close()
+
+    print(data1.shape())
 
     print('computing activity')
     wact1 = CCEWactivity.waveact(data1, wave, eofpath, spd, '1p0', 180)

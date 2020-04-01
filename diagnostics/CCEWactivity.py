@@ -72,7 +72,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     try:
         waveact.attrs['units'] = data.attrs['units']
     except KeyError:
-        print('Data has not units attribute, cannot attach units to activity')
+        print('Data has no units attribute, cannot attach units to activity')
     waveact.attrs['name'] = wave+' activity'
 
     del data, data_anom
