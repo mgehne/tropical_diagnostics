@@ -289,13 +289,13 @@ def plot_pattcorr(PC, labels, plotpath, lats, latn):
     fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 1],
                              mode='lines',
                              name=labels[1]))
-    fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 2],
-                             mode='lines',
-                             name=labels[2]))
+    #fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 2],
+    #                         mode='lines',
+    #                         name=labels[2]))
 
     fig.update_layout(title=latstring)
 
-    fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='lead time (h)')
+    fig.update_xaxes(ticks="", tick0=0, dtick=24, title_text='lead time (h)')
     fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='correlation')
 
     fig.write_image(plotname)
