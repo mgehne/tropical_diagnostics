@@ -1,6 +1,6 @@
 import numpy as np
 from netCDF4 import Dataset
-import xarray
+import xarray as xr
 import sys
 
 sys.path.append('../../')
@@ -28,7 +28,8 @@ pp = 0
 while pp < nplot:
 
     # read data from file
-    fin = Dataset(pathdata + 'SpaceTimeSpectra_' + symmetry[pp] + '_2spd.nc', "r")
+    #fin = Dataset(pathdata + 'SpaceTimeSpectra_' + symmetry[pp] + '_2spd.nc', "r")
+    fin = xr.open_dataset(pathdata + 'SpaceTimeSpectra_' + symmetry[pp] + '_2spd.nc')
     STC = fin['STC'][:, :, :]
     wnum = fin['wnum']
     freq = fin['freq']
