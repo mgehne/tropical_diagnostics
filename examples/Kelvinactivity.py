@@ -18,8 +18,8 @@ eofpath = '../data/EOF/'
 Parameters to set for plotting Kelvin activity index.
 """
 wave = 'Kelvin'
-datestrt = '2016-01-06 00:00:00'
-datelast = '2016-03-29 13:00:00'
+datestrt = '2015-12-01 00:00:00'
+datelast = '2016-03-31 13:00:00'
 
 
 print("reading ERAI data from file:")
@@ -50,8 +50,6 @@ timeB = ds.time.sel(time=slice(datestrt, datelast))
 ds.close()
 B.attrs['units'] = 'mm/d'
 
-print(B.shape())
-
 print("project data onto wave EOFs")
 waveactB = CCEWactivity.waveact(B, wave, eofpath, spd, '1p0', 181)
 print(waveactB.min(), waveactB.max())
@@ -62,7 +60,7 @@ res1 = 'C128'
 path1 = '/data/mgehne/FV3/replay_exps/C128/ERAI_free-forecast_C128/STREAM_2015103100/MODEL_DATA/SST_INITANOMALY2CLIMO-90DY/ALLDAYS/'
 filebase1 = 'prcp_avg6h_fhr'  #720_C128_180x360.nc
 
-fchrs = np.arange(0, 720, 24)
+fchrs = np.arange(0, 744, 24)
 nfchr = len(fchrs)
 exps = [0, 1, 2]
 explabels = ['trmm', 'erai', res1]
@@ -75,9 +73,9 @@ for ff in fchrs:
     ds = xr.open_dataset(path1 + filebase1 + fstr + '_C128_180x360.nc')
     data1 = ds.prcp
     data1 = data1.sel(time=slice(datestrt, datelast))
+    data1 = data1*3600
+    data1.attrs['units'] = 'mm/d'
     ds.close()
-
-    print(data1.shape())
 
     print('computing activity')
     wact1 = CCEWactivity.waveact(data1, wave, eofpath, spd, '1p0', 180)
