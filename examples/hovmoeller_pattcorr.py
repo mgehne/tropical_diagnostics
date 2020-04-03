@@ -16,7 +16,7 @@ plotpath = '../plots/'
 """
 Parameters to set for the Hovmoeller diagrams.
 """
-datestrt = '2016-01-11'  # plot start date, format: yyyy-mm-dd
+datestrt = '2015-12-01'  # plot start date, format: yyyy-mm-dd
 datelast = '2016-03-31'  # plot end date, format: yyyy-mm-dd
 latMax = 5.  # maximum latitude for the average
 latMin = -5.  # minimum latitude for the average
@@ -41,7 +41,7 @@ filebase1 = 'prcp_avg6h_fhr'  #720_C128_180x360.nc
 fchrs = np.arange(0, 744, 24)
 nfchr = len(fchrs)
 exps = [0, 1]
-explabels = ['trmm', res1]
+explabels = [res1,'trmm']
 nexps = len(exps)
 
 PC = xr.DataArray(0., coords=[fchrs, exps], dims=['fchrs', 'exps'])

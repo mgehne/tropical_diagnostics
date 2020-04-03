@@ -281,14 +281,17 @@ def plot_pattcorr(PC, labels, plotpath, lats, latn):
 
     plttype = "png"
     plotname = plotpath + "PatternCorrelationHovmoeller." + plttype
+    nlines = len(labels)
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 0],
+    for ll in np.arange(0,nlines):
+    	fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, ll],
                              mode='lines',
-                             name=labels[0]))
-    fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 1],
-                             mode='lines',
-                             name=labels[1]))
+                             name=labels[ll]))
+    
+    #fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 1],
+    #                         mode='lines',
+    #                         name=labels[1]))
     #fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 2],
     #                         mode='lines',
     #                         name=labels[2]))
