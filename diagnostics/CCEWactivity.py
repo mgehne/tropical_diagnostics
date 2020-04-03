@@ -234,7 +234,7 @@ def plot_skill(skill, wavename, labels, plotpath):
         title=wavename + " skill",
         yaxis=dict(range=[0, 1]))
 
-    fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='lead time (h)')
+    fig.update_xaxes(ticks="", tick0=0, dtick=24, title_text='lead time (h)')
     fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='skill correlation')
 
     fig.write_image(plotname)
