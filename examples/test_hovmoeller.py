@@ -8,8 +8,7 @@ local scripts, if loading from a different directory include that with a '.' bet
 directory name and script name
 """
 from tropical_diagnostics.diagnostics.hovmoeller_calc import lat_avg
-from tropical_diagnostics.diagnostics.hovmoeller_calc import pattern_corr
-
+from tropical_diagnostics.diagnostics.hovmoeller_plotly import hovmoeller
 plotpath = '../plots/'
 
 """
@@ -35,26 +34,15 @@ A = A * 1000 / 4
 A.attrs['units'] = 'mm/day'
 A = lat_avg(A, latmin=latMin, latmax=latMax)
 
-# print("plot hovmoeller diagram:")
-# spd = 2  # number of obs per day
-# source = "ERAI"  # data source
-# var = "precip"  # variable to plot
-# lev = ""   # level
-# contourmin = 0.2  # contour minimum
-# contourmax = 1.2  # contour maximum
-# contourspace = 0.2  # contour spacing
-# hovmoeller(A, lonA, timeA, datestrt, datelast, plotpath, latMin, latMax, spd, source, var, lev,
-#           contourmin, contourmax, contourspace)
-# hovmoeller(A, lonA, timeA, datestrt, datelast, plotpath, latMin, latMax, spd, source, var, lev)
+print("plot hovmoeller diagram:")
+spd = 2  # number of obs per day
+source = "ERAI"  # data source
+var = "precip"  # variable to plot
+lev = ""   # level
+contourmin = 0.2  # contour minimum
+contourmax = 1.2  # contour maximum
+contourspace = 0.2  # contour spacing
+hovmoeller(A, lonA, timeA, datestrt, datelast, plotpath, latMin, latMax, spd, source, var, lev,
+           contourmin, contourmax, contourspace)
+hovmoeller(A, lonA, timeA, datestrt, datelast, plotpath, latMin, latMax, spd, source, var, lev)
 
-ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/uwnd.erai.850.1p5.2x.1979-2016.nc')
-B = ds.uwnd
-print("extracting time period:")
-B = B.sel(time=slice(datestrt, datelast))
-ds.close()
-
-B = lat_avg(B, latmin=latMin, latmax=latMax)
-
-
-corr = pattern_corr(A, B)
-print(corr)
