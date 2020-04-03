@@ -21,44 +21,50 @@ datelast = '2016-03-31'  # plot end date, format: yyyy-mm-dd
 latMax = 5.  # maximum latitude for the average
 latMin = -5.  # minimum latitude for the average
 
-res1 = 'c96'
-path1 = '/data/mgehne/FV3/GAEA/control/'
-filebase1 = 'prate_ave_f'
-res2 = 'c384'
-path2 = '/data/mgehne/FV3/GAEA/control_'+res2+'/'
-filebase2 = 'prate_ave_regrid_T766_to_T126_f'
+print("reading observed precipitation data from file:")
+spd = 1
+ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/precip.trmm.'+str(spd)+'x.1p0.v7a.fillmiss.comp.1998-2016.nc')
+B = ds.precip
+print("extracting time period:")
+B = B.sel(time=slice(datestrt, datelast))
+B = B.squeeze()
+timeB = ds.time.sel(time=slice(datestrt, datelast))
+ds.close()
+B.attrs['units'] = 'mm/d'
+B = lat_avg(B, latmin=latMin, latmax=latMax)
 
-fchrs = np.arange(0, 121, 12)
+spd = 1
+res1 = 'C128'
+path1 = '/data/mgehne/FV3/replay_exps/C128/ERAI_free-forecast_C128/STREAM_2015103100/MODEL_DATA/SST_INITANOMALY2CLIMO-90DY/ALLDAYS/'
+filebase1 = 'prcp_avg6h_fhr'  #720_C128_180x360.nc
+
+fchrs = np.arange(0, 744, 24)
 nfchr = len(fchrs)
-exps = ['1', '2', '12']
-explabels = [res1, res2, res1+' vs '+res2]
-nexps = 2
+exps = [0, 1]
+explabels = ['trmm', res1]
+nexps = len(exps)
 
 PC = xr.DataArray(0., coords=[fchrs, exps], dims=['fchrs', 'exps'])
 
 fi = 0
 for ff in fchrs:
-    fstr = f"{ff:03d}"
+    fstr = f"{ff:02d}"
     print('Reading fhr='+fstr)
-    ds = xr.open_dataset(path1 + filebase1 + fstr + '.nc')
-    data1 = ds.prate_ave
+    ds = xr.open_dataset(path1 + filebase1 + fstr + '_C128_180x360.nc')
+    data1 = ds.prcp
+    data1 = data1.sel(time=slice(datestrt, datelast))
+    data1 = data1*3600
+    data1.attrs['units'] = 'mm/d'
+    ds.close()
     data1 = lat_avg(data1, latmin=latMin, latmax=latMax)
-    ds.close()
-    ds = xr.open_dataset(path2 + filebase2 + fstr + '.nc')
-    data2 = ds.prate_ave
-    data2 = lat_avg(data2, latmin=latMin, latmax=latMax)
-    ds.close()
 
     if fi == 0:
         ana1 = data1
-        ana2 = data2
 
     print('computing pattern correlation')
-    corr = pattern_corr(data1, data2)
-    PC[fi,2] = corr
     corr = pattern_corr(ana1, data1)
     PC[fi,0] = corr
-    corr = pattern_corr(ana2, data2)
+    corr = pattern_corr(B, data1)
     PC[fi,1] = corr
     fi += 1
 
