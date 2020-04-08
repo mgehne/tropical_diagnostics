@@ -115,6 +115,15 @@ pathout = '../data/'
 print('saving spectra to file: ' + pathout + fileout + '.nc')
 save_Spectra(STC, freq, wnum, fileout, pathout)
 
+
+ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/precip.trmm.1x.1deg.lats180.v7a.fillmiss.comp.1998-201806.nc')
+z = ds.precip
+z = z.sel(lat=slice(latMin, latMax))
+z = z.sel(time=slice(datestrt, datelast))
+z = z.squeeze()
+latC = ds.lat.sel(lat=slice(latMin, latMax))
+
+
 print("compute cross-spectra at all lead times")
 spd = 1
 res1 = 'C128'
@@ -147,9 +156,11 @@ for ff in fchrs:
     if Symmetry == "symm" or Symmetry == "asymm":
         P = get_symmasymm(prcp, lat, Symmetry)
         D = get_symmasymm(div, lat, Symmetry)
+        X = get_symmasymm(z, latC, Symmetry)
     else:
         P = prcp
         D = div
+        X = z
 
     print('compute cross spectra model precip and model div')
     result = mjo_cross(P, D, nperseg, segOverLap)
@@ -164,6 +175,7 @@ for ff in fchrs:
     save_Spectra(STC, freq, wnum, fileout, pathout)
 
     print('compute cross spectra model precip and obs precip')
+    print(P.shape, X.shape)
     result = mjo_cross(P, X, nperseg, segOverLap)
     STC = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
     freq = result['freq']
