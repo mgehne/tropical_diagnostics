@@ -136,7 +136,7 @@ for ff in fchrs:
     prcp = prcp*3600
     prcp.attrs['units'] = 'mm/d'
     ds.close()
-    ds = xr.open_dataset(path1 + filebaseP + fstr + '_C128_180x360.nc')
+    ds = xr.open_dataset(path1 + filebaseD + fstr + '.nc')
     div = ds.div
     div = div.sel(time=slice(datestrt, datelast))
     div = div.sel(lat=slice(latMin, latMax))
