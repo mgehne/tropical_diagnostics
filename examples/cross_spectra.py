@@ -158,7 +158,7 @@ for ff in fchrs:
     freq = freq * spd
     wnum = result['wave']
     # save spectra in netcdf file
-    fileout = 'SpaceTimeSpectra_FV3_P_D850_' + Symmetry + '_' + str(spd) + 'spd'
+    fileout = 'SpaceTimeSpectra_FV3_P_D850_' + Symmetry + '_' + str(spd) + 'spd_fhr'+ fstr
     pathout = '../data/'
     print('saving spectra to file: ' + pathout + fileout + '.nc')
     save_Spectra(STC, freq, wnum, fileout, pathout)
@@ -170,7 +170,7 @@ for ff in fchrs:
     freq = freq * spd
     wnum = result['wave']
     # save spectra in netcdf file
-    fileout = 'SpaceTimeSpectra_FV3_TRMM_P_' + Symmetry + '_' + str(spd) + 'spd'
+    fileout = 'SpaceTimeSpectra_FV3_TRMM_P_' + Symmetry + '_' + str(spd) + 'spd_fhr'+ fstr
     pathout = '../data/'
     print('saving spectra to file: ' + pathout + fileout + '.nc')
     save_Spectra(STC, freq, wnum, fileout, pathout)
