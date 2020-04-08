@@ -1,4 +1,5 @@
 import xarray as xr
+import numpy as np
 import sys
 
 sys.path.append('../../')
@@ -53,7 +54,7 @@ y = y.sel(time=slice(datestrt, datelast))
 y = y.squeeze()
 latB = ds.lat.sel(lat=slice(latMin, latMax))
 
-ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/precip.trmm.1x.1p0.v7a.fillmiss.comp.1998-2016.nc)
+ds = xr.open_dataset('/data/mgehne/Precip/MetricsObs/precip.trmm.1x.1p0.v7a.fillmiss.comp.1998-2016.nc')
 z = ds.precip
 z = z.sel(lat=slice(latMin, latMax))
 z = z.sel(time=slice(datestrt, datelast))
@@ -66,12 +67,12 @@ if any(latA - latB) != 0:
 print("get symmetric/anti-symmetric components:")
 if Symmetry == "symm" or Symmetry == "asymm":
     X = get_symmasymm(x, latA, Symmetry)
-Y = get_symmasymm(y, latB, Symmetry)
-Z = get_symmasymm(z, latC, Symmetry)
+    Y = get_symmasymm(y, latB, Symmetry)
+    Z = get_symmasymm(z, latC, Symmetry)
 else:
-X = x
-Y = y
-Z = z
+    X = x
+    Y = y
+    Z = z
 
 print("compute cross-spectrum:")
 """
@@ -121,7 +122,7 @@ path1 = '/data/mgehne/FV3/replay_exps/C128/ERAI_free-forecast_C128/STREAM_201510
 filebaseP = 'prcp_avg6h_fhr'  #720_C128_180x360.nc
 filebaseD = 'div850_sh_cdf_f'  #00.nc'
 
-fchrs = np.array(0)
+fchrs = np.array([0,24])
 print(fchrs)
 nfchr = len(fchrs)
 
