@@ -326,8 +326,8 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
         pp += 1
 
         # panel plots
-    ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], res_p)
-
+    #ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], res_p)
+    ngl.panel(wks, plots, [2, nplot // 2], res_p)
     ngl.end()
 
     return
