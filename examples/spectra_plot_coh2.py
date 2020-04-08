@@ -22,9 +22,10 @@ source = ""
 symmetry = "symm"      #("symm", "asymm", "latband")
 nplot = 6
 filenames = ['ERAI_TRMM_P_symm_1spd', 'FV3_TRMM_P_symm_1spd_fhr00', 'FV3_TRMM_P_symm_1spd_fhr24',
-             'ERAI_P_D850_symm_1spd', 'FV3_P_D850_symm_1spd_fhr00', 'FV3_P_D850_symm_1spd_fhr24']
-vars1 = ['ERAI P', 'FV3 P FH00', 'FV3 P FH24', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24']
-vars2 = ['TRMM', 'TRMM', 'TRMM', 'ERAI D850', 'FV3 D850 FH00', 'FV3 D850 FH24']
+             'ERAI_P_D850_symm_1spd', 'FV3_P_D850_symm_1spd_fhr00', 'FV3_P_D850_symm_1spd_fhr24',
+             'ERAI_P_D200_symm_1spd', 'FV3_P_D200_symm_1spd_fhr00', 'FV3_P_D200_symm_1spd_fhr24']
+vars1 = ['ERAI P', 'FV3 P FH00', 'FV3 P FH24', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24']
+vars2 = ['TRMM', 'TRMM', 'TRMM', 'ERAI D850', 'FV3 D850 FH00', 'FV3 D850 FH24', 'ERAI D200', 'FV3 D200 FH00', 'FV3 D200 FH24']
 pp = 0
 
 while pp < nplot:
