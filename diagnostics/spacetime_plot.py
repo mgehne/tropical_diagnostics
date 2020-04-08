@@ -244,7 +244,7 @@ def panel_resources(nplot=4, abc=['a', 'b', 'c', 'd']):
     return res_p
 
 
-def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="", var2="", plotpath="./", flim=0.5,
+def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1="", vars2="", plotpath="./", flim=0.5,
                    nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, nplot=1, N=[1, 2]):
     FillMode = "AreaFill"
 
@@ -253,7 +253,7 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="",
 
     # plot resources
     wkstype = "png"
-    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_" + source + var1 + var2)
+    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_")
     plots = []
 
     # coherence2 plot resources
@@ -281,7 +281,12 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", var1="",
         coh2 = cohsq[pp, :, :]
         phs1 = phase1[pp, :, :]
         phs2 = phase2[pp, :, :]
-        Symmetry = symmetry[pp]
+        if len(symmetry) == nplot:
+            Symmetry = symmetry[pp]
+        else:
+            Symmetry = symmetry
+        var1 = vars1[pp]
+        var2 = vars2[pp]
 
         res.tiMainString = source + "    coh^2(" + var1 + "," + var2 + ")           " + Symmetry
         plot = ngl.contour(wks, coh2, res)
