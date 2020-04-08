@@ -41,8 +41,10 @@ while pp < nplot:
     iwave = np.where(abs(wnum[:]) <= nWavePlt)
 
     STC[:, freq[:] == 0, :] = 0.
-    STC = STC[:, :, iwave]
-    STC = STC[:, ifreq, :]
+    STC = STC.sel(wnum=slice(-nWavePlt, nWavePlt))
+    STC = STC.sel(freq=slice(0,flim))
+    #STC = STC[:, :, iwave]
+    #STC = STC[:, ifreq, :]
     coh2 = np.squeeze(STC[4, :, :])
     phs1 = np.squeeze(STC[6, :, :])
     phs2 = np.squeeze(STC[7, :, :])
