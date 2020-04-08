@@ -47,7 +47,7 @@ x = x.squeeze()
 latA = ds.lat.sel(lat=slice(latMin, latMax))
 ds.close()
 
-ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/div.erai.200.1p0.1x.1979-2016.nc')
+ds = xr.open_dataset('/data/mgehne/ERAI/MetricsObs/div.erai.850.1p0.1x.1979-2016.nc')
 y = ds.div
 y = y.sel(lat=slice(latMin, latMax))
 y = y.sel(time=slice(datestrt, datelast))
@@ -99,7 +99,7 @@ freq = result['freq']
 freq = freq * spd
 wnum = result['wave']
 # save spectra in netcdf file
-fileout = 'SpaceTimeSpectra_ERAI_P_D200_' + Symmetry + '_' + str(spd) + 'spd'
+fileout = 'SpaceTimeSpectra_ERAI_P_D850_' + Symmetry + '_' + str(spd) + 'spd'
 pathout = '../data/'
 print('saving spectra to file: ' + pathout + fileout + '.nc')
 save_Spectra(STC, freq, wnum, fileout, pathout)
@@ -129,7 +129,7 @@ spd = 1
 res1 = 'C128'
 path1 = '/data/mgehne/FV3/replay_exps/C128/ERAI_free-forecast_C128/STREAM_2015103100/MODEL_DATA/SST_INITANOMALY2CLIMO-90DY/ALLDAYS/'
 filebaseP = 'prcp_avg6h_fhr'  #720_C128_180x360.nc
-filebaseD = 'div200_sh_cdf_f'  #00.nc'
+filebaseD = 'div850_sh_cdf_f'  #00.nc'
 
 fchrs = np.array([0,24])
 print(fchrs)
