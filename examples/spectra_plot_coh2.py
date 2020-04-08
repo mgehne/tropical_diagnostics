@@ -13,9 +13,9 @@ plotpath = '../plots/'
 # plot layout parameters
 flim = 0.5  # maximum frequency in cpd for plotting
 nWavePlt = 20  # maximum wavenumber for plotting
-contourmin = 0.05  # contour minimum
-contourmax = 0.55  # contour maximum
-contourspace = 0.05  # contour spacing
+contourmin = 0.1  # contour minimum
+contourmax = 0.9  # contour maximum
+contourspace = 0.1  # contour spacing
 N = [1, 2]  # wave modes for plotting
 source = ""
 
@@ -48,6 +48,8 @@ while pp < nplot:
     coh2 = np.squeeze(STC[4, :, :])
     phs1 = np.squeeze(STC[6, :, :])
     phs2 = np.squeeze(STC[7, :, :])
+    phs1.where(coh2 <= contourmin, drop=True)
+    phs2.where(coh2 <= contourmin, drop=True)
     pow1 = np.squeeze(STC[0, :, :])
     pow2 = np.squeeze(STC[1, :, :])
     pow1.where(pow1 <= 0, drop=True)
