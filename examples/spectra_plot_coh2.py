@@ -52,8 +52,6 @@ while pp < nplot:
     pow2 = np.squeeze(STC[1, :, :])
     pow1.where(pow1 <= 0, drop=True)
     pow2.where(pow2 <= 0, drop=True)
-    #pow1[pow1 <= 0] = np.nan
-    #pow2[pow2 <= 0] = np.nan
 
     if pp == 0:
         Coh2 = np.empty([nplot, len(freq[ifreq]), len(wnum[iwave])])
