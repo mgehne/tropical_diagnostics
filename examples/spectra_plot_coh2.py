@@ -17,19 +17,22 @@ contourmin = 0.05  # contour minimum
 contourmax = 0.55  # contour maximum
 contourspace = 0.05  # contour spacing
 N = [1, 2]  # wave modes for plotting
-source = "ERAI"
-var1 = "P"
-var2 = "D850"
+source = ""
 
-symmetry = ("symm", "asymm", "latband")
-nplot = len(symmetry)
+symmetry = "symm"      #("symm", "asymm", "latband")
+nplot = 6
+filenames = ['ERAI_TRMM_P_symm_1spd', 'FV3_TRMM_P_symm_1spd_fhr00', 'FV3_TRMM_P_symm_1spd_fhr24',
+             'ERAI_P_D850_symm_1spd', 'FV3_P_D850_symm_1spd_fhr00', 'FV3_P_D850_symm_1spd_fhr24']
+vars1 = ['ERAI P', 'FV3 P', 'FV3 P', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24']
+vars2 = ['TRMM', 'TRMM', 'TRMM', 'ERAI D850', 'FV3 D850 FH00', 'FV3 D850 FH24']
 pp = 0
 
 while pp < nplot:
 
     # read data from file
-    #fin = Dataset(pathdata + 'SpaceTimeSpectra_' + symmetry[pp] + '_2spd.nc', "r")
-    fin = xr.open_dataset(pathdata + 'SpaceTimeSpectra_' + symmetry[pp] + '_2spd.nc')
+    var1 = vars1[pp]
+    var2 = vars2[pp]
+    fin = xr.open_dataset(pathdata + 'SpaceTimeSpectra_' + filenames[pp] + '.nc')
     STC = fin['STC'][:, :, :]
     wnum = fin['wnum']
     freq = fin['freq']
