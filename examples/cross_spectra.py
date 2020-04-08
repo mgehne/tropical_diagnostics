@@ -135,9 +135,42 @@ for ff in fchrs:
     prcp = prcp.sel(lat=slice(latMin, latMax))
     prcp = prcp*3600
     prcp.attrs['units'] = 'mm/d'
+    lat = ds.lat.sel(lat=slice(latMin, latMax))
     ds.close()
     ds = xr.open_dataset(path1 + filebaseD + fstr + '.nc')
     div = ds.div
     div = div.sel(time=slice(datestrt, datelast))
     div = div.sel(lat=slice(latMin, latMax))
     ds.close()
+
+    print("get symmetric/anti-symmetric components:")
+    if Symmetry == "symm" or Symmetry == "asymm":
+        P = get_symmasymm(prcp, lat, Symmetry)
+        D = get_symmasymm(div, lat, Symmetry)
+    else:
+        P = prcp
+        D = div
+
+    print('compute cross spectra model precip and model div')
+    result = mjo_cross(P, D, nperseg, segOverLap)
+    STC = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
+    freq = result['freq']
+    freq = freq * spd
+    wnum = result['wave']
+    # save spectra in netcdf file
+    fileout = 'SpaceTimeSpectra_FV3_P_D850_' + Symmetry + '_' + str(spd) + 'spd'
+    pathout = '../data/'
+    print('saving spectra to file: ' + pathout + fileout + '.nc')
+    save_Spectra(STC, freq, wnum, fileout, pathout)
+
+    print('compute cross spectra model precip and obs precip')
+    result = mjo_cross(P, X, nperseg, segOverLap)
+    STC = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
+    freq = result['freq']
+    freq = freq * spd
+    wnum = result['wave']
+    # save spectra in netcdf file
+    fileout = 'SpaceTimeSpectra_FV3_TRMM_P_' + Symmetry + '_' + str(spd) + 'spd'
+    pathout = '../data/'
+    print('saving spectra to file: ' + pathout + fileout + '.nc')
+    save_Spectra(STC, freq, wnum, fileout, pathout)
