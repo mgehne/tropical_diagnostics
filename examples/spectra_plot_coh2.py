@@ -80,7 +80,7 @@ while pp < nplot:
     pp += 1
 
 # plot coherence
-stp.plot_coherence(Coh2, Phs1, Phs2, symmetry, source, var1, var2, plotpath, flim, 20, contourmin, contourmax,
+stp.plot_coherence(Coh2, Phs1, Phs2, symmetry, source, vars1, vars2, plotpath, flim, 20, contourmin, contourmax,
                    contourspace, nplot, N)
 
 exit()
