@@ -37,12 +37,12 @@ while pp < nplot:
     wnum = fin['wnum']
     freq = fin['freq']
 
-    ifreq = np.where((freq[:] >= 0) & (freq[:] <= flim))
-    iwave = np.where(abs(wnum[:]) <= nWavePlt)
+    #ifreq = np.where((freq[:] >= 0) & (freq[:] <= flim))
+    #iwave = np.where(abs(wnum[:]) <= nWavePlt)
 
     STC[:, freq[:] == 0, :] = 0.
     STC = STC.sel(wnum=slice(-nWavePlt, nWavePlt))
-    STC = STC.sel(freq=slice(0,flim))
+    STC = STC.sel(freq=slice(0, flim))
     #STC = STC[:, :, iwave]
     #STC = STC[:, ifreq, :]
     coh2 = np.squeeze(STC[4, :, :])
@@ -50,8 +50,10 @@ while pp < nplot:
     phs2 = np.squeeze(STC[7, :, :])
     pow1 = np.squeeze(STC[0, :, :])
     pow2 = np.squeeze(STC[1, :, :])
-    pow1[pow1 <= 0] = np.nan
-    pow2[pow2 <= 0] = np.nan
+    pow1.where(pow1 <= 0, drop=True)
+    pow2.where(pow2 <= 0, drop=True)
+    #pow1[pow1 <= 0] = np.nan
+    #pow2[pow2 <= 0] = np.nan
 
     if pp == 0:
         Coh2 = np.empty([nplot, len(freq[ifreq]), len(wnum[iwave])])
