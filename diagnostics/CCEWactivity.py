@@ -17,7 +17,7 @@ import plotly.graph_objects as go
 from netCDF4 import num2date
 
 
-def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int, opt=False):
+def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int, tres: str,opt=False):
     """
     Main script to compute the wave activity index.
     :param data: DataArray containing the raw data 
@@ -26,6 +26,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     :param spd: number of obs per day
     :param res: resolution of the data ('1p0')
     :param nlat: number of latitudes in the data (180 or 181)
+    :param tres: temporal resolution of the eofs ('annual' or 'monthly')
     :param opt: optional parameter, currently not used
     :return: DataArray containing the time series of wave activity
     """
@@ -34,6 +35,9 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
         eofname = 'EOF_1-4_130-270E_-15S-15N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_Kelvinband_'
     elif (wave == 'ER' or wave == 'er'):
         eofname = 'EOF_1-4_60-220E_-21S-21N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_ERband_'
+    elif (wave == 'MRG' or wave == 'mrg'):
+        eofname = 'EOF_1-2_60-220E_-21S-21N_trmm_8x_nlat'+str(nlat)+'_fillmiss8314_1983-2016_ERband_'
+        
 
     ds = xr.open_dataset(eofpath + eofname + '01.nc')
     nlat = len(ds.lat)

@@ -3,12 +3,12 @@ import numpy as np
 from diagnostics import spacetime_plot as stp
 import string
 import sys
+import xarray as xr
 
 sys.path.append('../../')
-from netCDF4 import Dataset
 
-pathdata = '../data/'
-plotpath = '../plots/'
+pathdata = './'
+plotpath = './'
 
 # plot layout parameters
 flim = 0.5  # maximum frequency in cpd for plotting
@@ -28,7 +28,7 @@ pp = 0
 while pp < nplot:
 
     # read data from file
-    fin = Dataset(pathdata + 'SpaceTimeSpectra_' + symmetry[pp] + '_' + str(spd) + 'spd.nc', "r")
+    fin = xr.open_dataset(pathdata + 'SpaceTimeSpectra_' + filenames[pp] + '.nc')
     STC = fin['STC'][:, :, :]
     wnum = fin['wnum']
     freq = fin['freq']
@@ -37,12 +37,12 @@ while pp < nplot:
     iwave = np.where(abs(wnum[:]) <= nWavePlt)
 
     STC[:, freq[:] == 0, :] = 0.
-    STC = STC[:, :, iwave]
-    STC = STC[:, ifreq, :]
+    STC = STC.sel(wnum=slice(-nWavePlt, nWavePlt))
+    STC = STC.sel(freq=slice(0, flim))
     pow1 = np.squeeze(STC[0, :, :])
     pow2 = np.squeeze(STC[1, :, :])
-    pow1[pow1 <= 0] = np.nan
-    pow2[pow2 <= 0] = np.nan
+    pow1.where(pow1 <= 0, drop=True)
+    pow2.where(pow2 <= 0, drop=True)
 
     if pp == 0:
         Pow1 = np.empty([nplot, len(freq[ifreq]), len(wnum[iwave])])
@@ -54,5 +54,5 @@ while pp < nplot:
 
     pp += 1
 
-stp.plot_power(Pow1, symmetry, source, var1, plotpath, flim, 20, contourmin,contourmax,contourspace,nplot,N)
+stp.plot_power(Pow1, symmetry, source, var1, plotpath, flim, nWavePlt, contourmin,contourmax,contourspace,nplot,N)
 exit()
