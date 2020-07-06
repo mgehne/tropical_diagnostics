@@ -35,7 +35,7 @@ A = A * 1000/4
 A.attrs['units'] = 'mm/d'
 
 print("project data onto wave EOFs")
-waveactA = CCEWactivity.waveact(A, wave, eofpath, spd, '1p0', 181)
+waveactA = CCEWactivity.waveact(A, wave, eofpath, spd, '1p0', 181, 'annual')
 print(waveactA.min(), waveactA.max())
 
 
@@ -51,7 +51,7 @@ ds.close()
 B.attrs['units'] = 'mm/d'
 
 print("project data onto wave EOFs")
-waveactB = CCEWactivity.waveact(B, wave, eofpath, spd, '1p0', 181)
+waveactB = CCEWactivity.waveact(B, wave, eofpath, spd, '1p0', 181, 'annual')
 print(waveactB.min(), waveactB.max())
 
 print('reading model forecast from file:')
