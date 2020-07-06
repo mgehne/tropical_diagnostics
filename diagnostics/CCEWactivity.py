@@ -38,8 +38,12 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     elif (wave == 'MRG' or wave == 'mrg'):
         eofname = 'EOF_1-2_150-210E_-21S-21N_precip.trmm.8x.1deg.lats'+str(nlat)+'.v7a.fillmiss.comp.1998-201806_MRGband_'
 
+    if tres == 'monthly':
+        filename = eofpath + eofname + '01.nc'
+    elif tres == 'annual':
+        filename = eofpath + eofname + 'annual.nc'
 
-    ds = xr.open_dataset(eofpath + eofname + '01.nc')
+    ds = xr.open_dataset(filename)
     nlat = len(ds.lat)
     nlon = len(ds.lon)
     eofnum = np.arange(4) + 1
@@ -48,13 +52,17 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     nmon = 12
     ntim = len(data['time'])
 
-    eofseas = xr.DataArray(0., coords=[month, eofnum, ds.lat, ds.lon], dims=['month', 'eofnum', 'lat', 'lon'])
-
-    for ss in month:
-        monthnum = f"{ss:02d}"
-        ds = xr.open_dataset(eofpath + eofname + monthnum + '.nc')
-        eofseas[ss - 1, :, :, :] = ds.eof
-    ds.close()
+    if tres == 'monthly':
+        eofseas = xr.DataArray(0., coords=[month, eofnum, ds.lat, ds.lon], dims=['month', 'eofnum', 'lat', 'lon'])
+        for ss in month:
+            monthnum = f"{ss:02d}"
+            ds = xr.open_dataset(eofpath + eofname + monthnum + '.nc')
+            eofseas[ss - 1, :, :, :] = ds.eof
+            ds.close()
+    elif tres == 'annual':
+        eofseas = xr.DataArray(0., coords=[month[0], eofnum, ds.lat, ds.lon], dims=['annual', 'eofnum', 'lat', 'lon'])
+        ds = xr.open_dataset(eofpath + eofname + 'annual.nc')
+        eofseas[0, :, :, :] = ds.eof
 
     # remove mean annual cycle
     print("remove annual cycle")
