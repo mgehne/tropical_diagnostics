@@ -143,10 +143,16 @@ def waveproj(data_anom: object, eofseas: object):
     neof = len(eofseas.eofnum)
     proj_wave: object = xr.DataArray(0., coords=[eofseas.eofnum, data_anom.time], dims=['eofnum', 'time'])
     tswave: object = xr.DataArray(0., coords=[data_anom.time], dims=['time'])
-    for tt in range(ntim):
-        eof = eofseas[mm[tt] - 1, :, :, :]
-        for ee in range(neof):
+
+    if len(eofseas.month) == 1:
+        eof = eofseas[0, :, :, :]
+        for tt in range(ntim):
             proj_wave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
+    else:
+        for tt in range(ntim):
+            eof = eofseas[mm[tt] - 1, :, :, :]
+            for ee in range(neof):
+                proj_wave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
 
     return proj_wave
 
