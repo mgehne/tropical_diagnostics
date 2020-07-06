@@ -17,7 +17,7 @@ eofpath = '../data/EOF/'
 """
 Parameters to set for plotting Kelvin activity index.
 """
-wave = 'Kelvin'
+wave = 'MRG'
 datestrt = '2015-12-01 00:00:00'
 datelast = '2016-03-31 13:00:00'
 
@@ -78,7 +78,7 @@ for ff in fchrs:
     ds.close()
 
     print('computing activity')
-    wact1 = CCEWactivity.waveact(data1, wave, eofpath, spd, '1p0', 180)
+    wact1 = CCEWactivity.waveact(data1, wave, eofpath, spd, '1p0', 180, 'annual')
 
     if fi == 0:
         act = xr.DataArray(0., coords=[fchrs, exps, wact1['time']], dims=['fchrs', 'exps', 'time'])
