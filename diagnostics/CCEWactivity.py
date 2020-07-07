@@ -149,7 +149,8 @@ def waveproj(data_anom: object, eofseas: object):
     if eofseas.shape[0] == 1:
         eof = eofseas[0, :, :, :]
         for tt in range(ntim):
-            proj_wave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
+            for ee in range(neof):
+                proj_wave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
     else:
         for tt in range(ntim):
             eof = eofseas[mm[tt] - 1, :, :, :]
