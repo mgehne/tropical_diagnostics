@@ -26,6 +26,9 @@ import xarray as xr
 import plotly.graph_objects as go
 from netCDF4 import num2date
 
+class opt_eof():
+    def __init__(self, cov):
+        self.covariance = cov
 
 def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int, tres: str,opt=False):
     """
@@ -270,11 +273,31 @@ def plot_skill(skill, wavename, labels, plotpath):
 
     fig.write_image(plotname)
 
-def eof_comp(data, neof, opt, dim):
+def eof_comp(data, neof, opt, dim=0):
     """
     :param data: Input data.
     :param neof: Number of EOFs to return.
-    :param opt: Parameter to change the default behavior.
+    :param opt: Class parameter to change the default behavior. opt = opt_eof(True) means use the covariance matrix.
     :param dim: which dimension contains the number of observations (i.e. time dimension)
     :return:
     """
+
+    ndims = data.ndim
+    dimsizes = data.shape
+    diml = 1.
+    for d in dimsizes:
+        if d != dim:
+            diml = diml*d
+
+    # move dimension dim to 0
+    data_reord = np.moveaxis(data, dim, 0)
+    # reshape to 2d by combining all dimensions 1 and up
+    a = np.reshape(data_reord, (dimsizes[dim],diml))
+
+    # standardize if correlation matrix instead of covariance matrix is needed
+    if opt.cov==False:
+        a = (a - np.mean(a, axis=0)) / np.std(a, axis=0)
+
+    u, s, vh = np.linalg.svd(a)
+
+    return u, s, vh
