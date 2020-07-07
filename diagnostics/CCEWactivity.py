@@ -269,3 +269,12 @@ def plot_skill(skill, wavename, labels, plotpath):
     fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='skill correlation')
 
     fig.write_image(plotname)
+
+def eof_comp(data, neof, opt, dim):
+    """
+    :param data: Input data.
+    :param neof: Number of EOFs to return.
+    :param opt: Parameter to change the default behavior.
+    :param dim: which dimension contains the number of observations (i.e. time dimension)
+    :return:
+    """
