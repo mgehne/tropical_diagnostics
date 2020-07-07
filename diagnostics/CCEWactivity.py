@@ -146,9 +146,7 @@ def waveproj(data_anom: object, eofseas: object):
     proj_wave: object = xr.DataArray(0., coords=[eofseas.eofnum, data_anom.time], dims=['eofnum', 'time'])
     tswave: object = xr.DataArray(0., coords=[data_anom.time], dims=['time'])
 
-    print(eofseas.shape)
-
-    if len(eofseas.shape[0]) == 1:
+    if eofseas.shape[0] == 1:
         eof = eofseas[0, :, :, :]
         for tt in range(ntim):
             proj_wave[ee, tt] = eof[ee, :, :] @ data_anom[tt, :, :]
