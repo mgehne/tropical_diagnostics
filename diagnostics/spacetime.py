@@ -442,3 +442,23 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
             fftData[jMaxWave + 1:, i] = 0
 
     return fftData
+
+def kf_filter(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
+    """
+    :param Data:
+    :param obsPerDay:
+    :param tMin:
+    :param tMax:
+    :param kMin:
+    :param kMax:
+    :param hMin:
+    :param hMax:
+    :param waveName:
+    :return:
+    """
+
+    fftdata = numpy.fft.fft2(data, axes=(0, 1))
+    fftfilt = kf_filter_mask(fftdata, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName)
+    datafilt = numpy.fft.ifft2(fftfilt, axes=(0, 1))
+
+    return datafilt

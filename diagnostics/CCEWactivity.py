@@ -7,7 +7,17 @@ waveact:
 
 rem_seas_cyc:
 
+rem_seas_mean:
+
 waveproj:
+
+waveskill:
+
+get_timestr:
+
+plot_activity:
+
+plot_skill:
 
 """
 
