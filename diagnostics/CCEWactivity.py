@@ -34,15 +34,12 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     if (wave == 'Kelvin' or wave == 'kelvin'):
         eofname = 'EOF_1-4_130-270E_-15S-15N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_Kelvinband_'
         eofnum = np.arange(4) + 1
-        neof = 4
     elif (wave == 'ER' or wave == 'er'):
         eofname = 'EOF_1-4_60-220E_-21S-21N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_ERband_'
         eofnum = np.arange(4) + 1
-        neof = 4
     elif (wave == 'MRG' or wave == 'mrg'):
         eofname = 'EOF_1-2_150-210E_-21S-21N_precip.trmm.8x.1deg.lats'+str(nlat)+'.v7a.fillmiss.comp.1998-201806_MRGband_' \
         eofnum = np.arange(2) + 1
-        neof = 2
 
     if tres == 'monthly':
         filename = eofpath + eofname + '01.nc'
