@@ -51,6 +51,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     month = np.arange(12) + 1
     nmon = 12
     ntim = len(data['time'])
+    annual = np.arange(1)
 
     if tres == 'monthly':
         eofseas = xr.DataArray(0., coords=[month, eofnum, ds.lat, ds.lon], dims=['month', 'eofnum', 'lat', 'lon'])
@@ -60,7 +61,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
             eofseas[ss - 1, :, :, :] = ds.eof
             ds.close()
     elif tres == 'annual':
-        eofseas = xr.DataArray(0., coords=[month[0], eofnum, ds.lat, ds.lon], dims=['annual', 'eofnum', 'lat', 'lon'])
+        eofseas = xr.DataArray(0., coords=[annual, eofnum, ds.lat, ds.lon], dims=['annual', 'eofnum', 'lat', 'lon'])
         ds = xr.open_dataset(eofpath + eofname + 'annual.nc')
         eofseas[0, :, :, :] = ds.eof
 
