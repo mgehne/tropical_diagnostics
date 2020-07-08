@@ -282,7 +282,6 @@ def eof_comp(data, neof, opt, dim=0):
     :param dim: which dimension contains the number of observations (i.e. time dimension)
     :return: eof time series (u), singular values (s), eof patterns (vh) for the first neof EOFs
     """
-
     ndims = data.ndim
     dimsizes = data.shape
     diml = 1
@@ -297,17 +296,17 @@ def eof_comp(data, neof, opt, dim=0):
     else:
         data_reord = data
 
-        # reshape to 2d by combining all dimensions 1 and up
+    # reshape to 2d by combining all dimensions 1 and up
     a = np.reshape(data_reord.values, (dimsizes[dim], diml))
-    print(a.shape)
-    print(a.min(), a.max())
 
     # standardize if correlation matrix instead of covariance matrix is needed
     if opt.covariance == False:
+        print('Using correlation matrix for EOF computation.')
         a = (a - np.mean(a, axis=0)) / np.std(a, axis=0)
-        print(a.min(), a.max())
+    else:
+        print('Using covariance matrix for EOF computation.')
 
-    print('computing singular values...')
+    print('Computing singular values...')
     eofts, s, eof = np.linalg.svd(a, full_matrices=False)
     print('done!')
 
