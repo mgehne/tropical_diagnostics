@@ -273,31 +273,42 @@ def plot_skill(skill, wavename, labels, plotpath):
 
     fig.write_image(plotname)
 
+
 def eof_comp(data, neof, opt, dim=0):
     """
     :param data: Input data.
     :param neof: Number of EOFs to return.
     :param opt: Class parameter to change the default behavior. opt = opt_eof(True) means use the covariance matrix.
     :param dim: which dimension contains the number of observations (i.e. time dimension)
-    :return:
+    :return: eof time series (u), singular values (s), eof patterns (vh) for the first neof EOFs
     """
 
     ndims = data.ndim
     dimsizes = data.shape
-    diml = 1.
-    for d in dimsizes:
+    diml = 1
+    for d in np.arange(ndims):
         if d != dim:
-            diml = diml*d
+            print(dimsizes[d])
+            diml = diml * dimsizes[d]
 
     # move dimension dim to 0
-    data_reord = np.moveaxis(data, dim, 0)
-    # reshape to 2d by combining all dimensions 1 and up
-    a = np.reshape(data_reord, (dimsizes[dim],diml))
+    if dim != 0:
+        data_reord = np.moveaxis(data, dim, 0)
+    else:
+        data_reord = data
+
+        # reshape to 2d by combining all dimensions 1 and up
+    a = np.reshape(data_reord.values, (dimsizes[dim], diml))
+    print(a.shape)
+    print(a.min(), a.max())
 
     # standardize if correlation matrix instead of covariance matrix is needed
-    if opt.cov==False:
+    if opt.covariance == False:
         a = (a - np.mean(a, axis=0)) / np.std(a, axis=0)
+        print(a.min(), a.max())
 
-    u, s, vh = np.linalg.svd(a)
+    print('computing singular values...')
+    eofts, s, eof = np.linalg.svd(a, full_matrices=False)
+    print('done!')
 
-    return u, s, vh
+    return eofts[:, 0:neof], s[0:neof], eof[0:neof, :]
