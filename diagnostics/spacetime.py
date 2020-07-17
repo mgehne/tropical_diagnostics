@@ -387,8 +387,6 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
     :return: Array containing the fft coefficients of the same size as the input data, with coefficients outside the
     desired region set to zero.
     """
-    g = 9.80665  # Gravitational acceleration [m s^{-2}]
-
     nf, nk = fftData.shape  # frequency, wavenumber array
     nt = (nf - 1) * 2
     jMin = int(round(nt / (tMax * obsPerDay)))
@@ -409,22 +407,21 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
         iMax = int(round(kMax))
         iMax = np.array([iMax, nk // 2]).min()
 
-    # set the appropriate coefficients outside the frequency range to zero    
+        # set the appropriate coefficients outside the frequency range to zero
     if jMin > 0:
         fftData[0:jMin, :] = 0
-    if jMax < (nf - 1):
-        fftData[jMax:, :] = 0
+    if jMax < (nf):
+        fftData[jMax + 1:nf, :] = 0
     if iMin < iMax:
         # Set things outside the wavenumber range to zero, this is more normal
         if iMin > 0:
             fftData[:, 0:iMin] = 0
-        if iMax < (nk - 1):
-            fftData[:, iMax + 1:] = 0
+        if iMax < (nk):
+            fftData[:, iMax + 1:nk] = 0
         else:
             # Set things inside the wavenumber range to zero, this should be somewhat unusual
             fftData[:, iMax + 1:iMin] = 0
 
-    print(g)
     c = np.sqrt(g * np.array([hMin, hMax]))
     spc = 24 * 3600. / (2 * pi * obsPerDay)  # seconds per cycle
 
@@ -432,37 +429,37 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
     # and find the limits for each one.
     for i in range(nk):
         if i < (nk / 2):
-            # k is negative
-            k = -i / re
-        else:
             # k is positive
-            k = (nk - i) / re
+            k = i / re
+        else:
+            k = -(nk - i) / re
+
         freq = np.array([0, nf]) / spc
         jMinWave = 0
         jMaxWave = nf
         if ((waveName == "Kelvin") or (waveName == "kelvin") or (waveName == "KELVIN")):
             ftmp = k * c
-            freq = np.array([ftmp, ftmp])
+            freq = np.array(ftmp)
         if ((waveName == "ER") or (waveName == "er")):
             ftmp = -beta * k / (k ^ 2 + 3. * beta / c)
-            freq = np.array([ftmp, ftmp])
+            freq = np.array(ftmp)
         if ((waveName == "MRG") or (waveName == "IG0") or (waveName == "mrg") or (waveName == "ig0")):
             if (k == 0):
                 ftmp = np.sqrt(beta * c)
-                freq = np.array([ftmp, ftmp])
+                freq = np.array(ftmp)
             else:
                 if (k > 0):
                     ftmp = k * c * (0.5 + 0.5 * np.sqrt(1 + 4 * beta / (k ^ 2 * c)))
-                    freq = np.array([ftmp, ftmp])
+                    freq = np.array(ftmp)
                 else:
                     ftmp = k * c * (0.5 - 0.5 * np.sqrt(1 + 4 * beta / (k ^ 2 * c)))
-                    freq = np.array([ftmp, ftmp])
+                    freq = np.array(ftmp)
         if ((waveName == "IG1") or (waveName == "ig1")):
             ftmp = np.sqrt(3 * beta * c + k ^ 2 * c ^ 2)
-            freq = np.array([ftmp, ftmp])
+            freq = np.array(ftmp)
         if ((waveName == "IG2") or (waveName == "ig2")):
             ftmp = np.sqrt(5 * beta * c + k ^ 2 * c ^ 2)
-            freq = np.array([ftmp, ftmp])
+            freq = np.array(ftmp)
 
         if (hMin == -9999):
             jMinWave = 0
@@ -473,12 +470,12 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
         else:
             jMaxWave = int(np.ceil(freq[1] * spc * nt))
         jMaxWave = np.array([jMaxWave, 0]).max()
-        jMinWave = np.array([jMinWave, freqDim]).min()
+        jMinWave = np.array([jMinWave, nf]).min()
         # set appropriate coefficients to zero
         if (jMinWave > 0):
-            fftData[:jMinWave, i] = 0
-        if (jMaxWave < (nf - 1)):
-            fftData[jMaxWave + 1:, i] = 0
+            fftData[0:jMinWave, i] = 0
+        if (jMaxWave < (nf)):
+            fftData[jMaxWave + 1:nf, i] = 0
 
     return fftData
 
