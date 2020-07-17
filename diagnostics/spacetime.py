@@ -387,6 +387,8 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
     :return: Array containing the fft coefficients of the same size as the input data, with coefficients outside the
     desired region set to zero.
     """
+    g = 9.80665  # Gravitational acceleration [m s^{-2}]
+
     nf, nk = fftData.shape  # frequency, wavenumber array
     nt = (nf - 1) * 2
     jMin = int(round(nt / (tMax * obsPerDay)))
