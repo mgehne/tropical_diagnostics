@@ -276,6 +276,7 @@ def plot_skill(skill, wavename, labels, plotpath):
 
 def eof_comp(data, neof, opt, dim=0):
     """
+    Compute the first neof Empirical Orthogonal functions treating dim as the time dimension and
     :param data: Input data.
     :param neof: Number of EOFs to return.
     :param opt: Class parameter to change the default behavior. opt = opt_eof(True) means use the covariance matrix.
@@ -284,11 +285,18 @@ def eof_comp(data, neof, opt, dim=0):
     """
     ndims = data.ndim
     dimsizes = data.shape
+    dimsizesred = np.arange(ndims-1)
+    dimeof = np.arange(ndims)
     diml = 1
+    dd=0
     for d in np.arange(ndims):
         if d != dim:
             print(dimsizes[d])
             diml = diml * dimsizes[d]
+            dimsizesred[dd] = dimsizes[d]
+            dd += 1
+    dimeof[0] = neof
+    dimeof[1:] = dimsizesred
 
     # move dimension dim to 0
     if dim != 0:
@@ -310,4 +318,5 @@ def eof_comp(data, neof, opt, dim=0):
     eofts, s, eof = np.linalg.svd(a, full_matrices=False)
     print('done!')
 
+    eof = np.reshape(eof, dimeof)
     return eofts[:, 0:neof], s[0:neof], eof[0:neof, :]

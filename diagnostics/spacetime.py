@@ -23,6 +23,8 @@ window_cosbell:
 
 kf_filter_mask:
 
+kf_filter:
+
 """
 
 import numpy
@@ -37,8 +39,14 @@ beta = 2. * omega / re  # beta parameter at the equator
 
 def mjo_cross_segment(XX, YY, opt=False):
     """
-  Compute the FFT to get the power and cross-spectra for one time segment.
-  """
+    Compute the FFT to get the power and cross-spectra for one time segment.
+    :param XX: Input array (time, lat, lon)
+    :param YY: Input array (time, lat, lon)
+    :param opt: Optional parameter, not currently used. Set to False.
+    :return STC: Spectra array of shape (8, nfreq, nwave). Last 4 entries are blank and need to be computed by calling
+    mjo_cross_coh2pha. The first 4 entries contain power spectra for XX, power spectra for YY, co-spectra between XX
+    and YY, quadrature spectra between XX and YY.
+    """
     NT, NM, NL = XX.shape
     # compute fourier decomposition in time and longitude
     Xfft = numpy.fft.fft2(XX, axes=(0, 2))
@@ -109,10 +117,13 @@ def mjo_cross_segment(XX, YY, opt=False):
 
 def get_symmasymm(X, lat, opt=False):
     """
-  Split the data in X into symmetric and anti-symmetric
-  (across the equator) parts. Return only the part we are 
-  interested in.
-  """
+    Split the data in X into symmetric and anti-symmetric
+    (across the equator) parts. Return only the part we are
+    interested in.
+    :param X: Array (time, lat, lon).
+    :param lat: Latitude values corresponding to dimension 1 of X.
+    :param opt: Parameter to choose symmetric or anti-symmetric part across the equator.
+    """
     if opt:
         NT, NM, NL = X.shape
         if opt == 'symm':
@@ -140,9 +151,12 @@ def get_symmasymm(X, lat, opt=False):
 
 def mjo_cross_coh2pha(STC, opt=False):
     """
-  Compute coherence squared and phase spectrum from averaged power and 
-  cross-spectral estimates. 
-  """
+    Compute coherence squared and phase spectrum from averaged power and
+    cross-spectral estimates.
+    :param STC: Spectra array.
+    :return STC: Spectra array of the same size with entries 4-7 (coherence squared, phase angle, phase component 1,
+    phase component 2) recomputed based on the power and cross-spectra in entries 0-3.
+    """
 
     nvar, nfreq, nwave = STC.shape
 
@@ -242,7 +256,10 @@ def smooth121_1D(array_in):
 
 def window_cosbell(N, pct, opt=False):
     """
-    Compute an equivalent tapering window to the NCL taper function. 
+    Compute an equivalent tapering window to the NCL taper function.
+    :param N: Length of the time series to be tapered.
+    :param pct: Percent of the time series to taper.
+    :return x: Array of length N and values 1 with pct/2 beginning and end values tapered to zero.
     """
 
     x = numpy.ones(N, dtype='double')
@@ -260,11 +277,19 @@ def window_cosbell(N, pct, opt=False):
 
 def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     """
-  MJO cross spectrum function. This function calls the above functions to compute
-  cross spectral estimates for each segment of length segLen. Segments overlap by
-  segOverLap. This function mirrors the NCL routine mjo_cross.
-  Return value is a dictionary.
-  """
+    MJO cross spectrum function. This function calls the above functions to compute
+    cross spectral estimates for each segment of length segLen. Segments overlap by
+    segOverLap. This function mirrors the NCL routine mjo_cross.
+    Return value is a dictionary.
+    :param X: Input data 3D array ( time, lat, lon).
+    :param Y: Input data 3D array ( time, lat, lon).
+    :param segLen: Length of the time segments.
+    :param segOverLap: Length of the overlap between time segments.
+    :param opt: Optional parameter. Not currently used, set to False.
+    :return dict: Dictionary containing the spectral array (STC), frequency array (freq), zonal wavenumber array (wave),
+    the number of segments used (nseg), the estimated degrees of freedom (dof), the probability levels (p),
+    the coherence squared values corresponding to the probability levels (prob_coh2)
+    """
 
     ntim, nlat, mlon = X.shape
     ntim1, nlat1, mlon1 = Y.shape
@@ -348,8 +373,19 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
 
 def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     """
-    Generate a filter mask array based on the FFT array and the wave information. Set all values
+    Generate a filtered mask array based on the FFT array and the wave information. Set all values
     outside the specified wave dispersion curves to zero.
+    :param fftData: Array of fft coefficients ( freq x wavenumber ), has to be 2 dimensional.
+    :param obsPerDay: Number of observations per day.
+    :param tMin: Minimum period to include in filtering region.
+    :param tMax: Maximum period to include in filtering region.
+    :param kMin: Minimum wavenumber to include in filtering region.
+    :param kMax: Maximum wavenumber to include in filtering region.
+    :param hMin: Minimum equivalent depth to include in filtering region.
+    :param hMax: Maximum equivalent depth to include in filtering region.
+    :param waveName: Name of the wave to filter for.
+    :return: Array containing the fft coefficients of the same size as the input data, with coefficients outside the
+    desired region set to zero.
     """
     nf, nk = fftData.shape  # frequency, wavenumber array
     nt = (nf - 1) * 2
@@ -445,16 +481,18 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
 
 def kf_filter(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     """
-    :param Data:
-    :param obsPerDay:
-    :param tMin:
-    :param tMax:
-    :param kMin:
-    :param kMax:
-    :param hMin:
-    :param hMax:
-    :param waveName:
-    :return:
+    Filter 2D (time x lon) input data for a convectively coupled equatorial wave region in
+    wavenumber - frequency space.
+    :param Data: Input data ( time x lon ), has to be 2 dimensional.
+    :param obsPerDay: Number of observations per day.
+    :param tMin: Minimum period to include in filtering region.
+    :param tMax: Maximum period to include in filtering region.
+    :param kMin: Minimum wavenumber to include in filtering region.
+    :param kMax: Maximum wavenumber to include in filtering region.
+    :param hMin: Minimum equivalent depth to include in filtering region.
+    :param hMax: Maximum equivalent depth to include in filtering region.
+    :param waveName: Name of the wave to filter for.
+    :return: Array containing the filtered data of the same size as the input data.
     """
 
     fftdata = numpy.fft.fft2(data, axes=(0, 1))
