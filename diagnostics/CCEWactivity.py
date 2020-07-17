@@ -291,7 +291,6 @@ def eof_comp(data, neof, opt, dim=0):
     dd=0
     for d in np.arange(ndims):
         if d != dim:
-            print(dimsizes[d])
             diml = diml * dimsizes[d]
             dimsizesred[dd] = dimsizes[d]
             dd += 1
