@@ -422,7 +422,7 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
             # Set things inside the wavenumber range to zero, this should be somewhat unusual
             fftData[:, iMax + 1:iMin] = 0
 
-    c = numpy.sqrt(g * [hMin, hMax])
+    c = numpy.sqrt(g * numpy.array([hMin, hMax]))
     spc = 24 * 3600. / (2 * pi * obsPerDay)  # seconds per cycle
 
     # Now set things to zero that are outside the wave dispersion. Loop through wavenumbers
