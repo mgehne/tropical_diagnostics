@@ -441,7 +441,7 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
             ftmp = k * c
             freq = np.array(ftmp)
         if ((waveName == "ER") or (waveName == "er")):
-            ftmp = -beta * k / (k ^ 2 + 3. * beta / c)
+            ftmp = -beta * k / (k**2 + 3 * beta / c)
             freq = np.array(ftmp)
         if ((waveName == "MRG") or (waveName == "IG0") or (waveName == "mrg") or (waveName == "ig0")):
             if (k == 0):
@@ -449,16 +449,16 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
                 freq = np.array(ftmp)
             else:
                 if (k > 0):
-                    ftmp = k * c * (0.5 + 0.5 * np.sqrt(1 + 4 * beta / (k ^ 2 * c)))
+                    ftmp = k * c * (0.5 + 0.5 * np.sqrt(1 + 4 * beta / (k**2 * c)))
                     freq = np.array(ftmp)
                 else:
-                    ftmp = k * c * (0.5 - 0.5 * np.sqrt(1 + 4 * beta / (k ^ 2 * c)))
+                    ftmp = k * c * (0.5 - 0.5 * np.sqrt(1 + 4 * beta / (k**2 * c)))
                     freq = np.array(ftmp)
         if ((waveName == "IG1") or (waveName == "ig1")):
-            ftmp = np.sqrt(3 * beta * c + k ^ 2 * c ^ 2)
+            ftmp = np.sqrt(3 * beta * c + k ** 2 * c ** 2)
             freq = np.array(ftmp)
         if ((waveName == "IG2") or (waveName == "ig2")):
-            ftmp = np.sqrt(5 * beta * c + k ^ 2 * c ^ 2)
+            ftmp = np.sqrt(5 * beta * c + k ** 2 * c ** 2)
             freq = np.array(ftmp)
 
         if (hMin == -9999):
