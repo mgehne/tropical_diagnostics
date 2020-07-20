@@ -317,5 +317,5 @@ def eof_comp(data, neof, opt, dim=0):
     eofts, s, eof = np.linalg.svd(a, full_matrices=False)
     print('done!')
 
-    eof = np.reshape(eof, dimeof)
+    eof = np.reshape(eof[0:neof, :], dimeof)
     return eofts[:, 0:neof], s[0:neof], eof[0:neof, :]
