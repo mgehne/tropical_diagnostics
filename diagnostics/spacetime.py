@@ -371,7 +371,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     return {'STC': STC, 'freq': freq, 'wave': wave, 'nseg': kseg, 'dof': dof, 'p': prob, 'prob_coh2': prob_coh2}
 
 
-def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
+def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     """
     Generate a filtered mask array based on the FFT array and the wave information. Set all values
     outside the specified wave dispersion curves to zero.
@@ -387,6 +387,7 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
     :return: Array containing the fft coefficients of the same size as the input data, with coefficients outside the
     desired region set to zero.
     """
+    fftData = np.copy(fftIn)
     nf, nk = fftData.shape  # frequency, wavenumber array
     nt = (nf - 1) * 2
     jMin = int(round(nt / (tMax * obsPerDay)))
@@ -407,9 +408,11 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
         iMax = int(round(kMax))
         iMax = np.array([iMax, nk // 2]).min()
 
-        # set the appropriate coefficients outside the frequency range to zero
+    # set the appropriate coefficients outside the frequency range to zero
+    # print(fftData[:, 0])
     if jMin > 0:
         fftData[0:jMin, :] = 0
+    print(fftIn[:, 0] - fftData[:, 0])
     if jMax < (nf):
         fftData[jMax + 1:nf, :] = 0
     if iMin < iMax:
@@ -418,11 +421,21 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
             fftData[:, 0:iMin] = 0
         if iMax < (nk):
             fftData[:, iMax + 1:nk] = 0
-        else:
-            # Set things inside the wavenumber range to zero, this should be somewhat unusual
-            fftData[:, iMax + 1:iMin] = 0
+    else:
+        # Set things inside the wavenumber range to zero, this should be somewhat unusual
+        fftData[:, iMax + 1:iMin] = 0
 
-    c = np.sqrt(g * np.array([hMin, hMax]))
+    c = np.empty([2])
+    if (hMin == -9999):
+        c[0] = np.nan
+        if hMax == -9999:
+            c[1] = np.nan
+    else:
+        if hMax == -9999:
+            c[1] = np.nan
+        else:
+            c = np.sqrt(g * np.array([hMin, hMax]))
+
     spc = 24 * 3600. / (2 * pi * obsPerDay)  # seconds per cycle
 
     # Now set things to zero that are outside the wave dispersion. Loop through wavenumbers
@@ -441,7 +454,7 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
             ftmp = k * c
             freq = np.array(ftmp)
         if ((waveName == "ER") or (waveName == "er")):
-            ftmp = -beta * k / (k**2 + 3 * beta / c)
+            ftmp = -beta * k / (k ** 2 + 3 * beta / c)
             freq = np.array(ftmp)
         if ((waveName == "MRG") or (waveName == "IG0") or (waveName == "mrg") or (waveName == "ig0")):
             if (k == 0):
@@ -449,10 +462,10 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
                 freq = np.array(ftmp)
             else:
                 if (k > 0):
-                    ftmp = k * c * (0.5 + 0.5 * np.sqrt(1 + 4 * beta / (k**2 * c)))
+                    ftmp = k * c * (0.5 + 0.5 * np.sqrt(1 + 4 * beta / (k ** 2 * c)))
                     freq = np.array(ftmp)
                 else:
-                    ftmp = k * c * (0.5 - 0.5 * np.sqrt(1 + 4 * beta / (k**2 * c)))
+                    ftmp = k * c * (0.5 - 0.5 * np.sqrt(1 + 4 * beta / (k ** 2 * c)))
                     freq = np.array(ftmp)
         if ((waveName == "IG1") or (waveName == "ig1")):
             ftmp = np.sqrt(3 * beta * c + k ** 2 * c ** 2)
@@ -471,6 +484,7 @@ def kf_filter_mask(fftData, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveN
             jMaxWave = int(np.ceil(freq[1] * spc * nt))
         jMaxWave = np.array([jMaxWave, 0]).max()
         jMinWave = np.array([jMinWave, nf]).min()
+
         # set appropriate coefficients to zero
         if (jMinWave > 0):
             fftData[0:jMinWave, i] = 0
