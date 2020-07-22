@@ -412,7 +412,6 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
     # print(fftData[:, 0])
     if jMin > 0:
         fftData[0:jMin, :] = 0
-    print(fftIn[:, 0] - fftData[:, 0])
     if jMax < (nf):
         fftData[jMax + 1:nf, :] = 0
     if iMin < iMax:
