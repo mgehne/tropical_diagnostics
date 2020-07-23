@@ -50,6 +50,9 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     elif (wave == 'ER' or wave == 'er'):
         eofname = 'EOF_1-4_60-220E_-21S-21N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_ERband_'
         eofnum = np.arange(4) + 1
+    elif (wave == 'MJO' or wave == 'mjo'):
+        eofname = 'EOF_1-2_30-240E_-21S-21N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_MJOband_'
+        eofnum = np.arange(4) + 1
     elif (wave == 'MRG' or wave == 'mrg'):
         eofname = 'EOF_1-2_150-210E_-21S-21N_precip.trmm.8x.1deg.lats'+str(nlat)+'.v7a.fillmiss.comp.1998-201806_MRGband_'
         eofnum = np.arange(2) + 1
