@@ -308,7 +308,7 @@ def plot_activity_mpl(act, wavename, labels, plotpath, fchr=[]):
     for ll in np.arange(nlines):
         ax.plot(timestr, act[ll, :].values, color=colors[ll], linestyle=linestyles[ll])
     ax.set_xlabel('time')
-    #ax.set_xticks(skill['fchrs'])
+    ax.set_xticks(timestr[::5])
     #ax.set_xlim(0, 720)
     ax.set_ylim(0, 25)
     ax.set_ylabel('activity')
