@@ -343,7 +343,7 @@ def plot_skill_mpl(skill, wavename, labels, plotpath):
     ax = fig.add_subplot(111)
 
     for ll in np.arange(nlines):
-        ax.plot(skill['fchrs'], skill[:,ll], color=colors[ll], linestyle=linestyles[ll])
+        ax.plot(skill['fchrs'], skill[:,ll], color=colors[ll], linestyle=linestyles[ll], linewidth=2.0)
     ax.set_xlabel('lead time (h)')
     ax.set_xticks(skill['fchrs'][::2])
     ax.set_xlim(0, 720)
@@ -352,8 +352,8 @@ def plot_skill_mpl(skill, wavename, labels, plotpath):
     ax.set_title(wavename + " skill")
     ax.grid()
 
-    legendlines = [Line2D([0], [0], color=colors[0], linestyle=linestyles[0], lw=1),
-                   Line2D([0], [0], color=colors[1], linestyle=linestyles[1], lw=1)]
+    legendlines = [Line2D([0], [0], color=colors[0], linestyle=linestyles[0], lw=2),
+                   Line2D([0], [0], color=colors[1], linestyle=linestyles[1], lw=2)]
     ax.legend(legendlines, labels, loc='upper right', prop={'size': 8})
 
     plt.savefig(plotname)
