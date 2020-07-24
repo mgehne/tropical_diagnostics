@@ -279,6 +279,47 @@ def plot_skill(skill, wavename, labels, plotpath):
     fig.write_image(plotname)
 
 
+def plot_activity_mpl(act, wavename, labels, plotpath, fchr=[]):
+    """
+    Plot pattern correlation curves as a function of lead time.
+    :param act:
+    :type act:
+    :param labels:
+    :type labels:
+    :return:
+    :rtype:
+    """
+
+    plttype = "png"
+    plotname = plotpath + wavename + "Activity." + plttype
+    if fchr:
+        plotname = plotpath + wavename + "Activity_f" + f"{fchr:03d}" + "." + plttype
+
+    nlines, ntim = act.shape
+
+    timestr = get_timestr(act['time'])
+
+    fig = plt.figure(figsize=(9, 3))
+    ax = fig.add_subplot(111)
+
+    for ll in np.arange(nlines):
+        ax.plot(timestr, act[ll, :].values, color=colors[ll], linestyle=linestyles[ll])
+    ax.set_xlabel('time')
+    #ax.set_xticks(skill['fchrs'])
+    #ax.set_xlim(0, 720)
+    ax.set_ylim(0, 25)
+    ax.set_ylabel('activity')
+    ax.set_title(wavename + " FH" + f"{fchr:03d}")
+    ax.grid()
+
+    legendlines = []
+    for ll in np.arange(nlines):
+        legendlines.append( Line2D([0], [0], color=colors[ll], linestyle=linestyles[ll], lw=1) )
+    ax.legend(legendlines, labels, loc='upper right', prop={'size': 8})
+
+    plt.savefig(plotname)
+    plt.close(fig)
+
 def plot_skill_mpl(skill, wavename, labels, plotpath):
     """
     Plot pattern correlation curves as a function of lead time.
@@ -304,7 +345,7 @@ def plot_skill_mpl(skill, wavename, labels, plotpath):
     for ll in np.arange(nlines):
         ax.plot(skill['fchrs'], skill[:,ll], color=colors[ll], linestyle=linestyles[ll])
     ax.set_xlabel('lead time (h)')
-    ax.set_xticks(skill['fchrs'])
+    ax.set_xticks(skill['fchrs'][::2])
     ax.set_xlim(0, 720)
     ax.set_ylim(0, 1)
     ax.set_ylabel('skill (correlation)')
