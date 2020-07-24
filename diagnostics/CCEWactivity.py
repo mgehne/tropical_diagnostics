@@ -28,6 +28,9 @@ from netCDF4 import num2date
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+colors = ['tab:blue', 'tab:orange', 'k', 'tab:green', 'tab:red', 'tab:brown']
+linestyles = ('-', ':', '--')
+
 class opt_eof():
     def __init__(self, cov):
         self.covariance = cov
@@ -330,9 +333,6 @@ def plot_skill_mpl(skill, wavename, labels, plotpath):
     :return:
     :rtype:
     """
-
-    colors = ['tab:blue', 'tab:orange', 'k', 'tab:green', 'tab:red', 'tab:brown']
-    linestyles = ('-', ':', '--')
 
     plttype = "png"
     plotname = plotpath + wavename + "Skill." + plttype
