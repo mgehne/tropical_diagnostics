@@ -343,7 +343,7 @@ def plot_skill_mpl(skill, wavename, labels, plotpath):
     ax = fig.add_subplot(111)
 
     for ll in np.arange(nlines):
-        ax.plot(skill['fchrs'], skill[:,ll], color=colors[ll], linestyle=linestyles'-', linewidth=2.0)
+        ax.plot(skill['fchrs'], skill[:,ll], color=colors[ll], linestyle='-', linewidth=2.0)
     ax.set_xlabel('lead time (h)')
     ax.set_xticks(skill['fchrs'][::2])
     ax.set_xlim(0, 720)
