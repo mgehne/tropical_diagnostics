@@ -354,7 +354,7 @@ def plot_skill_mpl(skill, wavename, labels, plotpath):
 
     legendlines = [Line2D([0], [0], color=colors[0], linestyle=linestyles[0], lw=2),
                    Line2D([0], [0], color=colors[1], linestyle=linestyles[1], lw=2)]
-    ax.legend(legendlines, labels, loc='upper right', prop={'size': 8})
+    ax.legend(legendlines, labels, loc='upper right', prop={'size': 12})
 
     plt.savefig(plotname)
     plt.close(fig)
