@@ -25,6 +25,8 @@ import numpy as np
 import xarray as xr
 import plotly.graph_objects as go
 from netCDF4 import num2date
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 class opt_eof():
     def __init__(self, cov):
@@ -275,6 +277,45 @@ def plot_skill(skill, wavename, labels, plotpath):
     fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='skill correlation')
 
     fig.write_image(plotname)
+
+
+def plot_skill_mpl(skill, wavename, labels, plotpath):
+    """
+    Plot pattern correlation curves as a function of lead time.
+    :param skill:
+    :type skill:
+    :param labels:
+    :type labels:
+    :return:
+    :rtype:
+    """
+
+    colors = ['tab:blue', 'tab:orange', 'k', 'tab:green', 'tab:red', 'tab:brown']
+    linestyles = ('-', ':', '--')
+
+    plttype = "png"
+    plotname = plotpath + wavename + "Skill." + plttype
+
+    nfchr, nlines = skill.shape
+
+    fig, ax = plt.figure(figsize=(9, 3))
+
+    for ll in np.arange(nlines):
+        ax.plot(skill['fchrs'], skill[:,ll], color=colors[ll], linestyle=linestyles[ll])
+    ax.set_xlabel('lead time (h)')
+    ax.set_xticks(skill['fchrs'])
+    ax.set_xlim(0, 720)
+    ax.set_ylim(0, 1)
+    ax.set_ylabel('skill (correlation)')
+    ax.set_title(wavename + " skill")
+    ax.grid()
+
+    legendlines = [Line2D([0], [0], color=colors[0], linestyle=linestyles[0], lw=1),
+                   Line2D([0], [0], color=colors[1], linestyle=linestyles[1], lw=1)]
+    ax.legend(legendlines, labels, loc='upper right', prop={'size': 8})
+
+    plt.savefig(plotname)
+    plt.close(fig)
 
 
 def eof_comp(data, neof, opt, dim=0):
