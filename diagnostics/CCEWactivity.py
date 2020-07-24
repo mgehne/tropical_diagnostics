@@ -53,8 +53,8 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
         eofname = 'EOF_1-4_130-270E_-15S-15N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_Kelvinband_'
         eofnum = np.arange(4) + 1
     elif (wave == 'ER' or wave == 'er'):
-        eofname = 'EOF_1-4_60-220E_-21S-21N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_ERband_'
-        eofnum = np.arange(4) + 1
+        eofname = 'EOF_1-2_60-220E_-21S-21N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_ERband_'
+        eofnum = np.arange(2) + 1
     elif (wave == 'MJO' or wave == 'mjo'):
         eofname = 'EOF_1-2_30-240E_-21S-21N_persiann_cdr_'+res+'_nlat'+str(nlat)+'_fillmiss8314_1983-2016_MJOband_'
         eofnum = np.arange(2) + 1
