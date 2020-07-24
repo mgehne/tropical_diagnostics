@@ -298,7 +298,8 @@ def plot_skill_mpl(skill, wavename, labels, plotpath):
 
     nfchr, nlines = skill.shape
 
-    fig, ax = plt.figure(figsize=(9, 3))
+    fig = plt.figure(figsize=(9, 3))
+    ax = fig.add_subplot(111)
 
     for ll in np.arange(nlines):
         ax.plot(skill['fchrs'], skill[:,ll], color=colors[ll], linestyle=linestyles[ll])
