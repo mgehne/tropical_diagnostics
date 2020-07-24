@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 colors = ['tab:blue', 'tab:orange', 'k', 'tab:green', 'tab:red', 'tab:brown']
-linestyles = ('-', :', '--')
+linestyles = ('-', ':', '--')
 
 class opt_eof():
     def __init__(self, cov):
