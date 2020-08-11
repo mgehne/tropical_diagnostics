@@ -412,7 +412,7 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
     # print(fftData[:, 0])
     if jMin > 0:
         fftData[0:jMin, :] = 0
-    if jMax < (nf):
+    if jMax < nf:
         fftData[jMax + 1:nf, :] = 0
     if iMin < iMax:
         # Set things outside the wavenumber range to zero, this is more normal
@@ -425,7 +425,7 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
         fftData[:, iMax + 1:iMin] = 0
 
     c = np.empty([2])
-    if (hMin == -9999):
+    if hMin == -9999:
         c[0] = np.nan
         if hMax == -9999:
             c[1] = np.nan
@@ -449,35 +449,35 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
         freq = np.array([0, nf]) / spc
         jMinWave = 0
         jMaxWave = nf
-        if ((waveName == "Kelvin") or (waveName == "kelvin") or (waveName == "KELVIN")):
+        if (waveName == "Kelvin") or (waveName == "kelvin") or (waveName == "KELVIN"):
             ftmp = k * c
             freq = np.array(ftmp)
-        if ((waveName == "ER") or (waveName == "er")):
+        if (waveName == "ER") or (waveName == "er"):
             ftmp = -beta * k / (k ** 2 + 3 * beta / c)
             freq = np.array(ftmp)
-        if ((waveName == "MRG") or (waveName == "IG0") or (waveName == "mrg") or (waveName == "ig0")):
-            if (k == 0):
+        if (waveName == "MRG") or (waveName == "IG0") or (waveName == "mrg") or (waveName == "ig0"):
+            if k == 0:
                 ftmp = np.sqrt(beta * c)
                 freq = np.array(ftmp)
             else:
-                if (k > 0):
+                if k > 0:
                     ftmp = k * c * (0.5 + 0.5 * np.sqrt(1 + 4 * beta / (k ** 2 * c)))
                     freq = np.array(ftmp)
                 else:
                     ftmp = k * c * (0.5 - 0.5 * np.sqrt(1 + 4 * beta / (k ** 2 * c)))
                     freq = np.array(ftmp)
-        if ((waveName == "IG1") or (waveName == "ig1")):
+        if (waveName == "IG1") or (waveName == "ig1"):
             ftmp = np.sqrt(3 * beta * c + k ** 2 * c ** 2)
             freq = np.array(ftmp)
-        if ((waveName == "IG2") or (waveName == "ig2")):
+        if (waveName == "IG2") or (waveName == "ig2"):
             ftmp = np.sqrt(5 * beta * c + k ** 2 * c ** 2)
             freq = np.array(ftmp)
 
-        if (hMin == -9999):
+        if hMin == -9999:
             jMinWave = 0
         else:
             jMinWave = int(np.floor(freq[0] * spc * nt))
-        if (hMax == -9999):
+        if hMax == -9999:
             jMaxWave = nf
         else:
             jMaxWave = int(np.ceil(freq[1] * spc * nt))
@@ -485,9 +485,9 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
         jMinWave = np.array([jMinWave, nf]).min()
 
         # set appropriate coefficients to zero
-        if (jMinWave > 0):
+        if jMinWave > 0:
             fftData[0:jMinWave, i] = 0
-        if (jMaxWave < (nf)):
+        if jMaxWave < nf:
             fftData[jMaxWave + 1:nf, i] = 0
 
     return fftData
