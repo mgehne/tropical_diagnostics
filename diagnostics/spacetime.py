@@ -112,7 +112,7 @@ def mjo_cross_segment(XX, YY, opt=False):
             STC[0, NT, :] = STC[0, 0, :]
             STC[:, :, 0] = STC[:, :, NL]
 
-    return (STC)
+    return STC
 
 
 def get_symmasymm(X, lat, opt=False):
@@ -146,7 +146,7 @@ def get_symmasymm(X, lat, opt=False):
     else:
         print("Please provide a valid option: symm or asymm.")
 
-    return (x)
+    return x
 
 
 def mjo_cross_coh2pha(STC, opt=False):
