@@ -230,23 +230,23 @@ def smooth121_1D(array_in):
     array_out[1:-1] = sma
 
     # Now its time to correct the borders
-    if (np.isnan(temp[1])):
-        if (np.isnan(temp[0])):
+    if np.isnan(temp[1]):
+        if np.isnan(temp[0]):
             array_out[0] = np.nan
         else:
             array_out[0] = temp[0]
     else:
-        if (np.isnan(temp[0])):
+        if np.isnan(temp[0]):
             array_out[0] = np.nan
         else:
             array_out[0] = (temp[1] + 3.0 * temp[0]) / 4.0
-    if (np.isnan(temp[-2])):
-        if (np.isnan(temp[-1])):
+    if np.isnan(temp[-2]):
+        if np.isnan(temp[-1]):
             array_out[-1] = np.nan
         else:
             array_out[-2] = array_out[-2]
     else:
-        if (np.isnan(temp[-1])):
+        if np.isnan(temp[-1]):
             array_out[-1] = np.nan
         else:
             array_out[-1] = (temp[-2] + 3.0 * temp[-1]) / 4.0
@@ -272,7 +272,7 @@ def window_cosbell(N, pct, opt=False):
         x[i - 1] = x[i - 1] * wgt
         x[-i] = x[-i] * wgt
 
-    return (x)
+    return x
 
 
 def mjo_cross(X, Y, segLen, segOverLap, opt=False):
@@ -418,7 +418,7 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
         # Set things outside the wavenumber range to zero, this is more normal
         if iMin > 0:
             fftData[:, 0:iMin] = 0
-        if iMax < (nk):
+        if iMax < nk:
             fftData[:, iMax + 1:nk] = 0
     else:
         # Set things inside the wavenumber range to zero, this should be somewhat unusual
