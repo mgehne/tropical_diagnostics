@@ -519,8 +519,9 @@ def kf_filter(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     # reorder to (lon x time) to be able to use rfft on the time dimension
     data = np.transpose(data, axes=[1, 0])
     fftdata = np.fft.rfft2(data, axes=(0, 1))
-    print(fftdata.shape)
+
     fftfilt = kf_filter_mask(fftdata, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName)
+
     datafilt = np.fft.irfft2(fftfilt, axes=(0, 1))
     datafilt = np.transpose(datafilt, axes=[1, 0])
 
