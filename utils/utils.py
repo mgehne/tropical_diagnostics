@@ -1,9 +1,10 @@
 """
 This is a collection of utility functions.
 
-Contains:
+List of functions:
 
 lonFlip:
+    Flip longitudes from -180:180 to 0:360 or vice versa.
 
 """
 
