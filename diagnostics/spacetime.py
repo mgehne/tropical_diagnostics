@@ -375,7 +375,7 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
     """
     Generate a filtered mask array based on the FFT array and the wave information. Set all values
     outside the specified wave dispersion curves to zero.
-    :param fftData: Array of fft coefficients ( freq x wavenumber ), has to be 2 dimensional.
+    :param fftData: Array of fft coefficients ( wavenumber x freq ), has to be 2 dimensional.
     :param obsPerDay: Number of observations per day.
     :param tMin: Minimum period to include in filtering region.
     :param tMax: Maximum period to include in filtering region.
