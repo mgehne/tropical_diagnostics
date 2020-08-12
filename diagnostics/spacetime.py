@@ -388,7 +388,10 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
     desired region set to zero.
     """
     fftData = np.copy(fftIn)
+    fftData = np.transpose(fftData)
     nf, nk = fftData.shape  # frequency, wavenumber array
+    fftData = fftData[:, ::-1]
+
     nt = (nf - 1) * 2
     jMin = int(round(nt / (tMax * obsPerDay)))
     jMax = int(round(nt / (tMin * obsPerDay)))
@@ -444,6 +447,7 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
             # k is positive
             k = i / re
         else:
+            # k is negative
             k = -(nk - i) / re
 
         freq = np.array([0, nf]) / spc
@@ -490,7 +494,11 @@ def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveNam
         if jMaxWave < nf:
             fftData[jMaxWave + 1:nf, i] = 0
 
+    fftData = fftData[:, ::-1]
+    fftData = np.transpose(fftData)
+
     return fftData
+
 
 def kf_filter(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     """
@@ -508,8 +516,12 @@ def kf_filter(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     :return: Array containing the filtered data of the same size as the input data.
     """
 
-    fftdata = np.fft.fft2(data, axes=(0, 1))
+    # reorder to (lon x time) to be able to use rfft on the time dimension
+    data = np.transpose(data, axes=[1, 0])
+    fftdata = np.fft.rfft2(data, axes=(0, 1))
+    print(fftdata.shape)
     fftfilt = kf_filter_mask(fftdata, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName)
-    datafilt = np.fft.ifft2(fftfilt, axes=(0, 1))
+    datafilt = np.fft.irfft2(fftfilt, axes=(0, 1))
+    datafilt = np.transpose(datafilt, axes=[1, 0])
 
     return datafilt
