@@ -36,9 +36,9 @@ def lonFlip(data,lon):
 
     else:
         # change longitude to -180:180
-        ilonneg = np.where(lon > 180)
+        ilonneg = np.where(lon >= 180)
         nlonneg = len(ilonneg[0])
-        ilonpos = np.where(lon <= 180)
+        ilonpos = np.where(lon < 180)
         nlonpos = len(ilonpos[0])
 
         lonnew[0:nlonneg] = lon[ilonneg[0]].values - 360
