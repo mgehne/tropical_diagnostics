@@ -1,3 +1,12 @@
+"""
+This is a collection of utility functions.
+
+Contains:
+
+lonFlip:
+
+"""
+
 import numpy as np
 import xarray as xr
 
