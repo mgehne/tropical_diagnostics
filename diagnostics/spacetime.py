@@ -526,3 +526,30 @@ def kf_filter(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
     datafilt = np.transpose(datafilt, axes=[1, 0])
 
     return datafilt
+
+def kf_filter_3d(data, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
+    """
+    Filter 3D (time x lat x lon) input data for a convectively coupled equatorial wave region in
+    wavenumber - frequency space.
+    :param Data: Input data ( time x lat x lon ), has to be 3 dimensional.
+    :param obsPerDay: Number of observations per day.
+    :param tMin: Minimum period to include in filtering region.
+    :param tMax: Maximum period to include in filtering region.
+    :param kMin: Minimum wavenumber to include in filtering region.
+    :param kMax: Maximum wavenumber to include in filtering region.
+    :param hMin: Minimum equivalent depth to include in filtering region.
+    :param hMax: Maximum equivalent depth to include in filtering region.
+    :param waveName: Name of the wave to filter for.
+    :return: Array containing the filtered data of the same size as the input data.
+    """
+
+    # reorder to (lon x time) to be able to use rfft on the time dimension
+    data = np.transpose(data, axes=[1, 2, 0])
+    fftdata = np.fft.rfft2(data, axes=(1, 2))
+
+    fftfilt = kf_filter_mask_3d(fftdata, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName)
+
+    datafilt = np.fft.irfft2(fftfilt, axes=(1, 2))
+    datafilt = np.transpose(datafilt, axes=[2, 0, 1])
+
+    return datafilt
