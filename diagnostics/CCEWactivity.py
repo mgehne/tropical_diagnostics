@@ -1,5 +1,8 @@
 """
-Contains functions to project data onto CCEW EOFs.
+Functions to project data onto CCEW EOFs and compute activity indices.
+Created by: Maria Gehne
+maria.gehne@noaa.gov
+2020
 
 List of functions:
 
@@ -18,6 +21,12 @@ get_timestr:
 plot_activity:
 
 plot_skill:
+
+plot_activity_mpl:
+
+plot_skill_mpl:
+
+eof_comp:
 
 """
 
