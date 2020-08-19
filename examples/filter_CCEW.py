@@ -1,8 +1,15 @@
+"""
+This script reads in data from a user specified file and filters it for
+a specified region in wavenumber - frequency space.
+User must set filename and path for input and output files, define start
+and end time of the data, define the region to filter for, set the latitude
+range to filter and specify the number of observations per day of the input
+data.
+This can be very slow if the data is high spatial and temporal resolution.
+"""
 import numpy as np
 import xarray as xr
 from tropical_diagnostics.diagnostics import spacetime as st
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import ImageGrid
 import time as systime
 import sys
 
