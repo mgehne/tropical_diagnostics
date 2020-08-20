@@ -90,7 +90,7 @@ ds.close()
 print("done. size of data array:")
 print(data.shape)
 
-## filter each latitude
+# filter each latitude
 datafilt = xr.DataArray(np.zeros(data.shape), dims=['time', 'lat', 'lon'])
 print("Filtering....")
 for ll in range(len(lat)):
