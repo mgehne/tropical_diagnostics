@@ -14,12 +14,12 @@ included are:
 
 ### Hovmoeller diagrams
 Functions to compute hovmoeller latitudinal averages and pattern correlation are included in
-**hovmoeller_calc.py**. Plotting routines are included in **hovmoeller_plotly.py**.
+*hovmoeller_calc.py*. Plotting routines are included in *hovmoeller_plotly.py*.
 
 ### Space-time spectra
-    Functions for computing 2D Fourier transforms and 2D power and cross-spectra are included in **spacetime.py**.
-    To plot the spectra **spacetime_plot.py** uses pyngl, which is based on NCL and provides similar control
-    over plotting resources.
+Functions for computing 2D Fourier transforms and 2D power and cross-spectra are included in *spacetime.py*.
+To plot the spectra *spacetime_plot.py* uses pyngl, which is based on NCL and provides similar control
+over plotting resources.
 
 ### CCEW activity and skill
     Functions to project precipitation (either from model output or observations) onto CCEW EOF patterns and
