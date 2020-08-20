@@ -13,8 +13,8 @@ Contains the functions and modules necessary to compute the various diagnostics.
 included are:
 
 ### Hovmoeller diagrams
-    Functions to compute hovmoeller latitudinal averages and pattern correlation are included in
-    **hovmoeller_calc.py**. Plotting routines are included in **hovmoeller_plotly.py**.
+Functions to compute hovmoeller latitudinal averages and pattern correlation are included in
+**hovmoeller_calc.py**. Plotting routines are included in **hovmoeller_plotly.py**.
 
 ### Space-time spectra
     Functions for computing 2D Fourier transforms and 2D power and cross-spectra are included in **spacetime.py**.
