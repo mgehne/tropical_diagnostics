@@ -33,8 +33,8 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     # compute coherence - loop through levels
     for ll in np.arange(0, len(levels), 1):
         for symm in symmetries:
-            y = get_symmasymm(data2[:,ll,:,:], data2['lat'], symm)
-            x = get_symmasymm(data1, data1['lat'], symm)
+            y = st.get_symmasymm(data2[:,ll,:,:], data2['lat'], symm)
+            x = st.get_symmasymm(data1, data1['lat'], symm)
             # compute coherence
             result = st.mjo_cross(x, y, nDayWin, nDaySkip)
             tmp = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2

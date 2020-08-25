@@ -7,7 +7,7 @@ filenames and the output location. Variable names depend on the input data and n
 by the user as well.
 """
 from tropical_diagnostics.diagnostics import vertical_coherence as vc
-
+import xarray as xr
 
 var1 = "precip"  # variable name of data in the precipitation file
 var2 = "shum"    # variable name of data in the second file
@@ -25,10 +25,10 @@ level2 = [1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,
           450,400,350,300,250,225,200,175,150,125,100]
 
 # first and last date format: yyyymmddhh
-datemin = 2007010100
-datemax = 2010123100
-yearmin = datemin/1000000
-yearmax = datemax/1000000
+datemin = '2007-01-01'
+datemax = '2010-12-31'
+yearmin = datemin[0:4]
+yearmax = datemax[0:4]
 
 # significance level for the coherence plots
 sigstr = 99.
@@ -54,6 +54,9 @@ outfileSpectra = "CoherenceVertical_SpaceTime_python_"+RES+"_"+str(spd)+"x_"+sou
 
 
 # read data1
+ds = xr.open_dataset(pathin+filebase+"."+wave1+".nc")
+data1 = ds[var1].sel(time=slice())
+
 
 # remove annual cycle from data1 - not necessary unless using unfiltered data
 
