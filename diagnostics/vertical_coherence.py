@@ -95,24 +95,24 @@ def cross_phase_2d(Cross):
     :return: Cross with replaced phase angles
     """
 
-    CXYs = Cross[:, 4]
-    CXYa = Cross[:, 5]
-    QXYs = Cross[:, 6]
-    QXYa = Cross[:, 7]
+    cxys = Cross[:, 4]
+    cxya = Cross[:, 5]
+    qxys = Cross[:, 6]
+    qxya = Cross[:, 7]
 
-    PHASs = np.arctan2(QXYs, CXYs)
-    PHASa = np.arctan2(QXYa, CXYa)
+    pha_s = np.arctan2(qxys, cxys)
+    pha_a = np.arctan2(qxya, cxya)
 
-    V1s = -QXYs / np.sqrt(np.square(QXYs) + np.square(CXYs))
-    V2s = CXYs / np.sqrt(np.square(QXYs) + np.square(CXYs))
-    V1a = -QXYa / np.sqrt(np.square(QXYa) + np.square(CXYa))
-    V2a = CXYa / np.sqrt(np.square(QXYa) + np.square(CXYa))
+    v1s = -qxys / np.sqrt(np.square(qxys) + np.square(cxys))
+    v2s = cxys / np.sqrt(np.square(qxys) + np.square(cxys))
+    v1a = -qxya / np.sqrt(np.square(qxya) + np.square(cxya))
+    v2a = cxya / np.sqrt(np.square(qxya) + np.square(cxya))
 
-    Cross[:, 10] = PHASs
-    Cross[:, 11] = PHASa
-    Cross[:, 12] = V1s
-    Cross[:, 13] = V1a
-    Cross[:, 14] = V2s
-    Cross[:, 15] = V2a
+    Cross[:, 10] = pha_s
+    Cross[:, 11] = pha_a
+    Cross[:, 12] = v1s
+    Cross[:, 13] = v1a
+    Cross[:, 14] = v2s
+    Cross[:, 15] = v2a
 
     return Cross
