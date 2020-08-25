@@ -35,11 +35,13 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
         for symm in symmetries:
             y = get_symmasymm(data2[:,ll,:,:], data2['lat'], symm)
             x = get_symmasymm(data1, data1['lat'], symm)
+            # compute coherence
             result = st.mjo_cross(x, y, nDayWin, nDaySkip)
             tmp = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
             try:
                 CrossMat
             except NameError:
+                # initialize cross-spectral array
                 freq = result['freq']
                 freq = freq * spd
                 wnum = result['wave']
@@ -48,6 +50,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
                                   dims=['level', 'cross', 'freq', 'wave'],
                                   coords={'level': levels, 'cross': np.arange(0, 16, 1), 'freq': freq, 'wave': wnum})
 
+            # write cross-spectral components to array
             if symm == 'symm':
                 CrossMat[0::2] = tmp
             elif symm == 'asymm':
@@ -56,7 +59,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     # compute significant value of coherence based on distribution
     sigval = coher_sig_dist(CrossMat[:, 8:10, :, :], siglevel)
 
-    # mask Cross spectra where coherence < siglevel
+    # mask cross-spectra where coherence < siglevel
     MaskArray = CrossMat[:, 8:9, :, :]
     MaskArray = np.where(MaskArray <= sigval, np.nan, 1)
     MaskAll = np.empty(CrossMat.shape)
@@ -104,19 +107,23 @@ def cross_phase_2d(Cross):
     :return: Cross with replaced phase angles
     """
 
+    # read co- and quadrature-spectral components
     cxys = Cross[:, 4]
     cxya = Cross[:, 5]
     qxys = Cross[:, 6]
     qxya = Cross[:, 7]
 
+    # compute phase angles
     pha_s = np.arctan2(qxys, cxys)
     pha_a = np.arctan2(qxya, cxya)
 
+    # compute phase vectors
     v1s = -qxys / np.sqrt(np.square(qxys) + np.square(cxys))
     v2s = cxys / np.sqrt(np.square(qxys) + np.square(cxys))
     v1a = -qxya / np.sqrt(np.square(qxya) + np.square(cxya))
     v2a = cxya / np.sqrt(np.square(qxya) + np.square(cxya))
 
+    # write phase angles and vectors to array
     Cross[:, 10] = pha_s
     Cross[:, 11] = pha_a
     Cross[:, 12] = v1s
