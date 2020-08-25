@@ -60,7 +60,7 @@ outfileSpectra = "CoherenceVertical_SpaceTime_python_"+RES+"_"+str(spd)+"x_"+sou
 # read data2
 
 # put this next part into a function
-CohAvg, CohMask, CohMat = vc.vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd)
+CohAvg, CohMask, CohMat = vc.vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglevel)
 
 # save data to file
 
