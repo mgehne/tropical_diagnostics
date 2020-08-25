@@ -1,5 +1,14 @@
 """
 Collection of functions and routines to compute vertical coherence profiles.
+
+Content:
+
+vertical_coherence_comp: driver script for vertical coherence calculations
+
+coher_sig_dist: compute significant value of coherence from coherence distribution
+
+cross_phase_2d: Compute phase angled from averaged cross-spectral components
+
 """
 import numpy as np
 import xarray as xr
@@ -20,10 +29,10 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     :return: CohAvg, CohMask, CohMat: Vertical profile, masked cross-spectra at all levels,
     full cross-spectra at all levels
     """
-    Symmetries = ['symm', 'asymm']
+    symmetries = ['symm', 'asymm']
     # compute coherence - loop through levels
     for ll in np.arange(0, len(levels), 1):
-        for symm in Symmetries:
+        for symm in symmetries:
             y = get_symmasymm(data2[:,ll,:,:], data2['lat'], symm)
             x = get_symmasymm(data1, data1['lat'], symm)
             result = st.mjo_cross(x, y, nDayWin, nDaySkip)
@@ -57,7 +66,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     CrossMask = CrossMat * MaskAll
 
     # average coherence across significant values
-    CrossAvg = np.average(CrossMask, axis=(2, 3))
+    CrossAvg = np.nanmean(CrossMask, axis=(2, 3))
     # recompute phase angles of averaged cross-spectra
     CrossAvg = cross_phase_2d(CrossAvg)
 
