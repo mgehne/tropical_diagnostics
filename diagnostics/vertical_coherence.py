@@ -46,7 +46,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
                 freq = freq * spd
                 wnum = result['wave']
                 dims = tmp.shape
-                CrossMat = xr.DataArray(np.empty(len(levels), dims[0]*2, dims[1], dims[2]),
+                CrossMat = xr.DataArray(np.empty([len(levels), dims[0]*2, dims[1], dims[2]]),
                                   dims=['level', 'cross', 'freq', 'wave'],
                                   coords={'level': levels, 'cross': np.arange(0, 16, 1), 'freq': freq, 'wave': wnum})
 
