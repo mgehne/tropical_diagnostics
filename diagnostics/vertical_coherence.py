@@ -93,7 +93,8 @@ def coher_sig_dist(Coher, siglevel):
     # make a 1d array
     coher = Coher.flatten()
     # find all valid values
-    coher = np.where(np.isfinite(coher) and (1 >= coher >= 0))
+    coher = coher[~np.isnan(coher)]
+    coher = coher[0 <= coher <= 1]
     # sort array
     coher = np.sort(coher)
     nvals = len(coher)
