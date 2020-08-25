@@ -94,7 +94,7 @@ def coher_sig_dist(Coher, siglevel):
     coher = Coher.flatten()
     # find all valid values
     coher = coher[~np.isnan(coher)]
-    coher = coher[0 <= coher <= 1]
+    coher = coher[(0 <= coher) & (coher <= 1)]
     # sort array
     coher = np.sort(coher)
     nvals = len(coher)
