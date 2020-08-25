@@ -33,7 +33,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     # compute coherence - loop through levels
     for ll in np.arange(0, len(levels), 1):
         for symm in symmetries:
-            y = st.get_symmasymm(data2[:,ll,:,:], data2['lat'], symm)
+            y = st.get_symmasymm(data2[:, ll, :, :], data2['lat'], symm)
             x = st.get_symmasymm(data1, data1['lat'], symm)
             # compute coherence
             result = st.mjo_cross(x, y, nDayWin, nDaySkip)
@@ -50,11 +50,13 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
                                   dims=['level', 'cross', 'freq', 'wave'],
                                   coords={'level': levels, 'cross': np.arange(0, 16, 1), 'freq': freq, 'wave': wnum})
 
+            print(CrossMat.shape)
+            print(tmp.shape)
             # write cross-spectral components to array
             if symm == 'symm':
-                CrossMat[0::2] = tmp
+                CrossMat[ll, 0::2, :, :] = tmp
             elif symm == 'asymm':
-                CrossMat[1::2] = tmp
+                CrossMat[ll, 1::2, :, :] = tmp
 
     # compute significant value of coherence based on distribution
     sigval = coher_sig_dist(CrossMat[:, 8:10, :, :], siglevel)
