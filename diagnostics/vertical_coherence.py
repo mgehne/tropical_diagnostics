@@ -32,6 +32,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     symmetries = ['symm', 'asymm']
     # compute coherence - loop through levels
     for ll in np.arange(0, len(levels), 1):
+        print('processing level = '+str(levels[ll]))
         for symm in symmetries:
             y = st.get_symmasymm(data2[:, ll, :, :], data2['lat'], symm)
             x = st.get_symmasymm(data1, data1['lat'], symm)
@@ -59,7 +60,8 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
                 CrossMat[ll, 1::2, :, :] = tmp
 
     # compute significant value of coherence based on distribution
-    sigval = coher_sig_dist(CrossMat[:, 8:10, :, :], siglevel)
+    sigval = coher_sig_dist(CrossMat[:, 8:10, :, :].values, siglevel)
+    print(str(siglevel*100)+"% significance coherence value: "+str(sigval))
 
     # mask cross-spectra where coherence < siglevel
     MaskArray = CrossMat[:, 8:9, :, :]
@@ -89,7 +91,7 @@ def coher_sig_dist(Coher, siglevel):
     :return: sigval
     """
     # make a 1d array
-    coher = np.flatten(Coher)
+    coher = Coher.flatten()
     # find all valid values
     coher = np.where(np.isfinite(coher) and (1 >= coher >= 0))
     # sort array
