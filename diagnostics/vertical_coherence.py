@@ -76,6 +76,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     CrossAvg = np.nanmean(CrossMask, axis=(2, 3))
     # recompute phase angles of averaged cross-spectra
     CrossAvg = cross_phase_2d(CrossAvg)
+    CrossAvg = xr.DataArray(CrossAvg, dims=['level', 'cross'], coords={'level': levels, 'cross': np.arange(0, 16, 1)})
 
     # return output
     return CrossAvg, CrossMask, CrossMat

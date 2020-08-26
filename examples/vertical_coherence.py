@@ -8,6 +8,7 @@ by the user as well.
 """
 from tropical_diagnostics.diagnostics import vertical_coherence as vc
 import xarray as xr
+import numpy as np
 
 var1 = "precip"  # variable name of data in the precipitation file
 var2 = "shum"    # variable name of data in the second file
@@ -70,8 +71,12 @@ print(data1.shape)
 print(data2.shape)
 
 # put this next part into a function
-CohAvg, CohMask, CohMat = vc.vertical_coherence_comp(data1, data2, level2, nDayWin, nDaySkip, spd, siglev)
-print(CohAvg[:,8:10])
+CrossAvg, CrossMask, CrossMat = vc.vertical_coherence_comp(data1, data2, level2, nDayWin, nDaySkip, spd, siglev)
+print(CrossAvg)
+
 # save data to file
+#ds = xr.Dataset({'CrossAvg': CrossAvg}, {'level': level2, 'cross': np.arange(0, 16, 1)})
+#ds.to_netcdf(pathout+outfile+".nc")
+#ds.close()
 
 # plot vertical coherence profile
