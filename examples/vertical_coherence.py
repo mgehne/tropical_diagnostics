@@ -79,4 +79,5 @@ print(CrossAvg)
 #ds.to_netcdf(pathout+outfile+".nc")
 #ds.close()
 
+
 # plot vertical coherence profile
