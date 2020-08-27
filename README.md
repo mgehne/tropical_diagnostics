@@ -27,7 +27,10 @@ compute wave activity and a CCEW skill score are included in **CCEWactivity.py**
 to plot the activity and the skill compared to observations.
 
 ### Vertical coherence of CCEWs
-Needs to still be included.
+These functions compute the coherence between two data sets at multiple vertical levels. The assumption is that
+the first data set is filtered precipitation (filtered for a CCEW or the MJO) and the second data set is a multi-
+level dynamical field, either from reanalysis or model output.
+Still needs plotting capabilities to be added.
 
 ## utils
 Contains functions and modules shared by multiple diagnostics. That includes reading data, saving netcdf
