@@ -38,3 +38,9 @@ Scripts containing example use cases. These scripts read in data, compute diagno
 This is a good place to start when first using the diagnostics.
 The user will need to supply their own data and edit these examples to get them to work.
 
+## installation
+Download or clone the source code from github.
+Change directory to top level package directory `cd tropical_diagnostics` and run `pip install ./`.
+To run scripts from the examples directory copy the script into the directory above tropical_diangostics
+and run from there. This will likely change in the future and become more user friendly.
+
