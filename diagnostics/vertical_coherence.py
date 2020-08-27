@@ -51,8 +51,6 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
                                   dims=['level', 'cross', 'freq', 'wave'],
                                   coords={'level': levels, 'cross': np.arange(0, 16, 1), 'freq': freq, 'wave': wnum})
 
-            print(CrossMat.shape)
-            print(tmp.shape)
             # write cross-spectral components to array
             if symm == 'symm':
                 CrossMat[ll, 0::2, :, :] = tmp
@@ -96,6 +94,7 @@ def coher_sig_dist(Coher, siglevel):
     # find all valid values
     coher = coher[~np.isnan(coher)]
     coher = coher[(0 <= coher) & (coher <= 1)]
+
     # sort array
     coher = np.sort(coher)
     nvals = len(coher)
