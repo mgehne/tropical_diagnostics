@@ -32,9 +32,10 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     symmetries = ['symm', 'asymm']
     # compute coherence - loop through levels
     for ll in np.arange(0, len(levels), 1):
+        print('processing level = '+str(levels[ll]))
         for symm in symmetries:
-            y = get_symmasymm(data2[:,ll,:,:], data2['lat'], symm)
-            x = get_symmasymm(data1, data1['lat'], symm)
+            y = st.get_symmasymm(data2[:, ll, :, :], data2['lat'], symm)
+            x = st.get_symmasymm(data1, data1['lat'], symm)
             # compute coherence
             result = st.mjo_cross(x, y, nDayWin, nDaySkip)
             tmp = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
@@ -46,18 +47,19 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
                 freq = freq * spd
                 wnum = result['wave']
                 dims = tmp.shape
-                CrossMat = xr.DataArray(np.empty(len(levels), dims[0]*2, dims[1], dims[2]),
+                CrossMat = xr.DataArray(np.empty([len(levels), dims[0]*2, dims[1], dims[2]]),
                                   dims=['level', 'cross', 'freq', 'wave'],
                                   coords={'level': levels, 'cross': np.arange(0, 16, 1), 'freq': freq, 'wave': wnum})
 
             # write cross-spectral components to array
             if symm == 'symm':
-                CrossMat[0::2] = tmp
+                CrossMat[ll, 0::2, :, :] = tmp
             elif symm == 'asymm':
-                CrossMat[1::2] = tmp
+                CrossMat[ll, 1::2, :, :] = tmp
 
     # compute significant value of coherence based on distribution
-    sigval = coher_sig_dist(CrossMat[:, 8:10, :, :], siglevel)
+    sigval = coher_sig_dist(CrossMat[:, 8:10, :, :].values, siglevel)
+    print(str(siglevel*100)+"% significance coherence value: "+str(sigval))
 
     # mask cross-spectra where coherence < siglevel
     MaskArray = CrossMat[:, 8:9, :, :]
@@ -69,9 +71,10 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     CrossMask = CrossMat * MaskAll
 
     # average coherence across significant values
-    CrossAvg = np.nanmean(CrossMask, axis=(2, 3))
+    CrossAvg = np.nanmean(CrossMask.sel(freq=slice(0, 1), wave=slice(-20, 20)), axis=(2, 3))
     # recompute phase angles of averaged cross-spectra
     CrossAvg = cross_phase_2d(CrossAvg)
+    CrossAvg = xr.DataArray(CrossAvg, dims=['level', 'cross'], coords={'level': levels, 'cross': np.arange(0, 16, 1)})
 
     # return output
     return CrossAvg, CrossMask, CrossMat
@@ -87,9 +90,11 @@ def coher_sig_dist(Coher, siglevel):
     :return: sigval
     """
     # make a 1d array
-    coher = np.flatten(Coher)
+    coher = Coher.flatten()
     # find all valid values
-    coher = np.where(np.isfinite(coher) and (1 >= coher >= 0))
+    coher = coher[~np.isnan(coher)]
+    coher = coher[(0 <= coher) & (coher <= 1)]
+
     # sort array
     coher = np.sort(coher)
     nvals = len(coher)

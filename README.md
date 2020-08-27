@@ -27,7 +27,10 @@ compute wave activity and a CCEW skill score are included in **CCEWactivity.py**
 to plot the activity and the skill compared to observations.
 
 ### Vertical coherence of CCEWs
-Needs to still be included.
+These functions compute the coherence between two data sets at multiple vertical levels. The assumption is that
+the first data set is filtered precipitation (filtered for a CCEW or the MJO) and the second data set is a multi-
+level dynamical field, either from reanalysis or model output.
+Still needs plotting capabilities to be added.
 
 ## utils
 Contains functions and modules shared by multiple diagnostics. That includes reading data, saving netcdf
@@ -37,4 +40,10 @@ files and AJM source code.
 Scripts containing example use cases. These scripts read in data, compute diagnostics and plot the results.
 This is a good place to start when first using the diagnostics.
 The user will need to supply their own data and edit these examples to get them to work.
+
+## installation
+Download or clone the source code from github.
+Change directory to top level package directory `cd tropical_diagnostics` and run `pip install ./`.
+To run scripts from the examples directory copy the script into the directory above tropical_diangostics
+and run from there. This will likely change in the future and become more user friendly.
 
