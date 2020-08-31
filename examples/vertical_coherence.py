@@ -6,7 +6,7 @@ run filter_CCEW.py to generate the filtered data. The user needs to change the i
 filenames and the output location. Variable names depend on the input data and need to be specified
 by the user as well.
 """
-from tropical_diagnostics.diagnostics import vertical_coherence as vc
+from diagnostics import vertical_coherence as vc
 import xarray as xr
 import numpy as np
 

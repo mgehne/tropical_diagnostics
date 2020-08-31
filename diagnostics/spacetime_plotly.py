@@ -12,7 +12,7 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
-import tropical_diagnostics.utils.matsuno_plot as mp
+import diagnostics.matsuno_plot as mp
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.figure_factory as ff

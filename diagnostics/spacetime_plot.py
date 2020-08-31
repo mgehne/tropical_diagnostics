@@ -12,7 +12,7 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
-import tropical_diagnostics.utils.matsuno_plot as mp
+import diagnostics.matsuno_plot as mp
 
 pi = np.pi
 re = 6.371008e6  # Earth's radius in meters
@@ -22,7 +22,7 @@ deg2rad = pi / 180  # Degrees to Radians
 sec2day = 1. / (24. * 60. * 60.)  # Seconds to Days
 
 """
-The following utilities include a background flow for mid-latitude Rossby wave dispersion
+The following utilities include a zonal background flow for mid-latitude Rossby wave dispersion
 curves.
 Created by: Maria Gehne
 2019
