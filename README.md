@@ -42,8 +42,33 @@ This is a good place to start when first using the diagnostics.
 The user will need to supply their own data and edit these examples to get them to work.
 
 ## installation
-Download or clone the source code from github.
-Change directory to top level package directory `cd tropical_diagnostics` and run `pip install ./`.
+Download or clone the source code from github. Make sure all the required packages are available. If working
+on a machine that requires python environments to install packages create a conda environment first:
+
+MyEnv = your chosen name of the environment
+
+`conda create --name MyEnv`
+
+Install the required packages:
+
+`conda install -n MyEnv scipy`
+
+`conda install -n MyEnv xarray`
+
+`conda install -n MyEnv numpy`
+
+`conda install -n MyEnv netCDF4`
+
+`conda install -n MyEnv pyngl`
+
+Activate the conda environment:
+`conda activate MyEnv`
+
+Change directory to top level package directory tropical_diagnostics and install package using pip.
+
+`cd tropical_diangostics/`
+`pip install./`
+
 To run scripts from the examples directory copy the script into the directory above tropical_diangostics
 and run from there. This will likely change in the future and become more user friendly.
 
