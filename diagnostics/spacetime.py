@@ -436,7 +436,8 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
 
         XX = x[ntStrt:ntLast, :, :] * window
         YY = y[ntStrt:ntLast, :, :] * window
-        STCseg = mjo_cross_segment(XX, YY, 0)
+        #STCseg = mjo_cross_segment(XX, YY, 0)
+        STCseg = mjo_cross_segment_realfft(XX, YY, 0)
         # set time-mean power to NaN
         STCseg[:, indfreq0, :] = np.nan
         # apply 1-2-1 smoother in frequency
