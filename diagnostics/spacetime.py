@@ -260,7 +260,6 @@ def mjo_cross_coh2pha(STC, opt=False):
     V1 = -QXY / np.sqrt(np.square(QXY) + np.square(CXY))
     V2 = CXY / np.sqrt(np.square(QXY) + np.square(CXY))
 
-    # STC[3,:,:] = QXY
     STC[4, :, :] = COH2
     STC[5, :, :] = PHAS
     STC[6, :, :] = V1
