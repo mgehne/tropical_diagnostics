@@ -411,7 +411,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     if segLen % 2 == 1:
         nfreq = int(segLen/2)
     else:
-        nfreq = int(segLen) + 1
+        nfreq = int(segLen/2) + 1
     if mlon % 2 == 1:
         nwave = mlon
     else:
