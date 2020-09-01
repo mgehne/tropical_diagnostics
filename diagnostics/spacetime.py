@@ -127,7 +127,6 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     """
     NT, NM, NL = XX.shape
     NT = int(NT/2) + 1
-    print(NT)
 
     XX = np.transpose(XX, axes=[1, 2, 0])  # is now (lat, lon, time)
     YY = np.transpose(YY, axes=[1, 2, 0])  # is now (lat, lon, time)
@@ -139,8 +138,6 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     # return array to (time, lat, lon)
     Xfft = np.transpose(Xfft, axes=[2, 0, 1])
     Yfft = np.transpose(Yfft, axes=[2, 0, 1])
-
-    print(Xfft.shape)
 
     # normalize by # time samples
     Xfft = Xfft / (NT * NL)
@@ -422,7 +419,6 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     wave = np.arange(-int(nwave / 2), int(nwave / 2) + 1, 1.)
     #freq = np.arange(-1. * int(segLen / 2), 1. * int(segLen / 2) + 1., 1) / (segLen)
     freq = np.arange(0, 1. * int(segLen / 2) + 1., 1) / (segLen)
-    print(len(freq))
 
     # find time-mean index
     indfreq0 = np.where(freq == 0.)[0]
