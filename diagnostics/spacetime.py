@@ -418,7 +418,8 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     STC = np.zeros([8, nfreq, nwave], dtype='double')
     wave = np.arange(-int(nwave / 2), int(nwave / 2) + 1, 1.)
     #freq = np.arange(-1. * int(segLen / 2), 1. * int(segLen / 2) + 1., 1) / (segLen)
-    freq = np.arange(0, 1. * int(segLen / 2) + 1., 1) / (segLen)
+    #freq = np.arange(0, 1. * int(segLen / 2) + 1., 1) / (segLen)
+    freq = np.linspace(0, 0.5, num=nfreq)
 
     # find time-mean index
     indfreq0 = np.where(freq == 0.)[0]
