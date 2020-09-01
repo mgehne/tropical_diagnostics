@@ -126,7 +126,7 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     and YY, quadrature spectra between XX and YY.
     """
     NT, NM, NL = XX.shape
-    NT = NT/2
+    NT = int(NT/2) + 1
     print(NT)
 
     XX = np.transpose(XX, axes=[1, 2, 0])  # is now (lat, lon, time)
