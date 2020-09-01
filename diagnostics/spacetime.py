@@ -409,9 +409,9 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     # returns the Nyquist frequency once for even NT or NL and twice
     # if they are odd
     if segLen % 2 == 1:
-        nfreq = segLen
+        nfreq = int(segLen/2)
     else:
-        nfreq = segLen + 1
+        nfreq = int(segLen) + 1
     if mlon % 2 == 1:
         nwave = mlon
     else:
@@ -420,7 +420,9 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     # initialize spectrum array
     STC = np.zeros([8, nfreq, nwave], dtype='double')
     wave = np.arange(-int(nwave / 2), int(nwave / 2) + 1, 1.)
-    freq = np.arange(-1. * int(segLen / 2), 1. * int(segLen / 2) + 1., 1) / (segLen)
+    #freq = np.arange(-1. * int(segLen / 2), 1. * int(segLen / 2) + 1., 1) / (segLen)
+    freq = np.arange(0, 1. * int(segLen / 2) + 1., 1) / (segLen)
+    print(len(freq))
 
     # find time-mean index
     indfreq0 = np.where(freq == 0.)[0]
