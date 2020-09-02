@@ -143,8 +143,8 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     Xfft = Xfft / (NT * NL)
     Yfft = Yfft / (NT * NL)
     # shift 0 wavenumber to the center
-    Xfft = np.fft.fftshift(Xfft, axes=(2))
-    Yfft = np.fft.fftshift(Yfft, axes=(2))
+    Xfft = np.fft.fftshift(Xfft, axes=2)
+    Yfft = np.fft.fftshift(Yfft, axes=2)
 
     # average the power spectra across all latitudes
     PX = np.average(np.square(np.abs(Xfft)), axis=1)
@@ -258,12 +258,8 @@ def mjo_cross_coh2pha(STC, opt=False):
     PHAS = np.arctan2(QXY, CXY)
 
     V1 = -QXY / np.sqrt(np.square(QXY) + np.square(CXY))
-    # V1[:,0:nwave//2+1]  = -1*QXY[:,0:nwave//2+1]/np.sqrt( np.square(QXY[:,0:nwave//2+1])+np.square(CXY[:,0:nwave//2+1]) )
-    # QXY[:,0:nwave//2+1] = -1*QXY[:,0:nwave//2+1]
-
     V2 = CXY / np.sqrt(np.square(QXY) + np.square(CXY))
 
-    # STC[3,:,:] = QXY
     STC[4, :, :] = COH2
     STC[5, :, :] = PHAS
     STC[6, :, :] = V1
@@ -417,8 +413,6 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     # initialize spectrum array
     STC = np.zeros([8, nfreq, nwave], dtype='double')
     wave = np.arange(-int(nwave / 2), int(nwave / 2) + 1, 1.)
-    #freq = np.arange(-1. * int(segLen / 2), 1. * int(segLen / 2) + 1., 1) / (segLen)
-    #freq = np.arange(0, 1. * int(segLen / 2) + 1., 1) / (segLen)
     freq = np.linspace(0, 0.5, num=nfreq)
 
     # find time-mean index
@@ -436,12 +430,11 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
 
         XX = x[ntStrt:ntLast, :, :] * window
         YY = y[ntStrt:ntLast, :, :] * window
-        #STCseg = mjo_cross_segment(XX, YY, 0)
         STCseg = mjo_cross_segment_realfft(XX, YY, 0)
         # set time-mean power to NaN
         STCseg[:, indfreq0, :] = np.nan
         # apply 1-2-1 smoother in frequency
-        smooth121(STCseg, freq)
+        #smooth121(STCseg, freq)
         # sum segment spectra
         STC = STC + STCseg
 
