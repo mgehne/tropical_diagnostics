@@ -140,8 +140,9 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     Yfft = np.transpose(Yfft, axes=[2, 0, 1])
 
     # normalize by # time samples
-    Xfft = Xfft / (NT * NL)
-    Yfft = Yfft / (NT * NL)
+    # Xfft = Xfft / (NT * NL)
+    # Yfft = Yfft / (NT * NL)
+
     # shift 0 wavenumber to the center
     Xfft = np.fft.fftshift(Xfft, axes=2)
     Yfft = np.fft.fftshift(Yfft, axes=2)
