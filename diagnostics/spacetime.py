@@ -151,7 +151,7 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     PY = np.average(np.square(np.abs(Yfft)), axis=1)
 
     # compute co- and quadrature spectrum
-    PXY = np.average(np.conj(Yfft) * Xfft, axis=1)
+    PXY = np.average(np.conj(Xfft) * Yfft, axis=1)
     CXY = np.real(PXY)
     QXY = np.imag(PXY)
 
