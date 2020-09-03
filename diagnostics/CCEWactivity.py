@@ -33,6 +33,7 @@ eof_comp:
 import numpy as np
 import xarray as xr
 import plotly.graph_objects as go
+from kaleido.scopes.plotly import PlotlyScope
 from netCDF4 import num2date
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
@@ -243,6 +244,7 @@ def plot_activity(act, wavename, labels, plotpath, fchr=[]):
 
     timestr = get_timestr(act['time'])
 
+    scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(nlines):
         fig.add_trace(go.Scatter(x=timestr, y=act[ll, :].values,
@@ -256,7 +258,8 @@ def plot_activity(act, wavename, labels, plotpath, fchr=[]):
     #fig.update_xaxes(ticks="", tick0=0, dtick=12, title_text='date')
     fig.update_yaxes(ticks="", tick0=0, dtick=1., title_text='activity')
 
-    fig.write_image(plotname)
+    with open(plotname, "wb") as f:
+        f.write(scope.transform(fig, format=plttype))
 
 
 def plot_skill(skill, wavename, labels, plotpath):
@@ -275,6 +278,7 @@ def plot_skill(skill, wavename, labels, plotpath):
 
     nfchr, nlines = skill.shape
 
+    scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(nlines):
         fig.add_trace(go.Scatter(x=skill['fchrs'], y=skill[:, ll],
@@ -288,7 +292,8 @@ def plot_skill(skill, wavename, labels, plotpath):
     fig.update_xaxes(ticks="", tick0=0, dtick=24, title_text='lead time (h)')
     fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='skill correlation')
 
-    fig.write_image(plotname)
+    with open(plotname, "wb") as f:
+        f.write(scope.transform(fig, format=plttype))
 
 
 def plot_activity_mpl(act, wavename, labels, plotpath, fchr=[]):
