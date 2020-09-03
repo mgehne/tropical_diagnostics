@@ -126,7 +126,6 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     and YY, quadrature spectra between XX and YY.
     """
     NT, NM, NL = XX.shape
-    NT = int(NT/2) + 1
 
     XX = np.transpose(XX, axes=[1, 2, 0])  # is now (lat, lon, time)
     YY = np.transpose(YY, axes=[1, 2, 0])  # is now (lat, lon, time)
@@ -140,8 +139,8 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     Yfft = np.transpose(Yfft, axes=[2, 0, 1])
 
     # normalize by # time samples
-    # Xfft = Xfft / (NT * NL)
-    # Yfft = Yfft / (NT * NL)
+    Xfft = Xfft / (NT * NL)
+    Yfft = Yfft / (NT * NL)
 
     # shift 0 wavenumber to the center
     Xfft = np.fft.fftshift(Xfft, axes=2)
@@ -164,6 +163,7 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     # test if time and longitude are odd or even, fft algorithm
     # returns the Nyquist frequency once for even NT or NL and twice
     # if they are odd
+    NT = int(NT / 2) + 1
     if NT % 2 == 1:
         nfreq = NT
         if NL % 2 == 1:
