@@ -342,7 +342,9 @@ def smooth121_1D(array_in):
         elif i == 0 or np.isnan(temp[i-1]):
             array_out[i] = (3*temp[i]+temp[i+1])/4
         elif i == (len(temp)-1) or np.isnan(temp[i+1]):
-            array_out[i] = (3 * temp[i] + temp[i - 1]) / 4
+            array_out[i] = (3 * temp[i] + temp[i-1]) / 4
+        else:
+            array_out[i] = (temp[i+1] + 2 * temp[i] + temp[i-1]) / 4
 
     return array_out
 
