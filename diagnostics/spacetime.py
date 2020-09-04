@@ -315,26 +315,34 @@ def smooth121_1D(array_in):
     array_out[1:-1] = sma
 
     # Now its time to correct the borders
-    if np.isnan(temp[1]):
-        if np.isnan(temp[0]):
+#    if np.isnan(temp[1]):
+#        if np.isnan(temp[0]):
+#            array_out[0] = np.nan
+#        else:
+#            array_out[0] = temp[0]
+#    else:
+#        if np.isnan(temp[0]):
+#            array_out[0] = np.nan
+#        else:
+#            array_out[0] = (temp[1] + 3.0 * temp[0]) / 4.0
+#    if np.isnan(temp[-2]):
+#        if np.isnan(temp[-1]):
+#            array_out[-1] = np.nan
+#        else:
+#            array_out[-2] = array_out[-2]
+#    else:
+#        if np.isnan(temp[-1]):
+#            array_out[-1] = np.nan
+#        else:
+#            array_out[-1] = (temp[-2] + 3.0 * temp[-1]) / 4.0
+
+    for i in np.arange(0, len(temp), 1):
+        if np.isnan(temp[i]):
             array_out[0] = np.nan
-        else:
-            array_out[0] = temp[0]
-    else:
-        if np.isnan(temp[0]):
-            array_out[0] = np.nan
-        else:
-            array_out[0] = (temp[1] + 3.0 * temp[0]) / 4.0
-    if np.isnan(temp[-2]):
-        if np.isnan(temp[-1]):
-            array_out[-1] = np.nan
-        else:
-            array_out[-2] = array_out[-2]
-    else:
-        if np.isnan(temp[-1]):
-            array_out[-1] = np.nan
-        else:
-            array_out[-1] = (temp[-2] + 3.0 * temp[-1]) / 4.0
+        elif i == 0 or np.isnan(temp[i-1]):
+            array_out[i] = (3*temp[i]+temp[i+1])/4
+        elif i == (len(temp)-1) or np.isnan(temp[i+1]):
+            array_out[i] = (3 * temp[i] + temp[i - 1]) / 4
 
     return array_out
 
@@ -435,7 +443,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
         # set time-mean power to NaN
         STCseg[:, indfreq0, :] = np.nan
         # apply 1-2-1 smoother in frequency
-        # smooth121(STCseg, freq)
+        smooth121(STCseg, freq)
         # sum segment spectra
         STC = STC + STCseg
 
