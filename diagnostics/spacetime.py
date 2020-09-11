@@ -314,28 +314,6 @@ def smooth121_1D(array_in):
     sma = np.convolve(temp, weights, 'valid')
     array_out[1:-1] = sma
 
-    # Now its time to correct the borders
-#    if np.isnan(temp[1]):
-#        if np.isnan(temp[0]):
-#            array_out[0] = np.nan
-#        else:
-#            array_out[0] = temp[0]
-#    else:
-#        if np.isnan(temp[0]):
-#            array_out[0] = np.nan
-#        else:
-#            array_out[0] = (temp[1] + 3.0 * temp[0]) / 4.0
-#    if np.isnan(temp[-2]):
-#        if np.isnan(temp[-1]):
-#            array_out[-1] = np.nan
-#        else:
-#            array_out[-2] = array_out[-2]
-#    else:
-#        if np.isnan(temp[-1]):
-#            array_out[-1] = np.nan
-#        else:
-#            array_out[-1] = (temp[-2] + 3.0 * temp[-1]) / 4.0
-
     for i in np.arange(0, len(temp), 1):
         if np.isnan(temp[i]):
             array_out[0] = np.nan
@@ -413,9 +391,9 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     # returns the Nyquist frequency once for even NT or NL and twice
     # if they are odd
     if segLen % 2 == 1:
-        nfreq = int(segLen/2)
+        nfreq = int((segLen+1)/2) + 1
     else:
-        nfreq = int(segLen/2) + 1
+        nfreq = int((segLen+1)/2) + 1
     if mlon % 2 == 1:
         nwave = mlon
     else:
