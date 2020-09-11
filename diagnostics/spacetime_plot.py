@@ -340,11 +340,13 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
     # text labels
     abc = list(string.ascii_lowercase)
 
+    print('opening workstation')
     # plot resources
     wkstype = "png"
     wks = ngl.open_wks(wkstype, plotpath + "SpaceTimePower_" + source + var1)
     plots = []
 
+    print('setting plot resources')
     # coherence2 plot resources
     res = coh_resources(cmin, cmax, cspc, FillMode, flim, nWavePlt)
     # phase arrow resources
@@ -374,12 +376,14 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
             coh2 = Pow[pp, :, :]
             Symmetry = symmetry[pp]
 
+        print('plotting data')
         res.tiMainString = source + "    log10( Power(" + var1 + "))           " + Symmetry
         plot = ngl.contour(wks, coh2, res)
 
         (matsuno_names, textlabels, textlocsX, textlocsY) = text_labels(Symmetry)
         nlabel = len(textlocsX)
 
+        print('generating matsuno dispersion curves ')
         # generate matsuno mode dispersion curves
         if Symmetry == "midlat":
             He = [3000, 7000, 10000]
@@ -388,6 +392,7 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
             He = [12, 25, 50]
             matsuno_modes = mp.matsuno_modes_wk(he=He, n=N, latitude=0., max_wn=nWavePlt, n_wn=500)
 
+        print('adding addine matsuno lines')
         # add polylines for dispersion curves
         for he in matsuno_modes:
             df = matsuno_modes[he]
@@ -406,10 +411,12 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
             ngl.add_text(wks, plot, textlabels[ll], textlocsX[ll], textlocsY[ll], txres)
             ll += 1
 
+        print('print append plot for panel')
         plots.append(plot)
         pp += 1
 
         # panel plots
+    print('paneling plots')
     ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], resP)
     del wks
     ngl.end()
