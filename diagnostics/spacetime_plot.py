@@ -367,7 +367,11 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
     # plot contours and phase arrows
     pp = 0
     while pp < nplot:
-        coh2 = Pow[pp, :, :]
+        if nplot == 1:
+            coh2 = Pow
+        else:
+            coh2 = Pow[pp, :, :]
+
         Symmetry = symmetry[pp]
 
         res.tiMainString = source + "    log10( Power(" + var1 + "))           " + Symmetry
