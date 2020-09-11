@@ -12,8 +12,7 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
-#import diagnostics.matsuno_plot as mp
-import matsuno_plot as mp
+import diagnostics.matsuno_plot as mp
 
 pi = np.pi
 re = 6.371008e6  # Earth's radius in meters
@@ -368,8 +367,12 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
     # plot contours and phase arrows
     pp = 0
     while pp < nplot:
-        coh2 = Pow[pp, :, :]
-        Symmetry = symmetry[pp]
+        if nplot == 1:
+            coh2 = Pow
+            Symmetry = symmetry
+        else:
+            coh2 = Pow[pp, :, :]
+            Symmetry = symmetry[pp]
 
         res.tiMainString = source + "    log10( Power(" + var1 + "))           " + Symmetry
         plot = ngl.contour(wks, coh2, res)
