@@ -413,6 +413,6 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
         # panel plots
     ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], resP)
     ngl.delete_wks(wks)
-    ngl.end()
+    #ngl.end()
 
     return
