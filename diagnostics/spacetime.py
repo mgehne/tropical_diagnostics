@@ -224,7 +224,7 @@ def get_symmasymm(X, lat, opt=False):
                 for ll in range(NM // 2):
                     x[:, ll, :] = 0.5 * (X[:, ll, :] + X[:, NM - ll - 1, :])
         else:
-            if opt == 'asymm':
+            if opt == 'asymm' or opt == 'anti-symm':
                 x = X[:, lat[:] > 0, :]
                 if len(lat) % 2 == 1:
                     for ll in range(NM // 2):
@@ -423,7 +423,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
         # set time-mean power to NaN
         STCseg[:, indfreq0, :] = np.nan
         # apply 1-2-1 smoother in frequency
-        smooth121(STCseg, freq)
+        # smooth121(STCseg, freq)
         # sum segment spectra
         STC = STC + STCseg
 
