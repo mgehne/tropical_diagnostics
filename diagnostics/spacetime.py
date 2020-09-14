@@ -151,9 +151,9 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
     PY = np.average(np.square(np.abs(Yfft)), axis=1)
 
     # compute co- and quadrature spectrum
-    PXY = np.average(np.conj(Xfft) * Yfft, axis=1)
-    CXY = np.real(PXY)
-    QXY = np.imag(PXY)
+    PXY = np.conj(Xfft) * Yfft
+    CXY = np.average(np.real(PXY), axis=1)
+    QXY = np.average(np.imag(PXY), axis=1)
 
     PX = PX[:, ::-1]
     PY = PY[:, ::-1]
@@ -423,7 +423,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
         # set time-mean power to NaN
         STCseg[:, indfreq0, :] = np.nan
         # apply 1-2-1 smoother in frequency
-        # smooth121(STCseg, freq)
+        smooth121(STCseg, freq)
         # sum segment spectra
         STC = STC + STCseg
 
