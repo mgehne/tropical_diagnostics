@@ -7,6 +7,31 @@ import numpy as np
 import plotly.graph_objects as go
 from kaleido.scopes.plotly import PlotlyScope
 
+def get_latstring(lats, latn):
+    """
+    Generate string describing the latitude band averaged over.
+    :param lats: southern latitude limit of the average
+    :type lats: float
+    :param latn: northern latitude limit of the average
+    :type latn: float
+    :return: latstr
+    :rtype: str
+    """
+    if lats < 0:
+        hems = 'S'
+        lats = -lats
+    else:
+        hems = 'N'
+    if latn < 0:
+        hemn = 'S'
+        latn = -latn
+    else:
+        hemn = 'N'
+
+    latstr = str(lats) + hems + " - " + str(latn) + hemn
+
+    return latstr
+
 
 def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats, latn):
     """
