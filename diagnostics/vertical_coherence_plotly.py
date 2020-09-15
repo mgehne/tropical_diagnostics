@@ -69,10 +69,10 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
                              mode='lines',
                              name=labels[ll]))
 
-    fig.update_layout(title=titlestr+' '+latstring, yaxis=list(autorange="reversed"))
+    fig.update_layout(title=titlestr+' '+latstring)
 
     fig.update_xaxes(ticks="", tick0=0, dtick=0.1, title_text='coh^2')
-    fig.update_yaxes(ticks="", tick0=0, dtick=50, title_text='hPa')
+    fig.update_yaxes(ticks="", tick0=0, dtick=50, title_text='hPa', autorange="reversed")
 
     with open(plotname, "wb") as f:
         f.write(scope.transform(fig, format=plttype))
