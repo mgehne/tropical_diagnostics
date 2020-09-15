@@ -198,7 +198,7 @@ def mjo_cross_segment_realfft(XX, YY, opt=False):
             STC[1, :NT, 1:NL + 1] = PY
             STC[2, :NT, 1:NL + 1] = CXY
             STC[3, :NT, 1:NL + 1] = QXY
-            STC[0, NT, :] = STC[0, 0, :]
+            STC[:, NT, :] = STC[:, 0, :]
             STC[:, :, 0] = STC[:, :, NL]
 
     return STC
@@ -310,9 +310,9 @@ def smooth121_1D(array_in):
 
     temp = np.copy(array_in)
     array_out = np.copy(temp) * 0.0
-    weights = np.array([1.0, 2.0, 1.0]) / 4.0
-    sma = np.convolve(temp, weights, 'valid')
-    array_out[1:-1] = sma
+    #weights = np.array([1.0, 2.0, 1.0]) / 4.0
+    #sma = np.convolve(temp, weights, 'valid')
+    #array_out[1:-1] = sma
 
     for i in np.arange(0, len(temp), 1):
         if np.isnan(temp[i]):
