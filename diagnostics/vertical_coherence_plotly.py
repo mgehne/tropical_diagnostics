@@ -65,8 +65,8 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
     # plot
     nlines = len(labels)
     colors = ['firebrick', 'black', 'orange', 'dodgerblue', 'seagreen']
+
     scope = PlotlyScope()
-    # fig = go.Figure()
     fig = make_subplots(rows=1, cols=2, shared_yaxes=True, horizontal_spacing=0.04)
 
     for ll in np.arange(0, nlines):
