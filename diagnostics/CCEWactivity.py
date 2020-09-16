@@ -244,12 +244,15 @@ def plot_activity(act, wavename, labels, plotpath, fchr=[]):
 
     timestr = get_timestr(act['time'])
 
+    colors = ['black', 'dodgerblue', 'orange', 'seagreen', 'firebrick']
+
     scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(nlines):
         fig.add_trace(go.Scatter(x=timestr, y=act[ll, :].values,
                                 mode='lines',
-                                name=labels[ll]))
+                                name=labels[ll],
+                                line=dict(color=colors[ll], width=2)))
 
     fig.update_layout(
         title=wavename + " FH" + f"{fchr:03d}",
@@ -278,12 +281,15 @@ def plot_skill(skill, wavename, labels, plotpath):
 
     nfchr, nlines = skill.shape
 
+    colors = ['dodgerblue', 'orange', 'seagreen', 'firebrick']
+
     scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(nlines):
         fig.add_trace(go.Scatter(x=skill['fchrs'], y=skill[:, ll],
                                 mode='lines',
-                                name=labels[ll]))
+                                name=labels[ll],
+                                line=dict(color=colors[ll], width=2)))
 
     fig.update_layout(
         title=wavename + " skill",
