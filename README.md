@@ -30,7 +30,9 @@ to plot the activity and the skill compared to observations.
 These functions compute the coherence between two data sets at multiple vertical levels. The assumption is that
 the first data set is filtered precipitation (filtered for a CCEW or the MJO) and the second data set is a multi-
 level dynamical field, either from reanalysis or model output.
-Still needs plotting capabilities to be added.
+Once coherence between all variables and filtered precipitation has been computed and saved the plotting routines
+to plot vertical profiles of coherence and phase angles can be used. The plotting is done using plotly and the kaleido
+engine.
 
 ## utils
 Contains functions and modules shared by multiple diagnostics. That includes reading data, saving netcdf
