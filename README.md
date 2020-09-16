@@ -66,9 +66,8 @@ Activate the conda environment:
 
 Change directory to top level package directory tropical_diagnostics and install package using pip.
 
-`cd tropical_diangostics/`
+`cd tropical_diagnostics/`
 `pip install./`
 
-To run scripts from the examples directory copy the script into the directory above tropical_diangostics
-and run from there. This will likely change in the future and become more user friendly.
-
+To run scripts from the examples directory copy the script into a directory where you would like to run. Make
+sure to activate the conda environment with `conda activate MyEnv`. Adjust all path and filenames if necessary.
