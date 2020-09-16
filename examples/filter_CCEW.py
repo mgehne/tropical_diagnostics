@@ -9,7 +9,7 @@ This can be very slow if the data is high spatial and temporal resolution.
 """
 import numpy as np
 import xarray as xr
-from tropical_diagnostics.diagnostics import spacetime as st
+from diagnostics import spacetime as st
 import time as systime
 import sys
 

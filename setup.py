@@ -8,5 +8,5 @@ setup(name='tropical_diagnostics',
       packages=['diagnostics',
                 'utils'],
       package_data={'diagnostics': ['../data']}, install_requires=['netCDF4', 'numpy', 'xarray', 'scipy',
-                                                                   'pandas', 'plotly']
+                                                                   'pandas', 'plotly', 'kaleido']
       )

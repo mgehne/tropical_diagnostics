@@ -12,7 +12,7 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
-import tropical_diagnostics.utils.matsuno_plot as mp
+import diagnostics.matsuno_plot as mp
 
 pi = np.pi
 re = 6.371008e6  # Earth's radius in meters
@@ -22,7 +22,7 @@ deg2rad = pi / 180  # Degrees to Radians
 sec2day = 1. / (24. * 60. * 60.)  # Seconds to Days
 
 """
-The following utilities include a background flow for mid-latitude Rossby wave dispersion
+The following utilities include a zonal background flow for mid-latitude Rossby wave dispersion
 curves.
 Created by: Maria Gehne
 2019
@@ -328,6 +328,7 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
         # panel plots
     #ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], res_p)
     ngl.panel(wks, plots, [3, nplot // 3], res_p)
+    ngl.delete_wks(wks)
     ngl.end()
 
     return
@@ -367,8 +368,12 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
     # plot contours and phase arrows
     pp = 0
     while pp < nplot:
-        coh2 = Pow[pp, :, :]
-        Symmetry = symmetry[pp]
+        if nplot == 1:
+            coh2 = Pow
+            Symmetry = symmetry
+        else:
+            coh2 = Pow[pp, :, :]
+            Symmetry = symmetry[pp]
 
         res.tiMainString = source + "    log10( Power(" + var1 + "))           " + Symmetry
         plot = ngl.contour(wks, coh2, res)
@@ -407,7 +412,7 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
 
         # panel plots
     ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], resP)
-
-    ngl.end()
+    ngl.delete_wks(wks)
+    #ngl.end()
 
     return
