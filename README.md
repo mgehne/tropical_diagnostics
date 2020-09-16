@@ -32,7 +32,8 @@ the first data set is filtered precipitation (filtered for a CCEW or the MJO) an
 level dynamical field, either from reanalysis or model output.
 Once coherence between all variables and filtered precipitation has been computed and saved the plotting routines
 to plot vertical profiles of coherence and phase angles can be used. The plotting is done using plotly and the kaleido
-engine.
+engine. Example scripts are provided for both the computational (vertical_coherence.py) and plotting
+(vertical_coherence_plot.py) part.
 
 ## utils
 Contains functions and modules shared by multiple diagnostics. That includes reading data, saving netcdf
