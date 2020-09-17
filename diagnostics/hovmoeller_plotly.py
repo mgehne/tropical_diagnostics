@@ -285,12 +285,15 @@ def plot_pattcorr(PC, labels, plotpath, lats, latn):
     plotname = plotpath + "PatternCorrelationHovmoeller." + plttype
     nlines = len(labels)
 
+    colors = ['black', 'dodgerblue', 'orange', 'seagreen', 'firebrick']
+
     scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(0,nlines):
         fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, ll],
                              mode='lines',
-                             name=labels[ll]))
+                             name=labels[ll],
+                             line=dict(color=colors[ll], width=2)))
 
     fig.update_layout(title=latstring)
 
