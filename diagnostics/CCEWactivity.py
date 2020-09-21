@@ -247,7 +247,7 @@ def plot_activity(act, wavename, labels, plotpath, fchr=[]):
     timestr = get_timestr(act['time'])
 
     colors = ['black', 'dodgerblue', 'orange', 'seagreen', 'firebrick']
-
+  
     scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(nlines):
