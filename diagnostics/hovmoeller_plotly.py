@@ -286,7 +286,7 @@ def plot_pattcorr(PC, labels, plotpath, lats, latn):
     nlines = len(labels)
 
     colors = ['black', 'dodgerblue', 'orange', 'seagreen', 'firebrick']
-
+  
     scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(0,nlines):
@@ -294,6 +294,7 @@ def plot_pattcorr(PC, labels, plotpath, lats, latn):
                              mode='lines',
                              name=labels[ll],
                              line=dict(color=colors[ll], width=2)))
+
 
     fig.update_layout(title=latstring)
 
