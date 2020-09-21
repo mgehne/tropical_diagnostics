@@ -80,6 +80,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
     ds = xr.open_dataset(filename)
     nlat = len(ds.lat)
     nlon = len(ds.lon)
+    ds.close()
     month = np.arange(12) + 1
     nmon = 12
     ntim = len(data['time'])
@@ -96,6 +97,7 @@ def waveact(data: object, wave: str, eofpath: str, spd: int, res: str, nlat: int
         eofseas = xr.DataArray(0., coords=[annual, eofnum, ds.lat, ds.lon], dims=['annual', 'eofnum', 'lat', 'lon'])
         ds = xr.open_dataset(eofpath + eofname + 'annual.nc')
         eofseas[0, :, :, :] = ds.eof
+        ds.close()
 
     # remove mean annual cycle
     print("remove annual cycle")
@@ -244,12 +246,15 @@ def plot_activity(act, wavename, labels, plotpath, fchr=[]):
 
     timestr = get_timestr(act['time'])
 
+    colors = ['black', 'dodgerblue', 'orange', 'seagreen', 'firebrick']
+  
     scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(nlines):
         fig.add_trace(go.Scatter(x=timestr, y=act[ll, :].values,
                                 mode='lines',
-                                name=labels[ll]))
+                                name=labels[ll],
+                                line=dict(color=colors[ll], width=2)))
 
     fig.update_layout(
         title=wavename + " FH" + f"{fchr:03d}",
@@ -278,12 +283,15 @@ def plot_skill(skill, wavename, labels, plotpath):
 
     nfchr, nlines = skill.shape
 
+    colors = ['dodgerblue', 'orange', 'seagreen', 'firebrick']
+
     scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(nlines):
         fig.add_trace(go.Scatter(x=skill['fchrs'], y=skill[:, ll],
                                 mode='lines',
-                                name=labels[ll]))
+                                name=labels[ll],
+                                line=dict(color=colors[ll], width=2)))
 
     fig.update_layout(
         title=wavename + " skill",
