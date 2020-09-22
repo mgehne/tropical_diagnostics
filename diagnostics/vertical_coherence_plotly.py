@@ -66,6 +66,7 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
     # plot
     nlines = len(labels)
     colors = ['firebrick', 'black', 'orange', 'dodgerblue', 'seagreen']
+    symbols = ['circle', 'square', 'diamond', 'x', 'triangle-up']
 
     scope = PlotlyScope()
     fig = make_subplots(rows=1, cols=2, shared_yaxes=True, horizontal_spacing=0.04)
@@ -79,7 +80,8 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
         fig.add_trace(go.Scatter(x=angle[ll, :], y=levels,
                                  mode='markers',
                                  showlegend=False,
-                                 marker=dict(color=colors[ll], size=12)),
+                                 marker=dict(color=colors[ll], size=8,
+                                             marker_symbol=symbols[ll])),
                       row=1, col=2)
 
     fig.add_annotation(
