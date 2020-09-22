@@ -35,10 +35,6 @@ to plot vertical profiles of coherence and phase angles can be used. The plottin
 engine. Example scripts are provided for both the computational (**vertical_coherence.py**) and plotting
 (**vertical_coherence_plot.py**) part.
 
-## utils
-Contains functions and modules shared by multiple diagnostics. That includes reading data, saving netcdf
-files and AJM source code.
-
 ## examples
 Scripts containing example use cases. These scripts read in data, compute diagnostics and plot the results.
 This is a good place to start when first using the diagnostics.
