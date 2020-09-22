@@ -34,7 +34,7 @@ def get_latstring(lats, latn):
     return latstr
 
 
-def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats, latn, xlim=0.5):
+def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats, latn, xlim=[0, 0.5]):
     """
     Plot averaged coherence and phase values by level.
     :param coh: Averaged coherence values. nvar x nlevels
@@ -107,7 +107,7 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
                       legend=dict(yanchor="bottom", y=0.01, xanchor="right", x=0.48)
                       )
 
-    fig.update_xaxes(title_text='coh^2', range=[0, xlim], row=1, col=1)
+    fig.update_xaxes(title_text='coh^2', range=[xlim[0], xlim[1]], row=1, col=1)
     fig.update_xaxes(title_text='phase angle', range=[-180, 180], dtick=90, row=1, col=2)
     fig.update_yaxes(range=[100, 1000], dtick=100, title_text='hPa', autorange="reversed", row=1, col=1)
     fig.update_yaxes(range=[100, 1000], dtick=100, autorange="reversed", row=1, col=2)
