@@ -30,12 +30,13 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     full cross-spectra at all levels
     """
     symmetries = ['symm', 'asymm']
+    lat = data2['lat']
     # compute coherence - loop through levels
     for ll in np.arange(0, len(levels), 1):
         print('processing level = '+str(levels[ll]))
         for symm in symmetries:
-            y = st.get_symmasymm(data2[:, ll, :, :], data2['lat'], symm)
-            x = st.get_symmasymm(data1, data1['lat'], symm)
+            y = st.get_symmasymm(data2[:, ll, :, :], lat, symm)
+            x = st.get_symmasymm(data1, lat, symm)
             # compute coherence
             result = st.mjo_cross(x, y, nDayWin, nDaySkip)
             tmp = result['STC']  # , freq, wave, number_of_segments, dof, prob, prob_coh2
