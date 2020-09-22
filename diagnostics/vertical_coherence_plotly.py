@@ -104,7 +104,7 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
     )
 
     fig.update_layout(title=titlestr + ' ' + latstring, width=900, height=600,
-                      legend=dict(yanchor="bottom", y=0.01, xanchor="right", x=0.48)
+                      legend=dict(yanchor="bottom", y=0.01, xanchor="left", x=0.01)
                       )
 
     fig.update_xaxes(title_text='coh^2', range=[xlim[0], xlim[1]], row=1, col=1)
