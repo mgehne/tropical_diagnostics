@@ -81,7 +81,7 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
                                  mode='markers',
                                  showlegend=False,
                                  marker=dict(color=colors[ll], size=8,
-                                             marker_symbol=symbols[ll])),
+                                             symbol=symbols[ll])),
                       row=1, col=2)
 
     fig.add_annotation(
