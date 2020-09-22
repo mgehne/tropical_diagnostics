@@ -77,9 +77,9 @@ def plot_vertcoh(coh, px, py, levels, labels, titlestr, plotname, plotpath, lats
                                  line=dict(color=colors[ll], width=2)),
                       row=1, col=1)
         fig.add_trace(go.Scatter(x=angle[ll, :], y=levels,
-                                 mode='lines',
+                                 mode='markers',
                                  showlegend=False,
-                                 line=dict(color=colors[ll], width=2)),
+                                 marker=dict(color=colors[ll], size=12)),
                       row=1, col=2)
 
     fig.add_annotation(
