@@ -83,11 +83,13 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
 
 def coher_sig_dist(Coher, siglevel):
     """
-    Compute the significant coherence level based on the distribution of coherence.
-    Sorts the coherence values by size and picks the value corresponding to the siglevel
-    percentile. E.g. for a siglevel or 0.95 it picks the value of coherence larger than
-    95% of all the input values.
-    :param Coher: numpy array containing all coherence values
+    Compute the significant coherence level based on the distribution of coherence2.
+    Sorts the coherence2 values by size and picks the value corresponding to the siglevel
+    percentile. E.g. for a siglevel or 0.95 it picks the value of coherence2 larger than
+    95% of all the input values. Based on testing this is a stronger requirement (i.e.
+    gives larger coh2 values) than estimating the background coherence2 by running one
+    time series backwards and adding values of coh2 for 2 random normal time series.
+    :param Coher: numpy array containing all coherence2 values
     :return: sigval
     """
     # make a 1d array
