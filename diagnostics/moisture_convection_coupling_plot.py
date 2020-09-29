@@ -5,17 +5,7 @@ Code contributed by Brandon Wolding.
 
 import numpy as np
 import xarray as xr
-import pandas as pd
-from metpy.units import units
-import metpy.constants as mpconst
-import metpy.calc as mpcalc
-import cf_units as cf
-from glob import glob
-import gc
-import hvplot.xarray
 import holoviews as hv
-import cartopy.crs as ccrs
-import geoviews as gv
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 hv.extension('bokeh')
