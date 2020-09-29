@@ -5,17 +5,6 @@ Contributed by Brandon Wolding.
 """
 import numpy as np
 import xarray as xr
-import pandas as pd
-from metpy.units import units
-import metpy.constants as mpconst
-import metpy.calc as mpcalc
-import cf_units as cf
-
-
-# ### Calculate the true pressure for model interfaces and midpoints
-#
-# In[2]:
-
 
 def calculate_true_pressure_model_pressure_midpoints_interfaces(hyam, hybm, hyai, hybi, P0, PS):
     """
