@@ -111,8 +111,9 @@ for year in range(start_year, end_year + 1):
     #landfrac.coords['lon'] = full_lon.coords['lon']
 
     #landfrac = landfrac.transpose()
-    landfrac = landfrac.sel(lat=slice(15, -15))
     landfrac = landfrac.sortby('lat', ascending=True)
+    landfrac = landfrac.sel(lat=slice(-15, 15))
+
 
     # Clean up environment #
     gc.collect()
@@ -146,6 +147,9 @@ for year in range(start_year, end_year + 1):
 
     # Create ocean mask #
     is_valid_ocean_mask = (landfrac < 0.1)
+
+    print(is_valid_ocean_mask.shape)
+    print(PS.shape)
 
     # Apply ocean mask to appropriate variables, setting invalid locations to nan #
     PS = PS.where(is_valid_ocean_mask, other=np.nan)
