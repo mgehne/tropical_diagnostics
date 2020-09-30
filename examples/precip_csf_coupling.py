@@ -127,12 +127,7 @@ for year in range(start_year, end_year + 1):
     ###############################################
 
     print('Applying Land/Ocean Mask')
-
-    # Create ocean mask #
     is_valid_ocean_mask = (landfrac < 0.1)
-
-    print(is_valid_ocean_mask.shape)
-    print(PS.shape)
 
     # Apply ocean mask to appropriate variables, setting invalid locations to nan #
     PS = PS.where(is_valid_ocean_mask, other=np.nan)
