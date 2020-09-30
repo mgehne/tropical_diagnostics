@@ -183,10 +183,10 @@ for simulation_number in [0]:  # range(len(fname_datasets)):
     # list_of_files = glob(fname_datasets[simulation_number] + '*' + 'CSF_precipitation_binned_data' + '*')
 
     list_of_files = fname_datasets[simulation_number] + '_CSF_binned_precipitation_rate' + '_2015.nc'
-    csf_binned_precipitation_rate_dataset = process_multiyear_binned_single_variable_dataset(list_of_files)
+    csf_binned_precipitation_rate_dataset = mcc.process_binned_single_variable_dataset(list_of_files)
 
     list_of_files = fname_datasets[simulation_number] + '_CSF_precipitation_binned_data' + '_2015.nc'
-    binned_CSF_precipitation_dataset = process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files)
+    binned_CSF_precipitation_dataset = mcc.process_binned_csf_precipitation_rate_dataset(list_of_files)
 
     #  Plotting CSF Binned Precipitation Rate Figures
     save_fig_boolean = True
@@ -216,7 +216,7 @@ for simulation_number in [0]:  # range(len(fname_datasets)):
         #                      'CSF_precipitation_binned_data' + '*')
         list_of_files = fname_datasets[verification_simulation_number] + '_CSF_precipitation_binned_data' + '_2015.nc'
         binned_CSF_precipitation_dataset_verificaton = \
-            mccp.process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files)
+            mcc.process_binned_csf_precipitation_rate_dataset(list_of_files)
 
         mccp.plot_CSF_precipitation_rate_difference_composites(binned_CSF_precipitation_dataset_verificaton,
                                                                binned_CSF_precipitation_dataset, min_number_of_obs,
