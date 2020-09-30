@@ -37,8 +37,8 @@ fname_datasets = [odir_datasets_string_list[i] +
 
 #############
 
-print('input file = ' + input_file_string_list_precipitation_rate)
-print('output dataset file = ' + fname_datasets)
+print('input file = ' + input_file_string_list_precipitation_rate[0])
+print('output dataset file = ' + fname_datasets[0])
 
 #########################################
 # Define paths of files we wish to load #
@@ -67,10 +67,10 @@ for year in range(start_year, end_year + 1):
     ##########################
 
     # Data is "lazy loaded", nothing is actually loaded until we "look" at data in some way #
-    dataset_specific_humidity = xr.open_dataset(input_file_string_list_specific_humidity)
-    dataset_temperature = xr.open_dataset(input_file_string_list_temperature)
-    dataset_surface_pressure = xr.open_dataset(input_file_string_list_surface_pressure)
-    dataset_land = xr.open_dataset(input_file_string_list_land_frac)
+    dataset_specific_humidity = xr.open_dataset(input_file_string_list_specific_humidity[0])
+    dataset_temperature = xr.open_dataset(input_file_string_list_temperature[0])
+    dataset_surface_pressure = xr.open_dataset(input_file_string_list_surface_pressure[0])
+    dataset_land = xr.open_dataset(input_file_string_list_land_frac[0])
 
     # Make data arrays, loading only the year of interest #
     full_lat = dataset_surface_pressure['lat']
@@ -121,7 +121,7 @@ for year in range(start_year, end_year + 1):
     ####  Load Precipitation Data  ####
     ##########################
 
-    dataset_precipitation_rate = xr.open_dataset(input_file_string_list_precipitation_rate)
+    dataset_precipitation_rate = xr.open_dataset(input_file_string_list_precipitation_rate[0])
 
     precipitation_rate = dataset_precipitation_rate['precip'].sel(
         time=slice(current_year_string + '-12-01', next_year_string + '-03-31'), lat=slice(-15, 15)) * (
@@ -235,6 +235,6 @@ for year in range(start_year, end_year + 1):
     ####  Calculate CSF Precipitation Rate Composites  ####
     #######################################################
 
-    mcc.calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets)
+    mcc.calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets[0])
 
 
