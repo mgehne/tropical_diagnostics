@@ -409,8 +409,9 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     output_dataset = xr.merge([bin_number_of_samples, bin_mean_csf])
 
     # Add desired attributes #
-    output_dataset.attrs[
-        'Comments'] = 'Binning variables 1 (BV1) is precipitation rate in [mm day^-1], Bin mean variable is column saturation fraction [Kg Kg^-1]'
+    output_dataset.attrs['Comments'] = \
+        'Binning variables 1 (BV1) is precipitation rate in [mm day^-1], Bin mean variable is ' \
+        'column saturation fraction [Kg Kg^-1]'
 
     # Output dataset to NetCDF #
     output_dataset.to_netcdf(
