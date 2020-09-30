@@ -40,13 +40,15 @@ def calculate_true_pressure_model_pressure_midpoints_interfaces_ml(hyam, hybm, h
 def calculate_true_pressure_model_pressure_midpoints_interfaces_pl(true_pressure_midpoint, time, level, lat, lon, PS):
     """
     Compute true model pressure interfaces and midpoints for each level. Use this for data on pressure levels.
+    Set upper most interface equal to uppermost level midpoint, and lowest interface equal to surface pressure.
+    This will still permit the desired vertical integral, just choose appropriate upper and lower integration limits
     :param true_pressure_midpoint:
     :param time: time coordinate
-    :param level:
-    :param lat:
-    :param lon:
-    :param PS:
-    :return:
+    :param level: level coordinate
+    :param lat: latitude coordinate
+    :param lon: longitiude coordinate
+    :param PS: actual surface pressure
+    :return true_pressure_midpoint, true_pressure_interface:
     """
 # Set upper most interface equal to uppermost level midpoint, and lowest interface equal to surface pressure.
     # This will still permit the desired vertical integral, just choose appropriate upper and lower integration limits
@@ -374,8 +376,9 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate])
 
     # Add desired attributes #
-    output_dataset.attrs[
-        'Comments'] = 'Binning variables 1 (BV1) is column saturation fraction [Kg Kg^-1], Bin mean variable is precipitation rate in [mm day^-1]'
+    output_dataset.attrs['Comments'] = \
+        'Binning variables 1 (BV1) is column saturation fraction [Kg Kg^-1], Bin mean variable is ' \
+        'precipitation rate in [mm day^-1]'
 
     # Output dataset to NetCDF #
     output_dataset.to_netcdf(
@@ -408,8 +411,9 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     output_dataset = xr.merge([bin_number_of_samples, bin_mean_csf])
 
     # Add desired attributes #
-    output_dataset.attrs[
-        'Comments'] = 'Binning variables 1 (BV1) is precipitation rate in [mm day^-1], Bin mean variable is column saturation fraction [Kg Kg^-1]'
+    output_dataset.attrs['Comments'] = \
+        'Binning variables 1 (BV1) is precipitation rate in [mm day^-1], Bin mean variable is ' \
+        'column saturation fraction [Kg Kg^-1]'
 
     # Output dataset to NetCDF #
     output_dataset.to_netcdf(
@@ -523,8 +527,9 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
          bin_number_pos_delta_precipitation_rate_centered])
 
     # Add desired attributes #
-    output_dataset.attrs[
-        'Comments'] = 'Binning variables 1 (BV1) is column saturation fraction [Kg Kg^-1], binning variables 2 (BV2) is precipitation rate [mm day^-1]'
+    output_dataset.attrs['Comments'] = \
+        'Binning variable 1 (BV1) is column saturation fraction [Kg Kg^-1], binning variable 2 (BV2) ' \
+        'is precipitation rate [mm day^-1]'
 
     # Output dataset to NetCDF #
     output_dataset.to_netcdf(
