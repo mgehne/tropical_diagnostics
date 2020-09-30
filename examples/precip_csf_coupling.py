@@ -37,8 +37,8 @@ fname_datasets = [odir_datasets_string_list[i] +
 
 #############
 
-print('input file = ' + input_file_string_list_precipitation_rate[simulation_number])
-print('output dataset file = ' + fname_datasets[simulation_number])
+print('input file = ' + input_file_string_list_precipitation_rate)
+print('output dataset file = ' + fname_datasets)
 
 #########################################
 # Define paths of files we wish to load #
@@ -67,7 +67,6 @@ for year in range(start_year, end_year + 1):
     ##########################
 
     # Data is "lazy loaded", nothing is actually loaded until we "look" at data in some way #
-
     dataset_specific_humidity = xr.open_dataset(input_file_string_list_specific_humidity)
     dataset_temperature = xr.open_dataset(input_file_string_list_temperature)
     dataset_surface_pressure = xr.open_dataset(input_file_string_list_surface_pressure)
