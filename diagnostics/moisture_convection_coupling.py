@@ -525,8 +525,9 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
          bin_number_pos_delta_precipitation_rate_centered])
 
     # Add desired attributes #
-    output_dataset.attrs[
-        'Comments'] = 'Binning variables 1 (BV1) is column saturation fraction [Kg Kg^-1], binning variables 2 (BV2) is precipitation rate [mm day^-1]'
+    output_dataset.attrs['Comments'] = \
+        'Binning variable 1 (BV1) is column saturation fraction [Kg Kg^-1], binning variable 2 (BV2) ' \
+        'is precipitation rate [mm day^-1]'
 
     # Output dataset to NetCDF #
     output_dataset.to_netcdf(
