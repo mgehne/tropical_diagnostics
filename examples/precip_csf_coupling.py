@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 from diagnostics import moisture_convection_coupling as mcc
+from diagnostics import moisture_convection_coupling_plot as mccp
 import gc
 
 # Years to analyze
@@ -22,10 +23,8 @@ input_file_string_list_temperature = \
     ['/data/mgehne/ERAI/MetricsObs/CSF/temp.erai.an.pl.1p0.daily.201512-201603.nc']  # Temperature
 input_file_string_list_surface_pressure = \
     ['/data/mgehne/ERAI/MetricsObs/CSF/surface_pres.erai.an.sfc.1p0.daily.201512-201603.nc']  # Surface Pressure
-
 # Land
 input_file_string_list_land_frac = ['/data/mgehne/ERAI/MetricsObs/CSF/land_sea_mask.erai.1p0.nc']  # Land Fraction
-
 
 # Output directory
 odir_datasets_string_list = ['/data/mgehne/CSF_precipitation_analysis/']  # TRMM and ERAi
@@ -35,6 +34,13 @@ ofile_datasets_string_list = ['TRMM_ERAi_1p0_1x'] # TRMM and ERAi
 fname_datasets = [odir_datasets_string_list[i] +
                   ofile_datasets_string_list[i] for i in range(len(odir_datasets_string_list))]
 
+# output directory for figures
+odir_figures_string_list = ['/data/mgehne/CSF_precipitation_analysis/Plots/']  # TRMM and ERAi
+# Output file name for figures
+ofile_figures_string_list = ofile_datasets_string_list
+# Define output string for figures
+fname_figures = [odir_figures_string_list[i] + ofile_figures_string_list[i] for i in
+                 range(len(odir_figures_string_list))]
 
 
 print('input file = ' + input_file_string_list_precipitation_rate[0])
@@ -164,3 +170,54 @@ for year in range(start_year, end_year + 1):
 #######################################################
 ####  Plot composites ####
 #######################################################
+# which experiment or model run are we using as verification
+verification_simulation_number = 0
+# minimum number of obs per bin to include bin in plotting
+min_number_of_obs = 200
+
+for simulation_number in [0]:  # range(len(fname_datasets)):
+
+    # Load saved variables
+    # using lists of files to load requires dask
+    # list_of_files = glob(fname_datasets[simulation_number] + '*' + 'CSF_binned_precipitation_rate' + '*')
+    # list_of_files = glob(fname_datasets[simulation_number] + '*' + 'CSF_precipitation_binned_data' + '*')
+
+    list_of_files = fname_datasets[simulation_number] + '_CSF_binned_precipitation_rate' + '_2015.nc'
+    csf_binned_precipitation_rate_dataset = process_multiyear_binned_single_variable_dataset(list_of_files)
+
+    list_of_files = fname_datasets[simulation_number] + '_CSF_precipitation_binned_data' + '_2015.nc'
+    binned_CSF_precipitation_dataset = process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files)
+
+    #  Plotting CSF Binned Precipitation Rate Figures
+    save_fig_boolean = True
+    figure_path_and_name = fname_figures[simulation_number] + '_CSF_binned_precipitation_rate.png'
+    print(figure_path_and_name)
+    mccp.plot_csf_binned_precipitation_rate(csf_binned_precipitation_rate_dataset, min_number_of_obs, save_fig_boolean,
+                                            figure_path_and_name)
+
+    #  Plotting Coevolution Figures
+    save_fig_boolean = True
+    figure_path_and_name = fname_figures[simulation_number] + '_center_diff_CSF_precipitation_coevolution.png'
+    print(figure_path_and_name)
+    mccp.plot_CSF_precipitation_rate_composites(binned_CSF_precipitation_dataset, min_number_of_obs, save_fig_boolean,
+                                                figure_path_and_name)
+
+    if simulation_number != verification_simulation_number:
+        save_fig_boolean = True
+        # Load verification dataset
+        difference_figure_path_and_name = odir_figures_string_list[simulation_number] + \
+                                          ofile_figures_string_list[simulation_number] + '_minus_' + \
+                                          ofile_figures_string_list[verification_simulation_number] + \
+                                          '_center_diff_CSF_precipitation_coevolution.png'
+        print(difference_figure_path_and_name)
+
+        # loading a list of files requires dask
+        # list_of_files = glob(fname_datasets[verification_simulation_number] + '*' +
+        #                      'CSF_precipitation_binned_data' + '*')
+        list_of_files = fname_datasets[verification_simulation_number] + '_CSF_precipitation_binned_data' + '_2015.nc'
+        binned_CSF_precipitation_dataset_verificaton = \
+            mccp.process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files)
+
+        mccp.plot_CSF_precipitation_rate_difference_composites(binned_CSF_precipitation_dataset_verificaton,
+                                                               binned_CSF_precipitation_dataset, min_number_of_obs,
+                                                               save_fig_boolean, difference_figure_path_and_name)
