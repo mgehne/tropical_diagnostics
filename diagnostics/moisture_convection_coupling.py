@@ -7,7 +7,7 @@ import numpy as np
 import xarray as xr
 
 
-def calculate_true_pressure_model_pressure_midpoints_interfaces(hyam, hybm, hyai, hybi, P0, PS):
+def calculate_true_pressure_model_pressure_midpoints_interfaces_ml(hyam, hybm, hyai, hybi, P0, PS):
     """
     Notes from Jim Benedict:
     To compute a pressure array, use the formula:
@@ -34,6 +34,51 @@ def calculate_true_pressure_model_pressure_midpoints_interfaces(hyam, hybm, hyai
 
     true_pressure_midpoint.attrs['units'] = 'Pa'
     true_pressure_interface.attrs['units'] = 'Pa'
+
+    return true_pressure_midpoint, true_pressure_interface
+
+def calculate_true_pressure_model_pressure_midpoints_interfaces_pl(true_pressure_midpoint, time, level, lat, lon, PS):
+    """
+    Compute true model pressure interfaces and midpoints for each level. Use this for data on pressure levels.
+    :param true_pressure_midpoint:
+    :param time: time coordinate
+    :param level:
+    :param lat:
+    :param lon:
+    :param PS:
+    :return:
+    """
+# Set upper most interface equal to uppermost level midpoint, and lowest interface equal to surface pressure.
+    # This will still permit the desired vertical integral, just choose appropriate upper and lower integration limits
+
+    # Model level midpoint
+    #true_pressure_midpoint = Q['level'] * 100.  # To convert to Pa
+    true_pressure_midpoint = true_pressure_midpoint.rename('true_pressure_midpoint_Pa')
+    true_pressure_midpoint = true_pressure_midpoint.expand_dims({'lat': lat, 'lon': lon, 'time': time})
+    true_pressure_midpoint = true_pressure_midpoint.transpose('time', 'level', 'lat', 'lon')
+
+    # Model level interfaces
+    true_pressure_interface = np.empty((len(time), len(lat), len(lon), len(level) + 1))
+
+    for interface_level_counter in range(len(level) + 1):
+        if interface_level_counter == 0:
+            # Set upper most interface equal to uppermost level midpoint
+            true_pressure_interface[:, :, :, interface_level_counter] = level.isel(level=0).values
+        elif interface_level_counter == (len(level)):
+            # Set lowest interface equal to surface pressure
+            true_pressure_interface[:, :, :, interface_level_counter] = PS
+        else:
+            # Set middle interfaces equal to half way points between level midpoints
+            true_pressure_interface[:, :, :, interface_level_counter] = \
+                (level.isel(level=interface_level_counter - 1).values +
+                 level.isel(level=interface_level_counter).values) / 2.
+
+    coords = {'time': time, 'lat': lat, 'lon': lon, 'ilev': np.arange(1, len(level) + 2)}
+    dims = ['time', 'lat', 'lon', 'ilev']
+    true_pressure_interface = xr.DataArray(true_pressure_interface, dims=dims, coords=coords) * 100.  # To convert to Pa
+    true_pressure_interface.attrs['units'] = 'Pa'
+
+    true_pressure_interface = true_pressure_interface.transpose('time', 'ilev', 'lat', 'lon')
 
     return true_pressure_midpoint, true_pressure_interface
 
