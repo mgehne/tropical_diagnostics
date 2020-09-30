@@ -157,29 +157,18 @@ for year in range(start_year, end_year + 1):
     ################################################################
 
     print("Calculating true model pressure")
-
-    # Set upper most interface equal to uppermost level midpoint, and lowest interface equal to surface pressure.
-    # This will still permit the desired vertical integral, just choose appropriate upper and lower integration limits
-
-    # Model level midpoint
     true_pressure_midpoint = Q['level'] * 100.  # To convert to Pa
     true_pressure_midpoint, true_pressure_interface = \
         mcc.calculate_true_pressure_model_pressure_midpoints_interfaces_pl(true_pressure_midpoint,
                                                                            Q['time'], Q['level'], Q['lat'], Q['lon'],
                                                                            PS)
 
-    ##################################################
-    ####  Calculate Saturation Specific Humidity  ####
-    ##################################################
-
+    #  Calculate Saturation Specific Humidity
     print("Calculating saturation specific humidity")
     saturation_specific_humidity = xr.apply_ufunc(mcc.calculate_saturation_specific_humidity, true_pressure_midpoint, T,
                                                   output_dtypes=[Q.dtype])
 
-    ######################################
-    ####  Column Integrate Variables  ####
-    ######################################
-
+    #  Column Integrate Variables
     upper_level_integration_limit_Pa = 10000  # [Pa]
     lower_level_integration_limit_Pa = 100000  # [Pa]
 
@@ -195,9 +184,9 @@ for year in range(start_year, end_year + 1):
     #  column  saturation fraction
     csf = ci_q / ci_q_sat
 
-    #######################################################
-    ####  Calculate CSF Precipitation Rate Composites and save to file  ####
-    #######################################################
+    # Calculate CSF Precipitation Rate Composites and save to file
     mcc.calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets[0])
 
-
+#######################################################
+####  Plot composites ####
+#######################################################
