@@ -8,7 +8,7 @@ start_year = 2015
 end_year = 2015
 
 #########################
-###.  ERAi and TRMM.  ###
+###  file names and paths  ###
 #########################
 
 # Precipitation
@@ -35,18 +35,13 @@ ofile_datasets_string_list = ['TRMM_ERAi_1p0_1x'] # TRMM and ERAi
 fname_datasets = [odir_datasets_string_list[i] +
                   ofile_datasets_string_list[i] for i in range(len(odir_datasets_string_list))]
 
-#############
+
 
 print('input file = ' + input_file_string_list_precipitation_rate[0])
 print('output dataset file = ' + fname_datasets[0])
 
-#########################################
-# Define paths of files we wish to load #
-#########################################
-
-# Limit files to the year of interest, and the year on either side. Given the file naming convention, the
-# year prior/after may have dates from the year of interest in the file
-
+#############
+# Limit files to the time interval of interest.
 for year in range(start_year, end_year + 1):
     print(year)
 
@@ -62,10 +57,7 @@ for year in range(start_year, end_year + 1):
     while len(next_year_string) < 4:
         next_year_string = '0' + next_year_string
 
-    ##########################
-    ####  Load ERAi Data  ####
-    ##########################
-
+    #  Load ERAi Data
     # Data is "lazy loaded", nothing is actually loaded until we "look" at data in some way #
     dataset_specific_humidity = xr.open_dataset(input_file_string_list_specific_humidity[0])
     dataset_temperature = xr.open_dataset(input_file_string_list_temperature[0])
@@ -93,39 +85,26 @@ for year in range(start_year, end_year + 1):
     # Clean up environment #
     gc.collect()
 
-    ###############################################
-    ####  Modify "landfrac" Variable as Needed ####
-    ###############################################
-
     print("Modifying landfrac as needed")
     landfrac = land_sea_mask
     landfrac = landfrac.rename({'land_sea_mask', 'landfrac'})
     landfrac = landfrac.sortby('lat', ascending=True)
     landfrac = landfrac.sel(lat=slice(-15, 15))
 
-    ##########################
-    ####  Load Precipitation Data  ####
-    ##########################
-
+    #  Load Precipitation Data
     dataset_precipitation_rate = xr.open_dataset(input_file_string_list_precipitation_rate[0])
     # Currently [mm/hr] Convert to [mm/day]
     precipitation_rate = dataset_precipitation_rate['precip'].sel(
         time=slice(current_year_string + '-12-01', next_year_string + '-03-31'), lat=slice(-15, 15)) * 24
     precipitation_rate.load()
 
-    ##############################################################
-    ####  Resample data to daily to match 'time' coordinates  ####
-    ##############################################################
-
+    #  Resample data to daily to match 'time' coordinates
     PS = PS.resample(time='1D').mean('time')
     Q = Q.resample(time='1D').mean('time')
     T = T.resample(time='1D').mean('time')
     precipitation_rate = precipitation_rate.resample(time='1D').mean('time')
 
-    ###############################################
-    ####  Limit to Oceanic (<10% Land) Points  ####
-    ###############################################
-
+    #  Limit to Oceanic (<10% Land) Points
     print('Applying Land/Ocean Mask')
     is_valid_ocean_mask = (landfrac < 0.1)
 
