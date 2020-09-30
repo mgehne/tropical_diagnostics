@@ -5,7 +5,7 @@ import gc
 
 # Years to analyze
 start_year = 2015
-end_year = 2016
+end_year = 2015
 
 #########################
 ###.  ERAi and TRMM.  ###
@@ -98,36 +98,19 @@ for year in range(start_year, end_year + 1):
     ###############################################
 
     print("Modifying landfrac as needed")
-
-    # landfrac = land_sea_mask.rename({'Latitude':'lat','Longitude':'lon'})
     landfrac = land_sea_mask
     landfrac = landfrac.rename({'land_sea_mask', 'landfrac'})
-    print(landfrac)
-
-    # The landfrac variable does not have lat/lon coordinates. Assign those of variables and check to make sure they make sense #
-
-    # print(landfrac.coords['lat'])
-    #landfrac.coords['lat'] = full_lat.coords['lat'] * -1
-    #landfrac.coords['lon'] = full_lon.coords['lon']
-
-    #landfrac = landfrac.transpose()
     landfrac = landfrac.sortby('lat', ascending=True)
     landfrac = landfrac.sel(lat=slice(-15, 15))
-
-
-    # Clean up environment #
-    gc.collect()
 
     ##########################
     ####  Load Precipitation Data  ####
     ##########################
 
     dataset_precipitation_rate = xr.open_dataset(input_file_string_list_precipitation_rate[0])
-
+    # Currently [mm/hr] Convert to [mm/day]
     precipitation_rate = dataset_precipitation_rate['precip'].sel(
-        time=slice(current_year_string + '-12-01', next_year_string + '-03-31'), lat=slice(-15, 15)) * (
-                             24)  # Currently [mm/hr]. Convert to [mm/day]
-
+        time=slice(current_year_string + '-12-01', next_year_string + '-03-31'), lat=slice(-15, 15)) * 24
     precipitation_rate.load()
 
     ##############################################################
@@ -193,9 +176,6 @@ for year in range(start_year, end_year + 1):
     saturation_specific_humidity = xr.apply_ufunc(mcc.calculate_saturation_specific_humidity, true_pressure_midpoint, T,
                                                   output_dtypes=[Q.dtype])
 
-    # Clean up environment #
-    gc.collect();\
-
     ######################################
     ####  Column Integrate Variables  ####
     ######################################
@@ -204,41 +184,20 @@ for year in range(start_year, end_year + 1):
     lower_level_integration_limit_Pa = 100000  # [Pa]
 
     print('Column Integrating')
-
     ci_q, _, _ = mcc.mass_weighted_vertical_integral_w_nan(Q, true_pressure_midpoint, true_pressure_interface,
                                                            lower_level_integration_limit_Pa,
                                                            upper_level_integration_limit_Pa)
-    # print(ci_q)
-    # print(ci_q.min())
-    # print(ci_q.max())
-    # print(ci_q.mean())
-    # plt.figure()
-    # ci_q.isel(time = 0).plot()
 
     ci_q_sat, _, _ = mcc.mass_weighted_vertical_integral_w_nan(saturation_specific_humidity, true_pressure_midpoint,
                                                                true_pressure_interface,
                                                                lower_level_integration_limit_Pa,
                                                                upper_level_integration_limit_Pa)
-    # print(ci_q_sat)
-    # print(ci_q_sat.min())
-    # print(ci_q_sat.max())
-    # print(ci_q_sat.mean())
-    # plt.figure()
-    # ci_q_sat.isel(time = 0).plot()
-
+    #  column  saturation fraction
     csf = ci_q / ci_q_sat
-    # print(csf)
-    # print(csf.min())
-    # print(csf.max())
-    # plt.figure()
-
-    # Clean up environment #
-    gc.collect()
 
     #######################################################
-    ####  Calculate CSF Precipitation Rate Composites  ####
+    ####  Calculate CSF Precipitation Rate Composites and save to file  ####
     #######################################################
-
     mcc.calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets[0])
 
 
