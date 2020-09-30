@@ -40,13 +40,15 @@ def calculate_true_pressure_model_pressure_midpoints_interfaces_ml(hyam, hybm, h
 def calculate_true_pressure_model_pressure_midpoints_interfaces_pl(true_pressure_midpoint, time, level, lat, lon, PS):
     """
     Compute true model pressure interfaces and midpoints for each level. Use this for data on pressure levels.
+    Set upper most interface equal to uppermost level midpoint, and lowest interface equal to surface pressure.
+    This will still permit the desired vertical integral, just choose appropriate upper and lower integration limits
     :param true_pressure_midpoint:
     :param time: time coordinate
-    :param level:
-    :param lat:
-    :param lon:
-    :param PS:
-    :return:
+    :param level: level coordinate
+    :param lat: latitude coordinate
+    :param lon: longitiude coordinate
+    :param PS: actual surface pressure
+    :return true_pressure_midpoint, true_pressure_interface:
     """
 # Set upper most interface equal to uppermost level midpoint, and lowest interface equal to surface pressure.
     # This will still permit the desired vertical integral, just choose appropriate upper and lower integration limits
