@@ -245,7 +245,11 @@ def panel_resources(nplot=4, abc=['a', 'b', 'c', 'd']):
 
 
 def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1="", vars2="", plotpath="./", flim=0.5,
-                   nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, nplot=1, N=[1, 2]):
+                   nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, plotxy=[1, 1], N=[1, 2]):
+
+    dims = cohsq.shape
+    nplot = dims[0]
+
     FillMode = "AreaFill"
 
     # text labels
@@ -325,9 +329,9 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
         plots.append(plot)
         pp += 1
 
-        # panel plots
-    #ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], res_p)
-    ngl.panel(wks, plots, [3, nplot // 3], res_p)
+
+    # panel plots
+    ngl.panel(wks, plots, plotxy, res_p)
     ngl.delete_wks(wks)
     ngl.end()
 
