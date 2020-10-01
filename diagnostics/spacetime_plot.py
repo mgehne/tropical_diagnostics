@@ -238,7 +238,7 @@ def panel_resources(nplot=4, abc=['a', 'b', 'c', 'd']):
     res_p.lbOrientation = "vertical"
     res_p.nglPanelLabelBarLabelFontHeightF = 0.02
     res_p.nglPanelLabelBarHeightF = 0.27
-    res_p.nglPanelLabelBarParallelPosF = 0.025
+    res_p.nglPanelLabelBarParallelPosF = 0.02
     res_p.nglPanelFigureStrings = abc[0:nplot]
     res_p.nglPanelFigureStringsJust = "TopLeft"
 
