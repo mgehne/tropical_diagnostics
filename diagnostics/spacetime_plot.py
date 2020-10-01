@@ -237,7 +237,7 @@ def panel_resources(nplot=4, abc=['a', 'b', 'c', 'd']):
     # res_p.nglPanelBottom = 0.05
     res_p.lbOrientation = "vertical"
     res_p.nglPanelLabelBarLabelFontHeightF = 0.02
-    res_p.nglPanelLabelBarHeightF = 0.37
+    res_p.nglPanelLabelBarHeightF = 0.3
     res_p.nglPanelLabelBarParallelPosF = 0.025
     res_p.nglPanelFigureStrings = abc[0:nplot]
     res_p.nglPanelFigureStringsJust = "TopLeft"
@@ -293,7 +293,7 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
         var1 = vars1[pp]
         var2 = vars2[pp]
 
-        res.tiMainString = source + "    coh^2(" + var1 + "," + var2 + ")           " + Symmetry
+        res.tiMainString = source + "    coh^2(" + var1 + "," + var2 + ") " + Symmetry
         plot = ngl.contour(wks, coh2, res)
         plot_a = ngl.vector(wks, phs1, phs2, res_a)
         ngl.overlay(plot, plot_a)
