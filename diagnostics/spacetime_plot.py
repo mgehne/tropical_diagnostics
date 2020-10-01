@@ -183,6 +183,7 @@ def coh_resources(contourmin=0.05, contourmax=0.55, contourspace=0.05, FillMode=
     res = ngl.Resources()
     res.nglDraw = False
     res.nglFrame = False
+    res.nglMaximize = False
     res.cnLinesOn = False
     res.cnFillOn = True
     res.cnFillMode = FillMode
