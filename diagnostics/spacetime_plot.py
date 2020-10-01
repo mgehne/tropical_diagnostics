@@ -245,8 +245,8 @@ def panel_resources(nplot=4, abc=['a', 'b', 'c', 'd']):
     return res_p
 
 
-def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1="", vars2="", plotpath="./", flim=0.5,
-                   nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, plotxy=[1, 1], N=[1, 2]):
+def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1="", vars2="", plotpath="./", wkstype="png",
+                   flim=0.5, nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, plotxy=[1, 1], N=[1, 2]):
 
     dims = cohsq.shape
     nplot = dims[0]
@@ -257,7 +257,7 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
     abc = list(string.ascii_lowercase)
 
     # plot resources
-    wkstype = "png"
+    #wkstype = wkstype
     wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_")
     plots = []
 
