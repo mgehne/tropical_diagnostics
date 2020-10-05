@@ -327,27 +327,6 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
         calculate_backward_forward_center_difference(precipitation_rate)
 
-    ###############################################################
-    ####  Limit data to be composited to the year of interest  ####
-    ###############################################################
-    #precipitation_rate = precipitation_rate.sel(
-    #    time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-    #csf = csf.sel(time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-
-    #delta_precipitation_rate_leading = delta_precipitation_rate_leading.sel(
-    #    time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-    #delta_precipitation_rate_lagging = delta_precipitation_rate_lagging.sel(
-    #    time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-    #delta_precipitation_rate_centered = delta_precipitation_rate_centered.sel(
-    #    time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-
-    #delta_csf_leading = delta_csf_leading.sel(
-    #    time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-    #delta_csf_lagging = delta_csf_lagging.sel(
-    #    time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-    #delta_csf_centered = delta_csf_centered.sel(
-    #    time=slice(current_year_string + '-01-01', current_year_string + '-12-31'))
-
     #########################################
     ####  Bin Precipitation Rate By CSF  ####
     #########################################
