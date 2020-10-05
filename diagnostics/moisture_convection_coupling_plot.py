@@ -4,11 +4,9 @@ Code contributed by Brandon Wolding.
 """
 
 import numpy as np
-import xarray as xr
-import holoviews as hv
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-hv.extension('bokeh')
+
 
 
 def plot_csf_binned_precipitation_rate(csf_binned_precipitation_rate_dataset, min_number_of_obs, save_fig_boolean=False,
