@@ -35,6 +35,13 @@ to plot vertical profiles of coherence and phase angles can be used. The plottin
 engine. Example scripts are provided for both the computational (**vertical_coherence.py**) and plotting
 (**vertical_coherence_plot.py**) part.
 
+### Moisture - Convection coupling
+These functions contain code to compute column saturation fraction (CSF) from reanalysis or model output and bin CSF
+and precipitation against each other (**moisture_convection_coupling.py**). Routines for plotting the circulation in
+preciptiation - CSF space and the distributions are contained in **moisture_convection_coupling_plot.py**. The example
+script **precip_csf_coupling.py** computes CSF from model output, bins TRMM precipitation against model CSF and plots
+the results.
+
 ## examples
 Scripts containing example use cases. These scripts read in data, compute diagnostics and plot the results.
 This is a good place to start when first using the diagnostics.
