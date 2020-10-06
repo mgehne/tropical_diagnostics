@@ -106,6 +106,38 @@ def calculate_saturation_specific_humidity(pressure, temperature):
     return saturation_specific_humidity
 
 
+def calculate_moist_enthalpy(temperature, specific_humidity):
+    """
+    Calculate the moist enthalpy from temperature and specific humidity.
+    :param temperature: temperature array in units of K
+    :param specific_humidity: specific humidity array in units of Kg Kg^-1
+    :return: moist enthalpy array
+    """
+    # Define constants
+    Cp = 1004.  # [J kg^-1 K^-1]
+    Lv = 2.5 * 10. ** 6.  # [J kg^-1]
+    # Calculate MSE
+    ME = (Cp * temperature) + (Lv * specific_humidity)  # [J kg^-1]
+
+    return ME
+
+
+def calculate_saturation_moist_enthalpy(temperature, saturation_specific_humidity):
+    """
+    Calculate the saturation moist enthalpy from temperature and saturation specific humidity.
+    :param temperature: temperature array in units of K
+    :param saturation_specific_humidity: saturation specific humidity array in units of Kg Kg^-1
+    :return: saturation moist enthalpy array
+    """
+    # Define constants
+    Cp = 1004.  # [J kg^-1 K^-1]
+    Lv = 2.5 * 10. ** 6.  # [J kg^-1]
+    # Calculate MSE_sat
+    ME_saturation = (Cp * temperature) + (Lv * saturation_specific_humidity)  # [J kg^-1]
+
+    return ME_saturation
+
+
 def mass_weighted_vertical_integral_w_nan(variable_to_integrate, pressure_model_level_midpoint_Pa,
                                           pressure_model_level_interface_Pa, max_pressure_integral_array_Pa,
                                           min_pressure_integral_array_Pa):
@@ -776,3 +808,34 @@ def process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files):
     binned_csf_precipitation_rate_dataset = binned_csf_precipitation_rate_dataset.squeeze()
 
     return binned_csf_precipitation_rate_dataset
+
+
+def output_B_L(filename, landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
+               mwa_saturation_deficit_850_to_500):
+    """
+    Write B_L variables to file.
+    :param filename: filename to write to.
+    :param landfrac: landfraction array
+    :param mwa_ME_surface_to_850: mass weighted average of moist enthalpy from the surface to 850hPa
+    :param mwa_ME_saturation_850_to_500: mass weighted average of saturation moist enthalpy from 850hPa to 500hPa
+    :param mwa_saturation_deficit_850_to_500: mass weighted average of saturation deficit from 850hPa to 500hPa
+    :return:
+    """
+    # Name variables #
+    landfrac.name = 'landfrac'
+    mwa_ME_surface_to_850.name = 'mwa_ME_surface_to_850'
+    mwa_ME_saturation_850_to_500.name = 'mwa_ME_saturation_850_to_500'
+    mwa_saturation_deficit_850_to_500.name = 'mwa_saturation_deficit_850_to_500'
+
+    # Add desired attributes #
+    landfrac.attrs['Units'] = 'Fraction of land, 0 = all water, 1 = all land'
+    mwa_ME_surface_to_850.attrs['Units'] = '[J Kg^-1]'
+    mwa_ME_saturation_850_to_500.attrs['Units'] = '[J Kg^-1]'
+    mwa_saturation_deficit_850_to_500.attrs['Units'] = '[Kg Kg^-1]'
+
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge(
+        [landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500])
+
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(filename)
