@@ -109,7 +109,8 @@ for year in range(start_year, end_year + 1):
     mcc.output_mwa(fname_datasets[0] + '_' + current_year_string + '.nc', landfrac, mwa_ME_surface_to_850,
                    mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500)
 
-    print('mask out land points')
+    print('mask out land points for binning')
+    landfrac = landfrac.sel(lat=slice(-15, 15))
     is_valid_ocean_mask = (landfrac < 0.1)
     precipitation_rate = precipitation_rate.where(is_valid_ocean_mask, other=np.nan)
     mwa_ME_surface_to_850 = mwa_ME_surface_to_850.where(is_valid_ocean_mask, other=np.nan)
