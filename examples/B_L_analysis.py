@@ -79,8 +79,6 @@ for year in range(start_year, end_year + 1):
     T = dataset_temperature['temp'].sel(time=slice(current_year_string + '-12-01', next_year_string + '-03-31'),
                                         lat=slice(-15, 15), level=slice(70, 1000))  # [K]
 
-    Q = Q.rename({'lev': 'level'})
-
     # Actually load data #
     land_sea_mask.load()
     PS.load()
@@ -102,7 +100,7 @@ for year in range(start_year, end_year + 1):
     saturation_specific_humidity = xr.apply_ufunc(mcc.calculate_saturation_specific_humidity, true_pressure_midpoint, T,
                                                   output_dtypes=[Q.dtype])
     # Clean up environment #
-    gc.collect();
+    gc.collect()
 
     saturation_deficit = saturation_specific_humidity - Q
 
