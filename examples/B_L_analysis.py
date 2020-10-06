@@ -28,11 +28,15 @@ input_file_string_list_land_frac = ['/data/mgehne/ERAI/MetricsObs/CSF/land_sea_m
 
 # Output directory
 odir_datasets_string_list = ['/data/mgehne/CSF_precipitation_analysis/']  # TRMM and ERAi
-# Output file name for datasets string list
+# Output file name for data sets string list
 ofile_datasets_string_list = ['ERAI_B_L_1p0_1x'] # TRMM and ERAi
-# Define output string for datasets and figures
 fname_datasets = [odir_datasets_string_list[i] +
                   ofile_datasets_string_list[i] for i in range(len(odir_datasets_string_list))]
+# outut file names for binned data sets
+bin_ofile_datasets_string_list = ['daily_TRMM_ERAI']
+bin_fname_datasets = [odir_datasets_string_list[i] +
+                  bin_ofile_datasets_string_list[i] for i in range(len(odir_datasets_string_list))]
+
 
 # output directory for figures
 odir_figures_string_list = ['/data/mgehne/CSF_precipitation_analysis/Plots/']  # TRMM and ERAi
@@ -61,6 +65,7 @@ for year in range(start_year, end_year + 1):
         next_year_string = '0' + next_year_string
 #
     # Data is "lazy loaded", nothing is actually loaded until we "look" at data in some way #
+    dataset_precipitation_rate = xr.open_dataset(input_file_string_list_precipitation_rate[0])
     dataset_specific_humidity = xr.open_dataset(input_file_string_list_specific_humidity[0])
     dataset_temperature = xr.open_dataset(input_file_string_list_temperature[0])
     dataset_surface_pressure = xr.open_dataset(input_file_string_list_surface_pressure[0])
@@ -78,12 +83,16 @@ for year in range(start_year, end_year + 1):
         level=slice(70, 1000))  # [Kg/Kg]
     T = dataset_temperature['temp'].sel(time=slice(current_year_string + '-12-01', next_year_string + '-03-31'),
                                         lat=slice(-15, 15), level=slice(70, 1000))  # [K]
+    precipitation_rate = dataset_precipitation_rate['precip'].sel(
+        time=slice(current_year_string + '-12-01', next_year_string + '-03-31'), lat=slice(-15, 15)) * 24
+    # Currently [mm/hr]. Convert to [mm/day]
 
     # Actually load data #
     land_sea_mask.load()
     PS.load()
     Q.load()
     T.load()
+    precipitation_rate.load()
 
     # Clean up environment #
     gc.collect()
@@ -92,6 +101,7 @@ for year in range(start_year, end_year + 1):
     landfrac = land_sea_mask
     landfrac = landfrac.rename({'land_sea_mask', 'landfrac'})
 
+    # compute vertical averages need for B_L computation
     mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500 = \
         mcc.compute_mwa_ME_components(Q, T, PS)
 
@@ -99,6 +109,16 @@ for year in range(start_year, end_year + 1):
     mcc.output_mwa(fname_datasets[0] + '_' + current_year_string + '.nc', landfrac, mwa_ME_surface_to_850,
                    mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500)
 
+    print('mask out land points')
+    is_valid_ocean_mask = (landfrac < 0.1)
+    precipitation_rate = precipitation_rate.where(is_valid_ocean_mask, other=np.nan)
+    mwa_ME_surface_to_850 = mwa_ME_surface_to_850.where(is_valid_ocean_mask, other=np.nan)
+    mwa_ME_saturation_850_to_500 = mwa_ME_saturation_850_to_500.where(is_valid_ocean_mask, other=np.nan)
+    mwa_saturation_deficit_850_to_500 = mwa_saturation_deficit_850_to_500.where(is_valid_ocean_mask, other=np.nan)
+
     print('Calculating B_L and Components')
     B_L, undilute_B_L, dilution_of_B_L = mcc.compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
                                                          mwa_saturation_deficit_850_to_500)
+
+    mcc.calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L,
+                                                          year, bin_fname_datasets[0])

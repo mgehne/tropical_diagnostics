@@ -923,3 +923,218 @@ def compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturat
     B_L = undilute_B_L + dilution_of_B_L
 
     return B_L, undilute_B_L, dilution_of_B_L
+
+
+def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L, year,
+                                                      fname_datasets_for_simulation):
+    """
+
+    :param precipitation_rate:
+    :param B_L:
+    :param undilute_B_L:
+    :param dilution_of_B_L:
+    :param year:
+    :param fname_datasets_for_simulation:
+    :return:
+    """
+    current_year_string = str(year)
+
+    while len(current_year_string) < 4:
+        current_year_string = '0' + current_year_string
+
+    ##############################################################################################
+    ####  Calculate Backwards, Forwards and Center Differences of CSF and Precipitation Rate  ####
+    ##############################################################################################
+
+    print('Calculating Differences')
+
+    delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+        calculate_backward_forward_center_difference(precipitation_rate)
+
+    delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = calculate_backward_forward_center_difference(B_L)
+
+    delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
+        calculate_backward_forward_center_difference(undilute_B_L)
+
+    delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
+        calculate_backward_forward_center_difference(dilution_of_B_L)
+
+
+    #########################################
+    ####  Bin Precipitation Rate By B_L  ####
+    #########################################
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-1.5, 0.5, 0.025)
+    upper_BV1_bin_limit_vector = np.arange(-1.5 + 0.025, 0.5 + 0.025, 0.025)
+    bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, B_L,
+                                                                             lower_BV1_bin_limit_vector,
+                                                                             upper_BV1_bin_limit_vector)
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate])
+    # Add desired attributes #
+    output_dataset.attrs['Comments'] = 'Binning variables 1 (BV1) is "B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(
+        fname_datasets_for_simulation + '_B_L_binned_precipitation_rate_' + current_year_string + '.nc', 'w')
+
+    ##################################################
+    ####  Bin Precipitation Rate By Undilute B_L  ####
+    ##################################################
+
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-1.5, 0.5, 0.025)
+    upper_BV1_bin_limit_vector = np.arange(-1.5 + 0.025, 0.5 + 0.025, 0.025)
+    bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, undilute_B_L,
+                                                                             lower_BV1_bin_limit_vector,
+                                                                             upper_BV1_bin_limit_vector)
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate])
+    # Add desired attributes #
+    output_dataset.attrs[
+        'Comments'] = 'Binning variables 1 (BV1) is "Undilte B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(
+        fname_datasets_for_simulation + '_undilute_B_L_binned_precipitation_rate_' + current_year_string + '.nc', 'w')
+
+    #####################################################
+    ####  Bin Precipitation Rate By Dilution of B_L  ####
+    #####################################################
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-1.5, 0.5, 0.025)
+    upper_BV1_bin_limit_vector = np.arange(-1.5 + 0.025, 0.5 + 0.025, 0.025)
+    bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, dilution_of_B_L,
+                                                                             lower_BV1_bin_limit_vector,
+                                                                             upper_BV1_bin_limit_vector)
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate])
+    # Add desired attributes #
+    output_dataset.attrs[
+        'Comments'] = 'Binning variables 1 (BV1) is "Dilution of B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(fname_datasets_for_simulation + '_dilution_of_B_L_binned_precipitation_rate_' +
+                             current_year_string + '.nc', 'w')
+
+    ########################################################
+    ####  Bin By Both Undilute B_L and Dilution of B_L  ####
+    ########################################################
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-0.4, 0.0, 0.01)  # Dilution
+    upper_BV1_bin_limit_vector = np.arange(-0.4 + 0.01, 0.0 + 0.01, 0.01)  # Dilution
+    lower_BV2_bin_limit_vector = np.arange(-0.25, 0.25, 0.01)  # Undilute
+    upper_BV2_bin_limit_vector = np.arange(-0.25 + 0.01, 0.25 + 0.01, 0.01)  # Undilute
+
+    bin_mean_precipitation_rate, bin_number_pos_precipitation_rate, bin_number_of_samples = bin_by_two_variables(
+        precipitation_rate, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    bin_mean_delta_dilution_leading, bin_number_pos_delta_dilution_leading, _ = bin_by_two_variables(
+        delta_dilution_leading, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_undilute_B_L_leading, bin_number_pos_delta_undilute_B_L_leading, _ = bin_by_two_variables(
+        delta_undilute_B_L_leading, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector,
+        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    bin_mean_delta_dilution_lagging, bin_number_pos_delta_dilution_lagging, _ = bin_by_two_variables(
+        delta_dilution_lagging, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_undilute_B_L_lagging, bin_number_pos_delta_undilute_B_L_lagging, _ = bin_by_two_variables(
+        delta_undilute_B_L_lagging, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector,
+        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    bin_mean_delta_dilution_centered, bin_number_pos_delta_dilution_centered, _ = bin_by_two_variables(
+        delta_dilution_centered, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_undilute_B_L_centered, bin_number_pos_delta_undilute_B_L_centered, _ = bin_by_two_variables(
+        delta_undilute_B_L_centered, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector,
+        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+
+    bin_mean_delta_dilution_leading.name = 'bin_mean_delta_dilution_leading'
+    bin_mean_delta_undilute_B_L_leading.name = 'bin_mean_delta_undilute_B_L_leading'
+    bin_number_pos_delta_dilution_leading.name = 'bin_number_pos_delta_dilution_leading'
+    bin_number_pos_delta_undilute_B_L_leading.name = 'bin_number_pos_delta_undilute_B_L_leading'
+
+    bin_mean_delta_dilution_lagging.name = 'bin_mean_delta_dilution_lagging'
+    bin_mean_delta_undilute_B_L_lagging.name = 'bin_mean_delta_undilute_B_L_lagging'
+    bin_number_pos_delta_dilution_lagging.name = 'bin_number_pos_delta_dilution_lagging'
+    bin_number_pos_delta_undilute_B_L_lagging.name = 'bin_number_pos_delta_undilute_B_L_lagging'
+
+    bin_mean_delta_dilution_centered.name = 'bin_mean_delta_dilution_centered'
+    bin_mean_delta_undilute_B_L_centered.name = 'bin_mean_delta_undilute_B_L_centered'
+    bin_number_pos_delta_dilution_centered.name = 'bin_number_pos_delta_dilution_centered'
+    bin_number_pos_delta_undilute_B_L_centered.name = 'bin_number_pos_delta_undilute_B_L_centered'
+
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+
+    bin_mean_delta_dilution_leading = bin_mean_delta_dilution_leading.assign_coords(year=year).expand_dims('year')
+    bin_mean_delta_undilute_B_L_leading = bin_mean_delta_undilute_B_L_leading.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_dilution_leading = bin_number_pos_delta_dilution_leading.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_undilute_B_L_leading = bin_number_pos_delta_undilute_B_L_leading.assign_coords(
+        year=year).expand_dims('year')
+
+    bin_mean_delta_dilution_lagging = bin_mean_delta_dilution_lagging.assign_coords(year=year).expand_dims('year')
+    bin_mean_delta_undilute_B_L_lagging = bin_mean_delta_undilute_B_L_lagging.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_dilution_lagging = bin_number_pos_delta_dilution_lagging.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_undilute_B_L_lagging = bin_number_pos_delta_undilute_B_L_lagging.assign_coords(
+        year=year).expand_dims('year')
+
+    bin_mean_delta_dilution_centered = bin_mean_delta_dilution_centered.assign_coords(year=year).expand_dims('year')
+    bin_mean_delta_undilute_B_L_centered = bin_mean_delta_undilute_B_L_centered.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_dilution_centered = bin_number_pos_delta_dilution_centered.assign_coords(
+        year=year).expand_dims('year')
+    bin_number_pos_delta_undilute_B_L_centered = bin_number_pos_delta_undilute_B_L_centered.assign_coords(
+        year=year).expand_dims('year')
+
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate, bin_mean_delta_dilution_leading,
+                               bin_mean_delta_undilute_B_L_leading, bin_number_pos_delta_dilution_leading,
+                               bin_number_pos_delta_undilute_B_L_leading, \
+                               bin_mean_delta_dilution_lagging, bin_mean_delta_undilute_B_L_lagging,
+                               bin_number_pos_delta_dilution_lagging, bin_number_pos_delta_undilute_B_L_lagging, \
+                               bin_mean_delta_dilution_centered, bin_mean_delta_undilute_B_L_centered,
+                               bin_number_pos_delta_dilution_centered, bin_number_pos_delta_undilute_B_L_centered])
+    # Add desired attributes #
+    output_dataset.attrs[
+        'Comments'] = 'Binning variables 1 (BV1) is "dilution_of_B_L" [m s^-2], binning variables 2 (BV2) is "undilute_B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(
+        fname_datasets_for_simulation + '_undilute_B_L_dilution_binned_data_' + current_year_string + '.nc', mode='w')
