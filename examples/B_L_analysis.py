@@ -92,44 +92,13 @@ for year in range(start_year, end_year + 1):
     landfrac = land_sea_mask
     landfrac = landfrac.rename({'land_sea_mask', 'landfrac'})
 
-    print("Calculating true model pressure")
-    true_pressure_midpoint, true_pressure_interface = mcc.calculate_true_pressure_model_pressure_midpoints_interfaces_pl(
-        Q['level'] * 100., Q['time'], Q['level'], Q['lat'], Q['lon'], PS)
+    mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500 = \
+        mcc.compute_mwa_ME_components(Q, T, PS)
 
-    print("Calculating saturation specific humidity")
-    saturation_specific_humidity = xr.apply_ufunc(mcc.calculate_saturation_specific_humidity, true_pressure_midpoint, T,
-                                                  output_dtypes=[Q.dtype])
-    # Clean up environment #
-    gc.collect()
-
-    saturation_deficit = saturation_specific_humidity - Q
-
-    ME = xr.apply_ufunc(mcc.calculate_moist_enthalpy, T, Q, output_dtypes=[T.dtype])
-    ME_saturation = xr.apply_ufunc(mcc.calculate_saturation_moist_enthalpy, T, saturation_specific_humidity,
-                                   output_dtypes=[T.dtype])
-    # Clean up environment #
-    del T
-    gc.collect()
-
-    print('Mass Weighted Averaging')
-    _, _, mwa_ME_surface_to_850 = mcc.mass_weighted_vertical_integral_w_nan(ME, true_pressure_midpoint,
-                                                                        true_pressure_interface, PS, 85000)
-
-    _, _, mwa_ME_saturation_850_to_500 = mcc.mass_weighted_vertical_integral_w_nan(ME_saturation,
-                                                                               true_pressure_midpoint,
-                                                                               true_pressure_interface, 85000,
-                                                                               50000)
-
-    _, _, mwa_saturation_deficit_850_to_500 = mcc.mass_weighted_vertical_integral_w_nan(saturation_deficit,
-                                                                                    true_pressure_midpoint,
-                                                                                    true_pressure_interface, 85000,
-                                                                                    50000)
-    # Clean up environment #
-    del Q, saturation_specific_humidity, saturation_deficit, ME, ME_saturation
-    gc.collect()
-
-    #################################
-    ####  Output Data as NetCDF  ####
-    #################################
-    mcc.output_B_L(fname_datasets[0] + '_' + current_year_string + '.nc', landfrac, mwa_ME_surface_to_850,
+    # write vertical averages to netcdf
+    mcc.output_mwa(fname_datasets[0] + '_' + current_year_string + '.nc', landfrac, mwa_ME_surface_to_850,
                    mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500)
+
+    print('Calculating B_L and Components')
+    B_L, undilute_B_L, dilution_of_B_L = mcc.compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
+                                                         mwa_saturation_deficit_850_to_500)

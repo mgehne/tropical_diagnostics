@@ -810,7 +810,7 @@ def process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files):
     return binned_csf_precipitation_rate_dataset
 
 
-def output_B_L(filename, landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
+def output_mwa(filename, landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
                mwa_saturation_deficit_850_to_500):
     """
     Write B_L variables to file.
@@ -839,3 +839,87 @@ def output_B_L(filename, landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_
 
     # Output dataset to NetCDF #
     output_dataset.to_netcdf(filename)
+
+
+def compute_mwa_ME_components(Q, T, PS):
+    """
+    Compute mass weighted vertically averaged moist enthalpy components for B_L calculation.
+    :param Q: specific humidity array
+    :param T: temperature array
+    :param PS: actual surface pressure
+    :return: mass weighted vertical averages
+    """
+
+    print("Calculating true model pressure")
+    true_pressure_midpoint, true_pressure_interface = calculate_true_pressure_model_pressure_midpoints_interfaces_pl(
+        Q['level'] * 100., Q['time'], Q['level'], Q['lat'], Q['lon'], PS)
+
+    print("Calculating saturation specific humidity")
+    saturation_specific_humidity = xr.apply_ufunc(calculate_saturation_specific_humidity, true_pressure_midpoint, T,
+                                                  output_dtypes=[Q.dtype])
+
+    saturation_deficit = saturation_specific_humidity - Q
+
+    ME = xr.apply_ufunc(calculate_moist_enthalpy, T, Q, output_dtypes=[T.dtype])
+    ME_saturation = xr.apply_ufunc(calculate_saturation_moist_enthalpy, T, saturation_specific_humidity,
+                                   output_dtypes=[T.dtype])
+
+    print('Mass Weighted Averaging')
+    _, _, mwa_ME_surface_to_850 = mass_weighted_vertical_integral_w_nan(ME, true_pressure_midpoint,
+                                                                            true_pressure_interface, PS, 85000)
+
+    _, _, mwa_ME_saturation_850_to_500 = mass_weighted_vertical_integral_w_nan(ME_saturation,
+                                                                                   true_pressure_midpoint,
+                                                                                   true_pressure_interface, 85000,
+                                                                                   50000)
+
+    _, _, mwa_saturation_deficit_850_to_500 = mass_weighted_vertical_integral_w_nan(saturation_deficit,
+                                                                                        true_pressure_midpoint,
+                                                                                        true_pressure_interface, 85000,
+                                                                                        50000)
+
+    return mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500
+
+
+def compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500):
+    """
+    Calculate B_L and its components.
+    :param mwa_ME_surface_to_850:
+    :param mwa_ME_saturation_850_to_500:
+    :param mwa_saturation_deficit_850_to_500:
+    :return:
+    """
+    # Define constants
+    g = 9.8  # [m s^-2]
+    Lv = 2.5 * 10. ** 6.  # [J kg^-1]
+    R_d = 287.  # [J Kg^-1 K^-1] Gas constant dry air
+    C_p = 1004.  # [J Kg^-1 K^-1] Specific heat capacity of dry air
+
+    # Calculate W_B and W_L
+    # a = 1 # determined by mass inflow profile
+    # b = 1 # determined by mass inflow profile
+
+    # delta_P_B = 150 # delta pressure of lower level
+    # delta_P_L = 350 # delta pressure of upper level
+
+    # W_B = ((a * delta_P_B) /  (b * delta_P_L)) * np.log((a * delta_P_B + b * delta_P_L) / (a * delta_P_B))
+    # W_L = 1 - W_B
+
+    W_B = 0.5  # Set to 0.5 as simplifying assumption
+    W_L = 0.5  # Set to 0.5 as simplifying assumption
+
+    # Calculate Exner Function
+    p_B = 925  # [hPa], mean BL pressure
+    p_L = 675  # [hPa], mean LFT pressure
+
+    exner = (p_L / p_B) ** (R_d / C_p)
+
+    # Calculate undilute_B_L, dilution_of_B_L, and B_L using fixed 850 method
+    undilute_B_L = g * W_B * (exner * mwa_ME_surface_to_850 - mwa_ME_saturation_850_to_500) \
+                   / mwa_ME_saturation_850_to_500
+
+    dilution_of_B_L = -(g * W_L * mwa_saturation_deficit_850_to_500 * Lv / mwa_ME_saturation_850_to_500)
+
+    B_L = undilute_B_L + dilution_of_B_L
+
+    return B_L, undilute_B_L, dilution_of_B_L
