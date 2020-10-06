@@ -92,6 +92,81 @@ def plot_csf_binned_precipitation_rate(csf_binned_precipitation_rate_dataset, mi
                     frameon=None, metadata=None)
 
 
+def plot_B_L_binned_precipitation_rate(binned_B_L_dataset, min_number_of_obs, save_fig_boolean=False,
+                                       figure_path_and_name='untitled.png'):
+    """
+    Plot precipitation rate binned by B_L and distribution.
+    :param binned_B_L_dataset:
+    :param min_number_of_obs:
+    :param save_fig_boolean:
+    :param figure_path_and_name:
+    :return:
+    """
+    bin_number_of_samples = binned_B_L_dataset['bin_number_of_samples']
+    bin_mean_precipitation_rate = binned_B_L_dataset['bin_mean_precipitation_rate']
+
+    # Create mask for regions with insufficient obs #
+    insufficient_obs_mask = bin_number_of_samples < min_number_of_obs
+
+    # Create "centered" figure #
+    fig = plt.figure(figsize=(10, 10))
+
+    # Ask for, out of a 1x1 grid, the first axes #
+    ax1 = fig.add_subplot(1, 1, 1)
+    ax1.plot(bin_mean_precipitation_rate.BV1_bin_midpoint.where(~insufficient_obs_mask),
+             bin_mean_precipitation_rate.where(~insufficient_obs_mask), color='k', linestyle='solid', linewidth=5)
+
+    ax1.set_xlabel('B$_{L}$ [m s$^{-2}$]', fontdict={'size': 24, 'weight': 'bold'})
+    ax1.set_ylabel('Precipitation Rate [mm day$^{-1}$]', fontdict={'size': 24, 'weight': 'bold'})
+    ax1.set(xlim=(-1.0, 0.5), ylim=(0, 80))
+
+    # Axis 1 Ticks #
+    ax1.tick_params(axis="x", direction="in", length=8, width=2, color="black")
+    ax1.tick_params(axis="y", direction="in", length=8, width=2, color="black")
+
+    ax1.tick_params(axis="x", labelsize=18, labelrotation=0, labelcolor="black")
+    ax1.tick_params(axis="y", labelsize=18, labelrotation=0, labelcolor="black")
+
+    for tick in ax1.xaxis.get_majorticklabels():
+        tick.set_fontsize(18)
+        tick.set_fontweight('bold')
+
+    for tick in ax1.yaxis.get_majorticklabels():
+        tick.set_fontsize(18)
+        tick.set_fontweight('bold')
+
+    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+    ax2.set_ylabel('Percent of Total Samples', fontdict={'size': 24, 'weight': 'bold'})
+    ax2.set(xlim=(-1.0, 0.5), ylim=(0, 15))
+
+    # Axis 2 Ticks #
+    ax2.plot(bin_number_of_samples.BV1_bin_midpoint,
+             (bin_number_of_samples / bin_number_of_samples.sum('BV1_bin_midpoint')) * 100, color='k',
+             linestyle='dashed', linewidth=5)
+
+    ax2.tick_params(axis="x", direction="in", length=8, width=2, color="black")
+    ax2.tick_params(axis="y", direction="in", length=8, width=2, color="black")
+
+    ax2.tick_params(axis="x", labelsize=18, labelrotation=0, labelcolor="black")
+    ax2.tick_params(axis="y", labelsize=18, labelrotation=0, labelcolor="black")
+
+    for tick in ax2.xaxis.get_majorticklabels():
+        tick.set_fontsize(18)
+        tick.set_fontweight('bold')
+
+    for tick in ax2.yaxis.get_majorticklabels():
+        tick.set_fontsize(18)
+        tick.set_fontweight('bold')
+
+    # Save figure #
+    if save_fig_boolean:
+        plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
+                    orientation='portrait', papertype=None, format='png',
+                    transparent=False, bbox_inches='tight', pad_inches=0.0,
+                    frameon=None, metadata=None)
+
+
 def plot_CSF_precipitation_rate_composites(binned_csf_precipitation_rate_dataset, min_number_of_obs,
                                            save_fig_boolean=False, figure_path_and_name='untitled.png'):
     """
