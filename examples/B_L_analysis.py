@@ -86,8 +86,6 @@ for year in range(start_year, end_year + 1):
     T.load()
     precipitation_rate.load()
 
-    print(precipitation_rate.min(), precipitation_rate.max())
-
     # Clean up environment #
     gc.collect()
 
@@ -111,9 +109,17 @@ for year in range(start_year, end_year + 1):
     mwa_ME_saturation_850_to_500 = mwa_ME_saturation_850_to_500.where(is_valid_ocean_mask, other=np.nan)
     mwa_saturation_deficit_850_to_500 = mwa_saturation_deficit_850_to_500.where(is_valid_ocean_mask, other=np.nan)
 
+    precipitation_rate = precipitation_rate.resample(time='1D').mean('time')
+    mwa_ME_surface_to_850 = mwa_ME_surface_to_850.resample(time='1D').mean('time')
+    mwa_ME_saturation_850_to_500 = mwa_ME_saturation_850_to_500.resample(time='1D').mean('time')
+    mwa_saturation_deficit_850_to_500 = mwa_saturation_deficit_850_to_500.resample(time='1D').mean('time')
+
+    print(precipitation_rate.shape)
+
     print('Calculating B_L and Components')
     B_L, undilute_B_L, dilution_of_B_L = mcc.compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
                                                          mwa_saturation_deficit_850_to_500)
+    print(B_L.shape)
 
     mcc.calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L,
                                                           year, bin_fname_datasets[0])
