@@ -970,8 +970,6 @@ def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, u
     bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, B_L,
                                                                              lower_BV1_bin_limit_vector,
                                                                              upper_BV1_bin_limit_vector)
-    print(B_L.min(), B_L.max())
-    print(precipitation_rate.min(), precipitation_rate.max())
     print(bin_mean_precipitation_rate.min(), bin_mean_precipitation_rate.max())
     ####  Output Data as NetCDF  ####
     # Name variables #

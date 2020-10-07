@@ -86,8 +86,6 @@ for year in range(start_year, end_year + 1):
     T.load()
     precipitation_rate.load()
 
-    print(precipitation_rate.min(), precipitation_rate.max())
-
     # Clean up environment #
     gc.collect()
 
