@@ -915,8 +915,8 @@ def compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturat
     exner = (p_L / p_B) ** (R_d / C_p)
 
     # Calculate undilute_B_L, dilution_of_B_L, and B_L using fixed 850 method
-    undilute_B_L = g * W_B * (exner * mwa_ME_surface_to_850 - mwa_ME_saturation_850_to_500) \
-                   / mwa_ME_saturation_850_to_500
+    undilute_B_L = \
+        g * W_B * (exner * mwa_ME_surface_to_850 - mwa_ME_saturation_850_to_500) / mwa_ME_saturation_850_to_500
 
     dilution_of_B_L = -(g * W_L * mwa_saturation_deficit_850_to_500 * Lv / mwa_ME_saturation_850_to_500)
 
