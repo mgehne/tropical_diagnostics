@@ -153,76 +153,56 @@ for year in range(start_year[0], end_year[0] + 1):
     # load datasets of binned composites
     B_L_binned_precipitation_rate_dataset = mccp.process_binned_B_L_dataset(year_limited_paths_B_L_binned)
 
-    binned_undilute_B_L_dilution_dataset = process_binned_undilute_B_L_dilution_dataset(
+    binned_undilute_B_L_dilution_dataset = mccp.process_binned_undilute_B_L_dilution_dataset(
         year_limited_paths_undilute_B_L_dilution_binned)
 
     # Plot B_L binned precipitation rate
-    figure_path_and_name = odir_figures_string_list[simulation_number] + 'B_L_binned_precipitation_rate_composite_' + \
-                           ofile_figures_string_list[simulation_number]
-
+    figure_path_and_name = odir_figures_string_list[0] + 'B_L_binned_precipitation_rate_composite_' + \
+                           ofile_figures_string_list[0]
     print(figure_path_and_name)
-
-    plot_B_L_binned_precipitation_rate(B_L_binned_precipitation_rate_dataset, min_number_of_obs, True, figure_path_and_name)
+    mccp.plot_B_L_binned_precipitation_rate(B_L_binned_precipitation_rate_dataset, min_number_of_obs, True,
+                                            figure_path_and_name)
 
     # Plot undilute B_L vs dilution composites
-
-    figure_path_and_name = odir_figures_string_list[simulation_number] + 'undilute_B_L_vs_dilution_composite_' + \
-                           ofile_figures_string_list[simulation_number]
-
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_' + \
+                           ofile_figures_string_list[0]
     print(figure_path_and_name)
-
-    plot_undilute_B_L_VS_dilution_composites_V1(binned_undilute_B_L_dilution_dataset, min_number_of_obs, True,
+    mccp.plot_undilute_B_L_VS_dilution_composites_V1(binned_undilute_B_L_dilution_dataset, min_number_of_obs, True,
                                                 figure_path_and_name)
 
     # Plot undilute B_L vs dilution composites with log precipitation scale
-
-    figure_path_and_name = odir_figures_string_list[
-                               simulation_number] + 'undilute_B_L_vs_dilution_composite_log_precipitation_' + \
-                           ofile_figures_string_list[simulation_number]
-
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_log_precipitation_' + \
+                           ofile_figures_string_list[0]
     print(figure_path_and_name)
-
-    plot_undilute_B_L_VS_dilution_composites_log_precipitation(binned_undilute_B_L_dilution_dataset, min_number_of_obs,
-                                                               True, figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_log_precipitation(binned_undilute_B_L_dilution_dataset,
+                                                                    min_number_of_obs, True, figure_path_and_name)
 
     # Plot undilute B_L vs dilution composites zoom out
-
-    figure_path_and_name = odir_figures_string_list[simulation_number] + 'undilute_B_L_vs_dilution_composite_ZO_' + \
-                           ofile_figures_string_list[simulation_number]
-
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_ZO_' + \
+                           ofile_figures_string_list[0]
     print(figure_path_and_name)
-
-    plot_undilute_B_L_VS_dilution_composites_V1_zoom_out(binned_undilute_B_L_dilution_dataset, min_number_of_obs, True,
-                                                         figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_V1_zoom_out(binned_undilute_B_L_dilution_dataset,
+                                                              min_number_of_obs, True, figure_path_and_name)
 
     # Plot undilute B_L vs dilution composites with log precipitation scale zoom out
-
-    figure_path_and_name = odir_figures_string_list[
-                               simulation_number] + 'undilute_B_L_vs_dilution_composite_ZO_log_precipitation_' + \
-                           ofile_figures_string_list[simulation_number]
-
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_ZO_log_precipitation_' + \
+                           ofile_figures_string_list[0]
     print(figure_path_and_name)
-
-    plot_undilute_B_L_VS_dilution_composites_log_precipitation_zoom_out(binned_undilute_B_L_dilution_dataset,
-                                                                        min_number_of_obs, True, figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_log_precipitation_zoom_out(binned_undilute_B_L_dilution_dataset,
+                                                                             min_number_of_obs, True, figure_path_and_name)
 
     # Plot undilute B_L vs dilution composites no vectors
-
-    figure_path_and_name = odir_figures_string_list[simulation_number] + 'undilute_B_L_vs_dilution_composite_no_vectors_' + \
-                           ofile_figures_string_list[simulation_number]
-
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_no_vectors_' + \
+                           ofile_figures_string_list[0]
     print(figure_path_and_name)
-
-    plot_undilute_B_L_VS_dilution_composites_no_vectors(binned_undilute_B_L_dilution_dataset, min_number_of_obs, True,
-                                                        figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_no_vectors(binned_undilute_B_L_dilution_dataset,
+                                                             min_number_of_obs, True, figure_path_and_name)
 
     # Plot undilute B_L vs dilution composites with log precipitation scale no vectors
-
-    figure_path_and_name = odir_figures_string_list[
-                               simulation_number] + 'undilute_B_L_vs_dilution_composite_log_precipitation_no_vectors_' + \
-                           ofile_figures_string_list[simulation_number]
-
+    figure_path_and_name = odir_figures_string_list[0] + \
+                           'undilute_B_L_vs_dilution_composite_log_precipitation_no_vectors_' + \
+                           ofile_figures_string_list[0]
     print(figure_path_and_name)
-
-    plot_undilute_B_L_VS_dilution_composites_log_precipitation_no_vectors(binned_undilute_B_L_dilution_dataset,
-                                                                          min_number_of_obs, True, figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_log_precipitation_no_vectors(binned_undilute_B_L_dilution_dataset,
+                                                                               min_number_of_obs, True,
+                                                                               figure_path_and_name)
