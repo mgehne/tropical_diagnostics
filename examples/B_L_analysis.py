@@ -38,14 +38,6 @@ bin_fname_datasets = [odir_datasets_string_list[i] +
                   bin_ofile_datasets_string_list[i] for i in range(len(odir_datasets_string_list))]
 
 
-# output directory for figures
-odir_figures_string_list = ['/data/mgehne/CSF_precipitation_analysis/Plots/']  # TRMM and ERAi
-# Output file name for figures
-ofile_figures_string_list = ofile_datasets_string_list
-# Define output string for figures
-fname_figures = [odir_figures_string_list[i] + ofile_figures_string_list[i] for i in
-                 range(len(odir_figures_string_list))]
-
 print('input file = ' + input_file_string_list_specific_humidity[0])
 print('input file = ' + input_file_string_list_temperature[0])
 print('input file = ' + input_file_string_list_surface_pressure[0])
@@ -123,3 +115,94 @@ for year in range(start_year, end_year + 1):
 
     mcc.calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L,
                                                           year, bin_fname_datasets[0])
+
+
+########## plot results
+start_year = (2015, 2015)
+end_year = (2015, 2015)
+
+input_file_string_list = ['/data/mgehne/CSF_precipitation_analysis/daily_TRMM_ERAI']
+# Output directory for figures string list
+odir_figures_string_list = ['/data/mgehne/CSF_precipitation_analysis/Plots/B_L_analysis/']
+# output file name
+ofile_figures_string_list = ['daily_' + str(start_year[0]) + '_' + str(end_year[0]) + '_TRMM_ERAI.png']
+fname_figures = [odir_figures_string_list[i] + ofile_figures_string_list[i] for i in range(len(odir_figures_string_list))]
+
+min_number_of_obs = 200
+verification_simulation_number = 4
+
+print('input file = ' + input_file_string_list[0])
+print('output figure directory = ' + odir_figures_string_list[0])
+
+# Define paths of files we wish to load #
+paths_all_years_B_L_binned = input_file_string_list[0] + '_B_L_binned_precipitation_rate_2015.nc'
+
+paths_all_years_undilute_B_L_dilution_binned = input_file_string_list[0] + '_undilute_B_L_dilution_binned_data_2015.nc'
+
+#### Limit files to years of interest   ###
+year_limited_paths_B_L_binned = paths_all_years_B_L_binned
+year_limited_paths_undilute_B_L_dilution_binned = paths_all_years_undilute_B_L_dilution_binned
+
+for year in range(start_year[0], end_year[0] + 1):
+
+    # Define year strings #
+    current_year_string = str(year)
+    while len(current_year_string) < 4:
+        current_year_string = '0' + current_year_string
+
+    # load datasets of binned composites
+    B_L_binned_precipitation_rate_dataset = mccp.process_binned_B_L_dataset(year_limited_paths_B_L_binned)
+
+    binned_undilute_B_L_dilution_dataset = mccp.process_binned_undilute_B_L_dilution_dataset(
+        year_limited_paths_undilute_B_L_dilution_binned)
+
+    # Plot B_L binned precipitation rate
+    figure_path_and_name = odir_figures_string_list[0] + 'B_L_binned_precipitation_rate_composite_' + \
+                           ofile_figures_string_list[0]
+    print(figure_path_and_name)
+    mccp.plot_B_L_binned_precipitation_rate(B_L_binned_precipitation_rate_dataset, min_number_of_obs, True,
+                                            figure_path_and_name)
+
+    # Plot undilute B_L vs dilution composites
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_' + \
+                           ofile_figures_string_list[0]
+    print(figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_V1(binned_undilute_B_L_dilution_dataset, min_number_of_obs, True,
+                                                figure_path_and_name)
+
+    # Plot undilute B_L vs dilution composites with log precipitation scale
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_log_precipitation_' + \
+                           ofile_figures_string_list[0]
+    print(figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_log_precipitation(binned_undilute_B_L_dilution_dataset,
+                                                                    min_number_of_obs, True, figure_path_and_name)
+
+    # Plot undilute B_L vs dilution composites zoom out
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_ZO_' + \
+                           ofile_figures_string_list[0]
+    print(figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_V1_zoom_out(binned_undilute_B_L_dilution_dataset,
+                                                              min_number_of_obs, True, figure_path_and_name)
+
+    # Plot undilute B_L vs dilution composites with log precipitation scale zoom out
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_ZO_log_precipitation_' + \
+                           ofile_figures_string_list[0]
+    print(figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_log_precipitation_zoom_out(binned_undilute_B_L_dilution_dataset,
+                                                                             min_number_of_obs, True, figure_path_and_name)
+
+    # Plot undilute B_L vs dilution composites no vectors
+    figure_path_and_name = odir_figures_string_list[0] + 'undilute_B_L_vs_dilution_composite_no_vectors_' + \
+                           ofile_figures_string_list[0]
+    print(figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_no_vectors(binned_undilute_B_L_dilution_dataset,
+                                                             min_number_of_obs, True, figure_path_and_name)
+
+    # Plot undilute B_L vs dilution composites with log precipitation scale no vectors
+    figure_path_and_name = odir_figures_string_list[0] + \
+                           'undilute_B_L_vs_dilution_composite_log_precipitation_no_vectors_' + \
+                           ofile_figures_string_list[0]
+    print(figure_path_and_name)
+    mccp.plot_undilute_B_L_VS_dilution_composites_log_precipitation_no_vectors(binned_undilute_B_L_dilution_dataset,
+                                                                               min_number_of_obs, True,
+                                                                               figure_path_and_name)
