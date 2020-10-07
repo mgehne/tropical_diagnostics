@@ -2,7 +2,6 @@ import numpy as np
 import xarray as xr
 from diagnostics import moisture_convection_coupling as mcc
 from diagnostics import moisture_convection_coupling_plot as mccp
-import gc
 
 # Years to analyze
 start_year = 2015
@@ -88,9 +87,6 @@ for year in range(start_year, end_year + 1):
     Q.load()
     T.load()
 
-    # Clean up environment #
-    gc.collect()
-
     print("Modifying landfrac as needed")
     landfrac = land_sea_mask
     landfrac = landfrac.rename({'land_sea_mask', 'landfrac'})
@@ -128,8 +124,6 @@ for year in range(start_year, end_year + 1):
     # print("Calculating true model pressure")
     # true_pressure_midpoint,true_pressure_interface =
     # mcc.calculate_true_pressure_model_pressure_midpoints_interfaces_ml(hyam, hybm, hyai, hybi, P0, PS)
-    # Clean up environment #
-    # gc.collect();
 
     ################################################################
     ####  USE THIS METHOD FOR DATA ALREADY ON PRESSURE LEVELS.  ####

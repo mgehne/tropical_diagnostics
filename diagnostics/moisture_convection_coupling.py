@@ -106,6 +106,38 @@ def calculate_saturation_specific_humidity(pressure, temperature):
     return saturation_specific_humidity
 
 
+def calculate_moist_enthalpy(temperature, specific_humidity):
+    """
+    Calculate the moist enthalpy from temperature and specific humidity.
+    :param temperature: temperature array in units of K
+    :param specific_humidity: specific humidity array in units of Kg Kg^-1
+    :return: moist enthalpy array
+    """
+    # Define constants
+    Cp = 1004.  # [J kg^-1 K^-1]
+    Lv = 2.5 * 10. ** 6.  # [J kg^-1]
+    # Calculate MSE
+    ME = (Cp * temperature) + (Lv * specific_humidity)  # [J kg^-1]
+
+    return ME
+
+
+def calculate_saturation_moist_enthalpy(temperature, saturation_specific_humidity):
+    """
+    Calculate the saturation moist enthalpy from temperature and saturation specific humidity.
+    :param temperature: temperature array in units of K
+    :param saturation_specific_humidity: saturation specific humidity array in units of Kg Kg^-1
+    :return: saturation moist enthalpy array
+    """
+    # Define constants
+    Cp = 1004.  # [J kg^-1 K^-1]
+    Lv = 2.5 * 10. ** 6.  # [J kg^-1]
+    # Calculate MSE_sat
+    ME_saturation = (Cp * temperature) + (Lv * saturation_specific_humidity)  # [J kg^-1]
+
+    return ME_saturation
+
+  
 def mass_weighted_vertical_integral_w_nan(variable_to_integrate, pressure_model_level_midpoint_Pa,
                                           pressure_model_level_interface_Pa, max_pressure_integral_array_Pa,
                                           min_pressure_integral_array_Pa):
@@ -776,3 +808,442 @@ def process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files):
     binned_csf_precipitation_rate_dataset = binned_csf_precipitation_rate_dataset.squeeze()
 
     return binned_csf_precipitation_rate_dataset
+
+
+def process_binned_B_L_dataset(filename):
+    binned_B_L_dataset = xr.open_dataset(filename)
+
+    # Calculate the bin means over all years #
+    more_than_zero_obs_mask = binned_B_L_dataset.bin_number_of_samples.sum('year') > 0
+
+    binned_B_L_dataset['bin_mean_precipitation_rate'] = \
+        (binned_B_L_dataset.bin_mean_precipitation_rate * binned_B_L_dataset.bin_number_of_samples).sum(
+        'year').where(more_than_zero_obs_mask, other=np.nan) / \
+        binned_B_L_dataset.bin_number_of_samples.sum('year').where(more_than_zero_obs_mask, other=np.nan)
+
+    # Sum number of observations in each bin over all years #
+    binned_B_L_dataset['bin_number_of_samples'] = binned_B_L_dataset.bin_number_of_samples.sum('year')
+
+    # Remove year dimension
+    return binned_B_L_dataset
+
+
+def process_binned_undilute_B_L_dilution_dataset(filename):
+    """
+    Read binned undilute dataset from file.
+    :param filename: input filename
+    :return: data set
+    """
+    binned_undilute_B_L_dilution_dataset = xr.open_dataset(filename)
+
+    # Calculate the bin means over all years #
+    more_than_zero_obs_mask = binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year') > 0
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_precipitation_rate'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_precipitation_rate *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_dilution_leading'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_dilution_leading *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_undilute_B_L_leading'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_undilute_B_L_leading *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_dilution_lagging'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_dilution_lagging *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_undilute_B_L_lagging'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_undilute_B_L_lagging *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_dilution_centered'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_dilution_centered *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_undilute_B_L_centered'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_undilute_B_L_centered *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    # Sum number of observations in each bin over all years #
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_of_samples'] = binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year')
+
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_dilution_leading'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_dilution_leading.sum(
+        'year')
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_undilute_B_L_leading'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_undilute_B_L_leading.sum(
+        'year')
+
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_dilution_lagging'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_dilution_lagging.sum(
+        'year')
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_undilute_B_L_lagging'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_undilute_B_L_lagging.sum(
+        'year')
+
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_dilution_centered'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_dilution_centered.sum(
+        'year')
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_undilute_B_L_centered'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_undilute_B_L_centered.sum(
+        'year')
+
+    # Remove year dimension
+    binned_undilute_B_L_dilution_dataset = binned_undilute_B_L_dilution_dataset.squeeze()
+
+    return binned_undilute_B_L_dilution_dataset
+
+
+def output_mwa(filename, landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
+               mwa_saturation_deficit_850_to_500):
+    """
+    Write B_L variables to file.
+    :param filename: filename to write to.
+    :param landfrac: landfraction array
+    :param mwa_ME_surface_to_850: mass weighted average of moist enthalpy from the surface to 850hPa
+    :param mwa_ME_saturation_850_to_500: mass weighted average of saturation moist enthalpy from 850hPa to 500hPa
+    :param mwa_saturation_deficit_850_to_500: mass weighted average of saturation deficit from 850hPa to 500hPa
+    :return:
+    """
+    # Name variables #
+    landfrac.name = 'landfrac'
+    mwa_ME_surface_to_850.name = 'mwa_ME_surface_to_850'
+    mwa_ME_saturation_850_to_500.name = 'mwa_ME_saturation_850_to_500'
+    mwa_saturation_deficit_850_to_500.name = 'mwa_saturation_deficit_850_to_500'
+
+    # Add desired attributes #
+    landfrac.attrs['Units'] = 'Fraction of land, 0 = all water, 1 = all land'
+    mwa_ME_surface_to_850.attrs['Units'] = '[J Kg^-1]'
+    mwa_ME_saturation_850_to_500.attrs['Units'] = '[J Kg^-1]'
+    mwa_saturation_deficit_850_to_500.attrs['Units'] = '[Kg Kg^-1]'
+
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge(
+        [landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500])
+
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(filename)
+
+
+def compute_mwa_ME_components(Q, T, PS):
+    """
+    Compute mass weighted vertically averaged moist enthalpy components for B_L calculation.
+    :param Q: specific humidity array
+    :param T: temperature array
+    :param PS: actual surface pressure
+    :return: mass weighted vertical averages
+    """
+
+    print("Calculating true model pressure")
+    true_pressure_midpoint, true_pressure_interface = calculate_true_pressure_model_pressure_midpoints_interfaces_pl(
+        Q['level'] * 100., Q['time'], Q['level'], Q['lat'], Q['lon'], PS)
+
+    print("Calculating saturation specific humidity")
+    saturation_specific_humidity = xr.apply_ufunc(calculate_saturation_specific_humidity, true_pressure_midpoint, T,
+                                                  output_dtypes=[Q.dtype])
+
+    saturation_deficit = saturation_specific_humidity - Q
+
+    ME = xr.apply_ufunc(calculate_moist_enthalpy, T, Q, output_dtypes=[T.dtype])
+    ME_saturation = xr.apply_ufunc(calculate_saturation_moist_enthalpy, T, saturation_specific_humidity,
+                                   output_dtypes=[T.dtype])
+
+    print('Mass Weighted Averaging')
+    _, _, mwa_ME_surface_to_850 = mass_weighted_vertical_integral_w_nan(ME, true_pressure_midpoint,
+                                                                            true_pressure_interface, PS, 85000)
+
+    _, _, mwa_ME_saturation_850_to_500 = mass_weighted_vertical_integral_w_nan(ME_saturation,
+                                                                                   true_pressure_midpoint,
+                                                                                   true_pressure_interface, 85000,
+                                                                                   50000)
+
+    _, _, mwa_saturation_deficit_850_to_500 = mass_weighted_vertical_integral_w_nan(saturation_deficit,
+                                                                                        true_pressure_midpoint,
+                                                                                        true_pressure_interface, 85000,
+                                                                                        50000)
+
+    return mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500
+
+
+def compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturation_deficit_850_to_500):
+    """
+    Calculate B_L and its components.
+    :param mwa_ME_surface_to_850:
+    :param mwa_ME_saturation_850_to_500:
+    :param mwa_saturation_deficit_850_to_500:
+    :return:
+    """
+    # Define constants
+    g = 9.8  # [m s^-2]
+    Lv = 2.5 * 10. ** 6.  # [J kg^-1]
+    R_d = 287.  # [J Kg^-1 K^-1] Gas constant dry air
+    C_p = 1004.  # [J Kg^-1 K^-1] Specific heat capacity of dry air
+
+    # Calculate W_B and W_L
+    # a = 1 # determined by mass inflow profile
+    # b = 1 # determined by mass inflow profile
+
+    # delta_P_B = 150 # delta pressure of lower level
+    # delta_P_L = 350 # delta pressure of upper level
+
+    # W_B = ((a * delta_P_B) /  (b * delta_P_L)) * np.log((a * delta_P_B + b * delta_P_L) / (a * delta_P_B))
+    # W_L = 1 - W_B
+
+    W_B = 0.5  # Set to 0.5 as simplifying assumption
+    W_L = 0.5  # Set to 0.5 as simplifying assumption
+
+    # Calculate Exner Function
+    p_B = 925  # [hPa], mean BL pressure
+    p_L = 675  # [hPa], mean LFT pressure
+
+    exner = (p_L / p_B) ** (R_d / C_p)
+
+    # Calculate undilute_B_L, dilution_of_B_L, and B_L using fixed 850 method
+    undilute_B_L = \
+        g * W_B * (exner * mwa_ME_surface_to_850 - mwa_ME_saturation_850_to_500) / mwa_ME_saturation_850_to_500
+
+    dilution_of_B_L = -(g * W_L * mwa_saturation_deficit_850_to_500 * Lv / mwa_ME_saturation_850_to_500)
+
+    B_L = undilute_B_L + dilution_of_B_L
+
+    return B_L, undilute_B_L, dilution_of_B_L
+
+
+def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L, year,
+                                                      fname_datasets_for_simulation):
+    """
+
+    :param precipitation_rate:
+    :param B_L:
+    :param undilute_B_L:
+    :param dilution_of_B_L:
+    :param year:
+    :param fname_datasets_for_simulation:
+    :return:
+    """
+    current_year_string = str(year)
+
+    while len(current_year_string) < 4:
+        current_year_string = '0' + current_year_string
+
+    ##############################################################################################
+    ####  Calculate Backwards, Forwards and Center Differences of CSF and Precipitation Rate  ####
+    ##############################################################################################
+
+    print('Calculating Differences')
+
+    delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+        calculate_backward_forward_center_difference(precipitation_rate)
+
+    delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = calculate_backward_forward_center_difference(B_L)
+
+    delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
+        calculate_backward_forward_center_difference(undilute_B_L)
+
+    delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
+        calculate_backward_forward_center_difference(dilution_of_B_L)
+
+
+    #########################################
+    ####  Bin Precipitation Rate By B_L  ####
+    #########################################
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-1.5, 0.5, 0.025)
+    upper_BV1_bin_limit_vector = np.arange(-1.5 + 0.025, 0.5 + 0.025, 0.025)
+    bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, B_L,
+                                                                             lower_BV1_bin_limit_vector,
+                                                                             upper_BV1_bin_limit_vector)
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate])
+    # Add desired attributes #
+    output_dataset.attrs['Comments'] = 'Binning variables 1 (BV1) is "B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(
+        fname_datasets_for_simulation + '_B_L_binned_precipitation_rate_' + current_year_string + '.nc', 'w')
+
+    ##################################################
+    ####  Bin Precipitation Rate By Undilute B_L  ####
+    ##################################################
+
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-1.5, 0.5, 0.025)
+    upper_BV1_bin_limit_vector = np.arange(-1.5 + 0.025, 0.5 + 0.025, 0.025)
+    bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, undilute_B_L,
+                                                                             lower_BV1_bin_limit_vector,
+                                                                             upper_BV1_bin_limit_vector)
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate])
+    # Add desired attributes #
+    output_dataset.attrs[
+        'Comments'] = 'Binning variables 1 (BV1) is "Undilte B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(
+        fname_datasets_for_simulation + '_undilute_B_L_binned_precipitation_rate_' + current_year_string + '.nc', 'w')
+
+    #####################################################
+    ####  Bin Precipitation Rate By Dilution of B_L  ####
+    #####################################################
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-1.5, 0.5, 0.025)
+    upper_BV1_bin_limit_vector = np.arange(-1.5 + 0.025, 0.5 + 0.025, 0.025)
+    bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, dilution_of_B_L,
+                                                                             lower_BV1_bin_limit_vector,
+                                                                             upper_BV1_bin_limit_vector)
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate])
+    # Add desired attributes #
+    output_dataset.attrs[
+        'Comments'] = 'Binning variables 1 (BV1) is "Dilution of B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(fname_datasets_for_simulation + '_dilution_of_B_L_binned_precipitation_rate_' +
+                             current_year_string + '.nc', 'w')
+
+    ########################################################
+    ####  Bin By Both Undilute B_L and Dilution of B_L  ####
+    ########################################################
+    print('Binning and Compositing')
+    # Define bins #
+    lower_BV1_bin_limit_vector = np.arange(-0.4, 0.0, 0.01)  # Dilution
+    upper_BV1_bin_limit_vector = np.arange(-0.4 + 0.01, 0.0 + 0.01, 0.01)  # Dilution
+    lower_BV2_bin_limit_vector = np.arange(-0.25, 0.25, 0.01)  # Undilute
+    upper_BV2_bin_limit_vector = np.arange(-0.25 + 0.01, 0.25 + 0.01, 0.01)  # Undilute
+
+    bin_mean_precipitation_rate, bin_number_pos_precipitation_rate, bin_number_of_samples = bin_by_two_variables(
+        precipitation_rate, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    bin_mean_delta_dilution_leading, bin_number_pos_delta_dilution_leading, _ = bin_by_two_variables(
+        delta_dilution_leading, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_undilute_B_L_leading, bin_number_pos_delta_undilute_B_L_leading, _ = bin_by_two_variables(
+        delta_undilute_B_L_leading, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector,
+        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    bin_mean_delta_dilution_lagging, bin_number_pos_delta_dilution_lagging, _ = bin_by_two_variables(
+        delta_dilution_lagging, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_undilute_B_L_lagging, bin_number_pos_delta_undilute_B_L_lagging, _ = bin_by_two_variables(
+        delta_undilute_B_L_lagging, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector,
+        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    bin_mean_delta_dilution_centered, bin_number_pos_delta_dilution_centered, _ = bin_by_two_variables(
+        delta_dilution_centered, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_undilute_B_L_centered, bin_number_pos_delta_undilute_B_L_centered, _ = bin_by_two_variables(
+        delta_undilute_B_L_centered, dilution_of_B_L, undilute_B_L, lower_BV1_bin_limit_vector,
+        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+
+    ####  Output Data as NetCDF  ####
+    # Name variables #
+    bin_number_of_samples.name = 'bin_number_of_samples'
+
+    bin_mean_precipitation_rate.name = 'bin_mean_precipitation_rate'
+
+    bin_mean_delta_dilution_leading.name = 'bin_mean_delta_dilution_leading'
+    bin_mean_delta_undilute_B_L_leading.name = 'bin_mean_delta_undilute_B_L_leading'
+    bin_number_pos_delta_dilution_leading.name = 'bin_number_pos_delta_dilution_leading'
+    bin_number_pos_delta_undilute_B_L_leading.name = 'bin_number_pos_delta_undilute_B_L_leading'
+
+    bin_mean_delta_dilution_lagging.name = 'bin_mean_delta_dilution_lagging'
+    bin_mean_delta_undilute_B_L_lagging.name = 'bin_mean_delta_undilute_B_L_lagging'
+    bin_number_pos_delta_dilution_lagging.name = 'bin_number_pos_delta_dilution_lagging'
+    bin_number_pos_delta_undilute_B_L_lagging.name = 'bin_number_pos_delta_undilute_B_L_lagging'
+
+    bin_mean_delta_dilution_centered.name = 'bin_mean_delta_dilution_centered'
+    bin_mean_delta_undilute_B_L_centered.name = 'bin_mean_delta_undilute_B_L_centered'
+    bin_number_pos_delta_dilution_centered.name = 'bin_number_pos_delta_dilution_centered'
+    bin_number_pos_delta_undilute_B_L_centered.name = 'bin_number_pos_delta_undilute_B_L_centered'
+
+    # Add year dimension to all variables #
+    bin_number_of_samples = bin_number_of_samples.assign_coords(year=year).expand_dims('year')
+
+    bin_mean_precipitation_rate = bin_mean_precipitation_rate.assign_coords(year=year).expand_dims('year')
+
+    bin_mean_delta_dilution_leading = bin_mean_delta_dilution_leading.assign_coords(year=year).expand_dims('year')
+    bin_mean_delta_undilute_B_L_leading = bin_mean_delta_undilute_B_L_leading.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_dilution_leading = bin_number_pos_delta_dilution_leading.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_undilute_B_L_leading = bin_number_pos_delta_undilute_B_L_leading.assign_coords(
+        year=year).expand_dims('year')
+
+    bin_mean_delta_dilution_lagging = bin_mean_delta_dilution_lagging.assign_coords(year=year).expand_dims('year')
+    bin_mean_delta_undilute_B_L_lagging = bin_mean_delta_undilute_B_L_lagging.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_dilution_lagging = bin_number_pos_delta_dilution_lagging.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_undilute_B_L_lagging = bin_number_pos_delta_undilute_B_L_lagging.assign_coords(
+        year=year).expand_dims('year')
+
+    bin_mean_delta_dilution_centered = bin_mean_delta_dilution_centered.assign_coords(year=year).expand_dims('year')
+    bin_mean_delta_undilute_B_L_centered = bin_mean_delta_undilute_B_L_centered.assign_coords(year=year).expand_dims(
+        'year')
+    bin_number_pos_delta_dilution_centered = bin_number_pos_delta_dilution_centered.assign_coords(
+        year=year).expand_dims('year')
+    bin_number_pos_delta_undilute_B_L_centered = bin_number_pos_delta_undilute_B_L_centered.assign_coords(
+        year=year).expand_dims('year')
+
+    # Merge all neccessary dataarrays to a single dataset #
+    output_dataset = xr.merge([bin_number_of_samples, bin_mean_precipitation_rate, bin_mean_delta_dilution_leading,
+                               bin_mean_delta_undilute_B_L_leading, bin_number_pos_delta_dilution_leading,
+                               bin_number_pos_delta_undilute_B_L_leading, \
+                               bin_mean_delta_dilution_lagging, bin_mean_delta_undilute_B_L_lagging,
+                               bin_number_pos_delta_dilution_lagging, bin_number_pos_delta_undilute_B_L_lagging, \
+                               bin_mean_delta_dilution_centered, bin_mean_delta_undilute_B_L_centered,
+                               bin_number_pos_delta_dilution_centered, bin_number_pos_delta_undilute_B_L_centered])
+    # Add desired attributes #
+    output_dataset.attrs[
+        'Comments'] = 'Binning variables 1 (BV1) is "dilution_of_B_L" [m s^-2], binning variables 2 (BV2) is "undilute_B_L" [m s^-2], Precipitation rate in [mm day^-1]'
+
+    # Output dataset to NetCDF #
+    output_dataset.to_netcdf(
+        fname_datasets_for_simulation + '_undilute_B_L_dilution_binned_data_' + current_year_string + '.nc', mode='w')
