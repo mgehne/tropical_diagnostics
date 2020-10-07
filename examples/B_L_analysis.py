@@ -158,9 +158,9 @@ for year in range(start_year[0], end_year[0] + 1):
         current_year_string = '0' + current_year_string
 
     # load datasets of binned composites
-    B_L_binned_precipitation_rate_dataset = mccp.process_binned_B_L_dataset(year_limited_paths_B_L_binned)
+    B_L_binned_precipitation_rate_dataset = mcc.process_binned_B_L_dataset(year_limited_paths_B_L_binned)
 
-    binned_undilute_B_L_dilution_dataset = mccp.process_binned_undilute_B_L_dilution_dataset(
+    binned_undilute_B_L_dilution_dataset = mcc.process_binned_undilute_B_L_dilution_dataset(
         year_limited_paths_undilute_B_L_dilution_binned)
 
     # Plot B_L binned precipitation rate
