@@ -198,8 +198,7 @@ def plot_csf_binned_precipitation_rate(csf_binned_precipitation_rate_dataset, mi
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_B_L_binned_precipitation_rate(binned_B_L_dataset, min_number_of_obs, save_fig_boolean=False,
@@ -273,8 +272,7 @@ def plot_B_L_binned_precipitation_rate(binned_B_L_dataset, min_number_of_obs, sa
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_CSF_precipitation_rate_composites(binned_csf_precipitation_rate_dataset, min_number_of_obs,
@@ -382,8 +380,7 @@ def plot_CSF_precipitation_rate_composites(binned_csf_precipitation_rate_dataset
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_CSF_precipitation_rate_difference_composites(binned_csf_precipitation_rate_dataset_baseline,
@@ -517,8 +514,7 @@ def plot_CSF_precipitation_rate_difference_composites(binned_csf_precipitation_r
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_undilute_B_L_VS_dilution_composites_V1(binned_undilute_B_L_dilution_dataset, min_number_of_obs,
@@ -666,8 +662,7 @@ def plot_undilute_B_L_VS_dilution_composites_V1(binned_undilute_B_L_dilution_dat
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_undilute_B_L_VS_dilution_composites_log_precipitation(binned_undilute_B_L_dilution_dataset, min_number_of_obs,
@@ -813,8 +808,7 @@ def plot_undilute_B_L_VS_dilution_composites_log_precipitation(binned_undilute_B
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_undilute_B_L_VS_dilution_composites_V1_zoom_out(binned_undilute_B_L_dilution_dataset, min_number_of_obs,
@@ -960,8 +954,7 @@ def plot_undilute_B_L_VS_dilution_composites_V1_zoom_out(binned_undilute_B_L_dil
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_undilute_B_L_VS_dilution_composites_log_precipitation_zoom_out(binned_undilute_B_L_dilution_dataset,
@@ -1106,8 +1099,7 @@ def plot_undilute_B_L_VS_dilution_composites_log_precipitation_zoom_out(binned_u
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_undilute_B_L_VS_dilution_composites_no_vectors(binned_undilute_B_L_dilution_dataset, min_number_of_obs,
@@ -1240,8 +1232,7 @@ def plot_undilute_B_L_VS_dilution_composites_no_vectors(binned_undilute_B_L_dilu
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
 
 def plot_undilute_B_L_VS_dilution_composites_log_precipitation_no_vectors(binned_undilute_B_L_dilution_dataset,
@@ -1374,5 +1365,4 @@ def plot_undilute_B_L_VS_dilution_composites_log_precipitation_no_vectors(binned
     if save_fig_boolean:
         plt.savefig(figure_path_and_name, dpi=1000, facecolor='w', edgecolor='w',
                     orientation='portrait', papertype=None, format='png',
-                    transparent=False, bbox_inches='tight', pad_inches=0.0,
-                    frameon=None, metadata=None)
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
