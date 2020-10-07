@@ -86,6 +86,8 @@ for year in range(start_year, end_year + 1):
     T.load()
     precipitation_rate.load()
 
+    print(precipitation_rate.min(), precipitation_rate.max())
+
     # Clean up environment #
     gc.collect()
 
@@ -129,7 +131,6 @@ ofile_figures_string_list = ['daily_' + str(start_year[0]) + '_' + str(end_year[
 fname_figures = [odir_figures_string_list[i] + ofile_figures_string_list[i] for i in range(len(odir_figures_string_list))]
 
 min_number_of_obs = 200
-verification_simulation_number = 4
 
 print('input file = ' + input_file_string_list[0])
 print('output figure directory = ' + odir_figures_string_list[0])
