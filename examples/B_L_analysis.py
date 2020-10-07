@@ -2,7 +2,6 @@ import numpy as np
 import xarray as xr
 from diagnostics import moisture_convection_coupling as mcc
 from diagnostics import moisture_convection_coupling_plot as mccp
-import gc
 
 # Years to analyze
 start_year = 2015
@@ -85,9 +84,6 @@ for year in range(start_year, end_year + 1):
     Q.load()
     T.load()
     precipitation_rate.load()
-
-    # Clean up environment #
-    gc.collect()
 
     # rename land_sea_mask
     landfrac = land_sea_mask

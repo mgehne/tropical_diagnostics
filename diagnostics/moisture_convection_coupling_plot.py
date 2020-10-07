@@ -4,7 +4,6 @@ Code contributed by Brandon Wolding.
 """
 
 import numpy as np
-import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
