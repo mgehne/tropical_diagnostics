@@ -13,7 +13,7 @@ in addition to surface pressure and a land-sea mask. The vertical coherence diag
 levels: temperature, specific humidity, divergence, zonal and meridional winds. However, it is up to the user to decide
 which variables are most useful to the user's specific application.
 
-## diagnostics
+## tropical_diagnostics
 Contains the functions and modules necessary to compute the various diagnostics. The main diagnostics
 included are:
 
