@@ -5,7 +5,7 @@ all variables specified below and plots the average vertical coherence profile a
 """
 import xarray as xr
 import numpy as np
-import diagnostics.vertical_coherence_plotly as vcp
+import tropical_diagnostics.vertical_coherence_plotly as vcp
 
 
 var1 = "precip"  # variable name of data in the precipitation file

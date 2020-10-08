@@ -12,7 +12,7 @@ cross_phase_2d: Compute phase angled from averaged cross-spectral components
 """
 import numpy as np
 import xarray as xr
-from diagnostics import spacetime as st
+from tropical_diagnostics import spacetime as st
 
 def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglevel):
     """

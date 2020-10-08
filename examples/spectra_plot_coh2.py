@@ -4,7 +4,7 @@ import xarray as xr
 import sys
 
 sys.path.append('../../')
-from diagnostics import spacetime_plot as stp
+from tropical_diagnostics import spacetime_plot as stp
 
 
 pathdata = '../data/'

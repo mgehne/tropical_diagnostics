@@ -7,9 +7,9 @@ sys.path.append('../../')
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
-from diagnostics.spacetime import mjo_cross
-from diagnostics.spacetime import get_symmasymm
-from diagnostics.utils import save_Spectra
+from tropical_diagnostics.spacetime import mjo_cross
+from tropical_diagnostics.spacetime import get_symmasymm
+from tropical_diagnostics.utils import save_Spectra
 
 """
 Set parameters for the spectra calculation.

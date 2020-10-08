@@ -7,9 +7,9 @@ sys.path.append('../../')
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
-from diagnostics.hovmoeller_plotly import plot_pattcorr
-from diagnostics.hovmoeller_calc import lat_avg
-from diagnostics.hovmoeller_calc import pattern_corr
+from tropical_diagnostics.hovmoeller_plotly import plot_pattcorr
+from tropical_diagnostics.hovmoeller_calc import lat_avg
+from tropical_diagnostics.hovmoeller_calc import pattern_corr
 
 plotpath = '../plots/'
 

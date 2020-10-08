@@ -1,7 +1,7 @@
 import numpy as np
 import xarray as xr
-from diagnostics import moisture_convection_coupling as mcc
-from diagnostics import moisture_convection_coupling_plot as mccp
+from tropical_diagnostics import moisture_convection_coupling as mcc
+from tropical_diagnostics import moisture_convection_coupling_plot as mccp
 
 # Years to analyze
 start_year = 2015
