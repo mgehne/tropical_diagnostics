@@ -115,6 +115,95 @@ def mjo_cross_segment(XX, YY, opt=False):
     return STC
 
 
+def mjo_cross_segment_realfft(XX, YY, opt=False):
+    """
+    Compute the FFT to get the power and cross-spectra for one time segment.
+    :param XX: Input array (time, lat, lon)
+    :param YY: Input array (time, lat, lon)
+    :param opt: Optional parameter, not currently used. Set to False.
+    :return STC: Spectra array of shape (8, nfreq, nwave). Last 4 entries are blank and need to be computed by calling
+    mjo_cross_coh2pha. The first 4 entries contain power spectra for XX, power spectra for YY, co-spectra between XX
+    and YY, quadrature spectra between XX and YY.
+    """
+    NT, NM, NL = XX.shape
+
+    XX = np.transpose(XX, axes=[1, 2, 0])  # is now (lat, lon, time)
+    YY = np.transpose(YY, axes=[1, 2, 0])  # is now (lat, lon, time)
+
+    # compute fourier decomposition in time and longitude
+    Xfft = np.fft.rfft2(XX, axes=(1, 2))  # (lat, nlon, ntim)
+    Yfft = np.fft.rfft2(YY, axes=(1, 2))   # (lat, nlon, ntim)
+
+    # return array to (time, lat, lon)
+    Xfft = np.transpose(Xfft, axes=[2, 0, 1])
+    Yfft = np.transpose(Yfft, axes=[2, 0, 1])
+
+    # normalize by # time samples
+    Xfft = Xfft / (NT * NL)
+    Yfft = Yfft / (NT * NL)
+
+    # shift 0 wavenumber to the center
+    Xfft = np.fft.fftshift(Xfft, axes=2)
+    Yfft = np.fft.fftshift(Yfft, axes=2)
+
+    # average the power spectra across all latitudes
+    PX = np.average(np.square(np.abs(Xfft)), axis=1)
+    PY = np.average(np.square(np.abs(Yfft)), axis=1)
+
+    # compute co- and quadrature spectrum
+    PXY = np.conj(Xfft) * Yfft
+    CXY = np.average(np.real(PXY), axis=1)
+    QXY = np.average(np.imag(PXY), axis=1)
+
+    PX = PX[:, ::-1]
+    PY = PY[:, ::-1]
+    CXY = CXY[:, ::-1]
+    QXY = QXY[:, ::-1]
+
+    # test if time and longitude are odd or even, fft algorithm
+    # returns the Nyquist frequency once for even NT or NL and twice
+    # if they are odd
+    NT = int(NT / 2) + 1
+    if NT % 2 == 1:
+        nfreq = NT
+        if NL % 2 == 1:
+            nwave = NL
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, :NL] = PX
+            STC[1, :NT, :NL] = PY
+            STC[2, :NT, :NL] = CXY
+            STC[3, :NT, :NL] = QXY
+        else:
+            nwave = NL + 1
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, 1:NL + 1] = PX
+            STC[1, :NT, 1:NL + 1] = PY
+            STC[2, :NT, 1:NL + 1] = CXY
+            STC[3, :NT, 1:NL + 1] = QXY
+            STC[:, :, 0] = STC[:, :, NL]
+    else:
+        nfreq = NT + 1
+        if NL % 2 == 1:
+            nwave = NL
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, :NL] = PX
+            STC[1, :NT, :NL] = PY
+            STC[2, :NT, :NL] = CXY
+            STC[3, :NT, :NL] = QXY
+            STC[:, NT, :] = STC[:, 0, :]
+        else:
+            nwave = NL + 1
+            STC = np.zeros([8, nfreq, nwave], dtype='double')
+            STC[0, :NT, 1:NL + 1] = PX
+            STC[1, :NT, 1:NL + 1] = PY
+            STC[2, :NT, 1:NL + 1] = CXY
+            STC[3, :NT, 1:NL + 1] = QXY
+            STC[:, NT, :] = STC[:, 0, :]
+            STC[:, :, 0] = STC[:, :, NL]
+
+    return STC
+
+
 def get_symmasymm(X, lat, opt=False):
     """
     Split the data in X into symmetric and anti-symmetric
@@ -135,7 +224,7 @@ def get_symmasymm(X, lat, opt=False):
                 for ll in range(NM // 2):
                     x[:, ll, :] = 0.5 * (X[:, ll, :] + X[:, NM - ll - 1, :])
         else:
-            if opt == 'asymm':
+            if opt == 'asymm' or opt == 'anti-symm':
                 x = X[:, lat[:] > 0, :]
                 if len(lat) % 2 == 1:
                     for ll in range(NM // 2):
@@ -170,12 +259,8 @@ def mjo_cross_coh2pha(STC, opt=False):
     PHAS = np.arctan2(QXY, CXY)
 
     V1 = -QXY / np.sqrt(np.square(QXY) + np.square(CXY))
-    # V1[:,0:nwave//2+1]  = -1*QXY[:,0:nwave//2+1]/np.sqrt( np.square(QXY[:,0:nwave//2+1])+np.square(CXY[:,0:nwave//2+1]) )
-    # QXY[:,0:nwave//2+1] = -1*QXY[:,0:nwave//2+1]
-
     V2 = CXY / np.sqrt(np.square(QXY) + np.square(CXY))
 
-    # STC[3,:,:] = QXY
     STC[4, :, :] = COH2
     STC[5, :, :] = PHAS
     STC[6, :, :] = V1
@@ -225,31 +310,19 @@ def smooth121_1D(array_in):
 
     temp = np.copy(array_in)
     array_out = np.copy(temp) * 0.0
-    weights = np.array([1.0, 2.0, 1.0]) / 4.0
-    sma = np.convolve(temp, weights, 'valid')
-    array_out[1:-1] = sma
+    #weights = np.array([1.0, 2.0, 1.0]) / 4.0
+    #sma = np.convolve(temp, weights, 'valid')
+    #array_out[1:-1] = sma
 
-    # Now its time to correct the borders
-    if np.isnan(temp[1]):
-        if np.isnan(temp[0]):
+    for i in np.arange(0, len(temp), 1):
+        if np.isnan(temp[i]):
             array_out[0] = np.nan
+        elif i == 0 or np.isnan(temp[i-1]):
+            array_out[i] = (3*temp[i]+temp[i+1])/4
+        elif i == (len(temp)-1) or np.isnan(temp[i+1]):
+            array_out[i] = (3 * temp[i] + temp[i-1]) / 4
         else:
-            array_out[0] = temp[0]
-    else:
-        if np.isnan(temp[0]):
-            array_out[0] = np.nan
-        else:
-            array_out[0] = (temp[1] + 3.0 * temp[0]) / 4.0
-    if np.isnan(temp[-2]):
-        if np.isnan(temp[-1]):
-            array_out[-1] = np.nan
-        else:
-            array_out[-2] = array_out[-2]
-    else:
-        if np.isnan(temp[-1]):
-            array_out[-1] = np.nan
-        else:
-            array_out[-1] = (temp[-2] + 3.0 * temp[-1]) / 4.0
+            array_out[i] = (temp[i+1] + 2 * temp[i] + temp[i-1]) / 4
 
     return array_out
 
@@ -317,10 +390,10 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     # test if time and longitude are odd or even, fft algorithm
     # returns the Nyquist frequency once for even NT or NL and twice
     # if they are odd
-    if segLen % 2 == 1:
-        nfreq = segLen
+    if (segLen/2+1) % 2 == 1:
+        nfreq = int(segLen/2) + 1
     else:
-        nfreq = segLen + 1
+        nfreq = int(segLen/2) + 2
     if mlon % 2 == 1:
         nwave = mlon
     else:
@@ -329,7 +402,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     # initialize spectrum array
     STC = np.zeros([8, nfreq, nwave], dtype='double')
     wave = np.arange(-int(nwave / 2), int(nwave / 2) + 1, 1.)
-    freq = np.arange(-1. * int(segLen / 2), 1. * int(segLen / 2) + 1., 1) / (segLen)
+    freq = np.linspace(0, 0.5, num=nfreq)
 
     # find time-mean index
     indfreq0 = np.where(freq == 0.)[0]
@@ -346,7 +419,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
 
         XX = x[ntStrt:ntLast, :, :] * window
         YY = y[ntStrt:ntLast, :, :] * window
-        STCseg = mjo_cross_segment(XX, YY, 0)
+        STCseg = mjo_cross_segment_realfft(XX, YY, 0)
         # set time-mean power to NaN
         STCseg[:, indfreq0, :] = np.nan
         # apply 1-2-1 smoother in frequency

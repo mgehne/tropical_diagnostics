@@ -12,7 +12,7 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
-import tropical_diagnostics.utils.matsuno_plot as mp
+import tropical_diagnostics.matsuno_plot as mp
 
 pi = np.pi
 re = 6.371008e6  # Earth's radius in meters
@@ -22,7 +22,7 @@ deg2rad = pi / 180  # Degrees to Radians
 sec2day = 1. / (24. * 60. * 60.)  # Seconds to Days
 
 """
-The following utilities include a background flow for mid-latitude Rossby wave dispersion
+The following utilities include a zonal background flow for mid-latitude Rossby wave dispersion
 curves.
 Created by: Maria Gehne
 2019
@@ -183,6 +183,7 @@ def coh_resources(contourmin=0.05, contourmax=0.55, contourspace=0.05, FillMode=
     res = ngl.Resources()
     res.nglDraw = False
     res.nglFrame = False
+    res.nglMaximize = False
     res.cnLinesOn = False
     res.cnFillOn = True
     res.cnFillMode = FillMode
@@ -236,23 +237,27 @@ def panel_resources(nplot=4, abc=['a', 'b', 'c', 'd']):
     # res_p.nglPanelBottom = 0.05
     res_p.lbOrientation = "vertical"
     res_p.nglPanelLabelBarLabelFontHeightF = 0.02
-    res_p.nglPanelLabelBarHeightF = 0.37
-    res_p.nglPanelLabelBarParallelPosF = 0.025
+    res_p.nglPanelLabelBarHeightF = 0.27
+    res_p.nglPanelLabelBarParallelPosF = 0.01
     res_p.nglPanelFigureStrings = abc[0:nplot]
     res_p.nglPanelFigureStringsJust = "TopLeft"
 
     return res_p
 
 
-def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1="", vars2="", plotpath="./", flim=0.5,
-                   nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, nplot=1, N=[1, 2]):
+def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1="", vars2="", plotpath="./", wkstype="png",
+                   flim=0.5, nwaveplt=20, cmin=0.05, cmax=0.55, cspc=0.05, plotxy=[1, 1], N=[1, 2]):
+
+    dims = cohsq.shape
+    nplot = dims[0]
+
     FillMode = "AreaFill"
 
     # text labels
     abc = list(string.ascii_lowercase)
 
     # plot resources
-    wkstype = "png"
+    #wkstype = wkstype
     wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_")
     plots = []
 
@@ -288,7 +293,7 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
         var1 = vars1[pp]
         var2 = vars2[pp]
 
-        res.tiMainString = source + "    coh^2(" + var1 + "," + var2 + ")           " + Symmetry
+        res.tiMainString = source + "    coh^2(" + var1 + "," + var2 + ") " + Symmetry
         plot = ngl.contour(wks, coh2, res)
         plot_a = ngl.vector(wks, phs1, phs2, res_a)
         ngl.overlay(plot, plot_a)
@@ -325,9 +330,10 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
         plots.append(plot)
         pp += 1
 
-        # panel plots
-    #ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], res_p)
-    ngl.panel(wks, plots, [3, nplot // 3], res_p)
+
+    # panel plots
+    ngl.panel(wks, plots, plotxy, res_p)
+    ngl.delete_wks(wks)
     ngl.end()
 
     return
@@ -367,8 +373,12 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
     # plot contours and phase arrows
     pp = 0
     while pp < nplot:
-        coh2 = Pow[pp, :, :]
-        Symmetry = symmetry[pp]
+        if nplot == 1:
+            coh2 = Pow
+            Symmetry = symmetry
+        else:
+            coh2 = Pow[pp, :, :]
+            Symmetry = symmetry[pp]
 
         res.tiMainString = source + "    log10( Power(" + var1 + "))           " + Symmetry
         plot = ngl.contour(wks, coh2, res)
@@ -407,7 +417,7 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
 
         # panel plots
     ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], resP)
-
-    ngl.end()
+    ngl.delete_wks(wks)
+    #ngl.end()
 
     return

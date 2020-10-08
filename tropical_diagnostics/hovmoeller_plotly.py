@@ -4,8 +4,8 @@ Hovmoeller plots using plotly module.
 
 import numpy as np
 import plotly.graph_objects as go
-import plotly.express as px
 from netCDF4 import num2date
+from kaleido.scopes.plotly import PlotlyScope
 
 
 def hov_resources(pltvarname):
@@ -219,6 +219,7 @@ def hovmoeller(data, lon, time, datestrt, datelast, plotpath, lats, latn, spd, s
     """
     Generate the Hovmoeller plot.
     """
+    scope = PlotlyScope()
     fig = go.Figure()
 
     fig.add_trace(
@@ -257,7 +258,8 @@ def hovmoeller(data, lon, time, datestrt, datelast, plotpath, lats, latn, spd, s
     fig.update_xaxes(ticks="inside", tick0=0, dtick=30, title_text='longitude')
     fig.update_yaxes(autorange="reversed", ticks="inside", nticks=11)
 
-    fig.write_image(plotname)
+    with open(plotname, "wb") as f:
+        f.write(scope.transform(fig, format=plttype))
 
     return
 
@@ -283,22 +285,21 @@ def plot_pattcorr(PC, labels, plotpath, lats, latn):
     plotname = plotpath + "PatternCorrelationHovmoeller." + plttype
     nlines = len(labels)
 
+    colors = ['black', 'dodgerblue', 'orange', 'seagreen', 'firebrick']
+  
+    scope = PlotlyScope()
     fig = go.Figure()
     for ll in np.arange(0,nlines):
-    	fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, ll],
+        fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, ll],
                              mode='lines',
-                             name=labels[ll]))
-    
-    #fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 1],
-    #                         mode='lines',
-    #                         name=labels[1]))
-    #fig.add_trace(go.Scatter(x=PC['fchrs'], y=PC[:, 2],
-    #                         mode='lines',
-    #                         name=labels[2]))
+                             name=labels[ll],
+                             line=dict(color=colors[ll], width=2)))
+
 
     fig.update_layout(title=latstring)
 
     fig.update_xaxes(ticks="", tick0=0, dtick=24, title_text='lead time (h)')
     fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='correlation')
 
-    fig.write_image(plotname)
+    with open(plotname, "wb") as f:
+        f.write(scope.transform(fig, format=plttype))

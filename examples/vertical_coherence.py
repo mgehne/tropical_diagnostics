@@ -6,11 +6,12 @@ run filter_CCEW.py to generate the filtered data. The user needs to change the i
 filenames and the output location. Variable names depend on the input data and need to be specified
 by the user as well.
 """
-from tropical_diagnostics.diagnostics import vertical_coherence as vc
-
+#from tropical_diagnostics.tropical_diagnostics import vertical_coherence as vc
+import tropical_diagnostics.vertical_coherence as vc
+import xarray as xr
 
 var1 = "precip"  # variable name of data in the precipitation file
-var2 = "shum"    # variable name of data in the second file
+var2 = "div"    # variable name of data in the second file
 
 source1 = "TRMM"  # ERAI, ERA5, TRMM
 source2 = "ERA5"
@@ -23,12 +24,13 @@ spd = 1  # data is spd x daily
 # var2 is read at all these levels
 level2 = [1000,975,950,925,900,875,850,825,800,775,750,700,650,600,550,500,
           450,400,350,300,250,225,200,175,150,125,100]
+#level2 = [300]
 
 # first and last date format: yyyymmddhh
-datemin = 2007010100
-datemax = 2010123100
-yearmin = datemin/1000000
-yearmax = datemax/1000000
+datemin = '2007-01-01'
+datemax = '2010-12-31'
+yearmin = datemin[0:4]
+yearmax = datemax[0:4]
 
 # significance level for the coherence plots
 sigstr = 99.
@@ -52,16 +54,32 @@ outfile = "CoherenceVertical_python_"+RES+"_"+str(spd)+"x_"+source1+var1+wave1+"
 outfileSpectra = "CoherenceVertical_SpaceTime_python_"+RES+"_"+str(spd)+"x_"+source1+var1+wave1+"_"+source2+var2+"_"\
           + str(datemin)+"-"+str(datemax)+"_"+str(latS)+"-"+str(latN)+"_sigMask"
 
+print(source1+" "+var1+" "+wave1+", "+source2+" "+var2)
 
 # read data1
+print('reading data1')
+ds = xr.open_dataset(pathin+filebase+"."+wave1+".nc")
+data1 = ds[var1].sel(lat=slice(latS,latN), time=slice(datemin,datemax))
+ds.close()
 
-# remove annual cycle from data1 - not necessary unless using unfiltered data
+# remove annual cycle from data1 - only necessary if using unfiltered data
 
 # read data2
+print('reading data2')
+ds = xr.open_dataset('/data/mgehne/era5/'+var2+'.2p5.daily.2007-2010.nc')
+data2 = ds[var2].sel(lat=slice(latN,latS), time=slice(datemin,datemax), level=level2)
+ds.close()
+
+print(data1.shape)
+print(data2.shape)
 
 # put this next part into a function
-CohAvg, CohMask, CohMat = vc.vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglevel)
-
+CohAvg, CohMask, CohMat = vc.vertical_coherence_comp(data1, data2, level2, nDayWin, nDaySkip, spd, siglev)
+print(CohAvg)
 # save data to file
-
-# plot vertical coherence profile
+ds = xr.Dataset({'CrossAvg': CohAvg})
+ds.to_netcdf(pathout+outfile+".nc")
+ds.close()
+ds = xr.Dataset({'CrossMat': CohMat, 'CrossMask': CohMask})
+ds.to_netcdf(pathout+outfileSpectra+".nc")
+ds.close()

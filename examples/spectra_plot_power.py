@@ -1,6 +1,6 @@
 import Ngl as ngl
 import numpy as np
-from diagnostics import spacetime_plot as stp
+from tropical_diagnostics import spacetime_plot as stp
 import string
 import sys
 import xarray as xr
