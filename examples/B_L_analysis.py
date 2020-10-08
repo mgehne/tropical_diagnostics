@@ -1,8 +1,7 @@
 import numpy as np
 import xarray as xr
-from diagnostics import moisture_convection_coupling as mcc
-from diagnostics import moisture_convection_coupling_plot as mccp
-import gc
+from tropical_diagnostics import moisture_convection_coupling as mcc
+from tropical_diagnostics import moisture_convection_coupling_plot as mccp
 
 # Years to analyze
 start_year = 2015
@@ -86,9 +85,6 @@ for year in range(start_year, end_year + 1):
     T.load()
     precipitation_rate.load()
 
-    # Clean up environment #
-    gc.collect()
-
     # rename land_sea_mask
     landfrac = land_sea_mask
     landfrac = landfrac.rename({'land_sea_mask', 'landfrac'})
@@ -158,9 +154,9 @@ for year in range(start_year[0], end_year[0] + 1):
         current_year_string = '0' + current_year_string
 
     # load datasets of binned composites
-    B_L_binned_precipitation_rate_dataset = mccp.process_binned_B_L_dataset(year_limited_paths_B_L_binned)
+    B_L_binned_precipitation_rate_dataset = mcc.process_binned_B_L_dataset(year_limited_paths_B_L_binned)
 
-    binned_undilute_B_L_dilution_dataset = mccp.process_binned_undilute_B_L_dilution_dataset(
+    binned_undilute_B_L_dilution_dataset = mcc.process_binned_undilute_B_L_dilution_dataset(
         year_limited_paths_undilute_B_L_dilution_binned)
 
     # Plot B_L binned precipitation rate

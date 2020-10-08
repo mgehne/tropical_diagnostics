@@ -137,7 +137,7 @@ def calculate_saturation_moist_enthalpy(temperature, saturation_specific_humidit
 
     return ME_saturation
 
-
+  
 def mass_weighted_vertical_integral_w_nan(variable_to_integrate, pressure_model_level_midpoint_Pa,
                                           pressure_model_level_interface_Pa, max_pressure_integral_array_Pa,
                                           min_pressure_integral_array_Pa):
@@ -810,6 +810,115 @@ def process_multiyear_binned_csf_precipitation_rate_dataset(list_of_files):
     return binned_csf_precipitation_rate_dataset
 
 
+def process_binned_B_L_dataset(filename):
+    binned_B_L_dataset = xr.open_dataset(filename)
+
+    # Calculate the bin means over all years #
+    more_than_zero_obs_mask = binned_B_L_dataset.bin_number_of_samples.sum('year') > 0
+
+    binned_B_L_dataset['bin_mean_precipitation_rate'] = \
+        (binned_B_L_dataset.bin_mean_precipitation_rate * binned_B_L_dataset.bin_number_of_samples).sum(
+        'year').where(more_than_zero_obs_mask, other=np.nan) / \
+        binned_B_L_dataset.bin_number_of_samples.sum('year').where(more_than_zero_obs_mask, other=np.nan)
+
+    # Sum number of observations in each bin over all years #
+    binned_B_L_dataset['bin_number_of_samples'] = binned_B_L_dataset.bin_number_of_samples.sum('year')
+
+    # Remove year dimension
+    return binned_B_L_dataset
+
+
+def process_binned_undilute_B_L_dilution_dataset(filename):
+    """
+    Read binned undilute dataset from file.
+    :param filename: input filename
+    :return: data set
+    """
+    binned_undilute_B_L_dilution_dataset = xr.open_dataset(filename)
+
+    # Calculate the bin means over all years #
+    more_than_zero_obs_mask = binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year') > 0
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_precipitation_rate'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_precipitation_rate *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_dilution_leading'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_dilution_leading *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_undilute_B_L_leading'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_undilute_B_L_leading *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_dilution_lagging'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_dilution_lagging *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_undilute_B_L_lagging'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_undilute_B_L_lagging *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_dilution_centered'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_dilution_centered *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    binned_undilute_B_L_dilution_dataset['bin_mean_delta_undilute_B_L_centered'] = \
+        (binned_undilute_B_L_dilution_dataset.bin_mean_delta_undilute_B_L_centered *
+         binned_undilute_B_L_dilution_dataset.bin_number_of_samples).sum('year').where(
+            more_than_zero_obs_mask, other=np.nan) / \
+        binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year').where(
+            more_than_zero_obs_mask, other=np.nan)
+
+    # Sum number of observations in each bin over all years #
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_of_samples'] = binned_undilute_B_L_dilution_dataset.bin_number_of_samples.sum('year')
+
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_dilution_leading'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_dilution_leading.sum(
+        'year')
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_undilute_B_L_leading'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_undilute_B_L_leading.sum(
+        'year')
+
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_dilution_lagging'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_dilution_lagging.sum(
+        'year')
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_undilute_B_L_lagging'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_undilute_B_L_lagging.sum(
+        'year')
+
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_dilution_centered'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_dilution_centered.sum(
+        'year')
+    binned_undilute_B_L_dilution_dataset[
+        'bin_number_pos_delta_undilute_B_L_centered'] = binned_undilute_B_L_dilution_dataset.bin_number_pos_delta_undilute_B_L_centered.sum(
+        'year')
+
+    # Remove year dimension
+    binned_undilute_B_L_dilution_dataset = binned_undilute_B_L_dilution_dataset.squeeze()
+
+    return binned_undilute_B_L_dilution_dataset
+
+
 def output_mwa(filename, landfrac, mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500,
                mwa_saturation_deficit_850_to_500):
     """
@@ -970,7 +1079,6 @@ def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, u
     bin_mean_precipitation_rate, bin_number_of_samples = bin_by_one_variable(precipitation_rate, B_L,
                                                                              lower_BV1_bin_limit_vector,
                                                                              upper_BV1_bin_limit_vector)
-    print(bin_mean_precipitation_rate.min(), bin_mean_precipitation_rate.max())
     ####  Output Data as NetCDF  ####
     # Name variables #
     bin_number_of_samples.name = 'bin_number_of_samples'

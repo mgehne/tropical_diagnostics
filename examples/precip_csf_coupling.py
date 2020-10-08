@@ -1,8 +1,7 @@
 import numpy as np
 import xarray as xr
-from diagnostics import moisture_convection_coupling as mcc
-from diagnostics import moisture_convection_coupling_plot as mccp
-import gc
+from tropical_diagnostics import moisture_convection_coupling as mcc
+from tropical_diagnostics import moisture_convection_coupling_plot as mccp
 
 # Years to analyze
 start_year = 2015
@@ -88,9 +87,6 @@ for year in range(start_year, end_year + 1):
     Q.load()
     T.load()
 
-    # Clean up environment #
-    gc.collect()
-
     print("Modifying landfrac as needed")
     landfrac = land_sea_mask
     landfrac = landfrac.rename({'land_sea_mask', 'landfrac'})
@@ -128,8 +124,6 @@ for year in range(start_year, end_year + 1):
     # print("Calculating true model pressure")
     # true_pressure_midpoint,true_pressure_interface =
     # mcc.calculate_true_pressure_model_pressure_midpoints_interfaces_ml(hyam, hybm, hyai, hybi, P0, PS)
-    # Clean up environment #
-    # gc.collect();
 
     ################################################################
     ####  USE THIS METHOD FOR DATA ALREADY ON PRESSURE LEVELS.  ####
@@ -183,7 +177,7 @@ for simulation_number in [0]:  # range(len(fname_datasets)):
     # list_of_files = glob(fname_datasets[simulation_number] + '*' + 'CSF_precipitation_binned_data' + '*')
 
     list_of_files = fname_datasets[simulation_number] + '_CSF_binned_precipitation_rate' + '_2015.nc'
-    csf_binned_precipitation_rate_dataset = mccp.process_binned_single_variable_dataset(list_of_files)
+    csf_binned_precipitation_rate_dataset = mcc.process_binned_single_variable_dataset(list_of_files)
 
     list_of_files = fname_datasets[simulation_number] + '_CSF_precipitation_binned_data' + '_2015.nc'
     binned_CSF_precipitation_dataset = mcc.process_binned_csf_precipitation_rate_dataset(list_of_files)

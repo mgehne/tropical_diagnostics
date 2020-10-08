@@ -6,7 +6,7 @@ sys.path.append('../../')
 local scripts, if loading from a different directory include that with a '.' between
 directory name and script name
 """
-from diagnostics import CCEWactivity
+from tropical_diagnostics import CCEWactivity
 
 """
 paths to plot and data directories

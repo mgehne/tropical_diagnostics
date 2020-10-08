@@ -8,7 +8,12 @@ Required model output is primarily precipitation. This is enough to compute Hovm
 compare to observations and to project onto the convectively coupled equatorial wave (CCEW) EOFs to
 analyze CCEW activity and skill in model forecasts.
 
-## diagnostics
+For the moisture convection coupling analysis vertical level data of specific humidity and temperature are needed,
+in addition to surface pressure and a land-sea mask. The vertical coherence diagnostic also uses data at vertical
+levels: temperature, specific humidity, divergence, zonal and meridional winds. However, it is up to the user to decide
+which variables are most useful to the user's specific application.
+
+## tropical_diagnostics
 Contains the functions and modules necessary to compute the various diagnostics. The main diagnostics
 included are:
 
@@ -40,7 +45,7 @@ These functions contain code to compute column saturation fraction (CSF) from re
 and precipitation against each other (**moisture_convection_coupling.py**). Routines for plotting the circulation in
 preciptiation - CSF space and the distributions are contained in **moisture_convection_coupling_plot.py**. The example
 script **precip_csf_coupling.py** computes CSF from model output, bins TRMM precipitation against model CSF and plots
-the results.
+the results. **B_L_analysis.py** shows how to run the B_L analysis scripts and plots results.
 
 ## examples
 Scripts containing example use cases. These scripts read in data, compute diagnostics and plot the results.
