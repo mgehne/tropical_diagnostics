@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
 
+
 # Define colormap for composites #
 colors = [(10, 50, 120), (15, 75, 165), (30, 110, 200), (60, 160, 240), (80, 180, 250), (130, 210, 255),
           (160, 240, 255), (200, 250, 255), (230, 255, 255), (255, 255, 255), (255, 255, 255), (255, 250, 220),
@@ -272,7 +273,7 @@ def plot_CSF_precipitation_rate_composites(binned_csf_precipitation_rate_dataset
                     orientation='portrait', papertype=None, format='png',
                     transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
-
+        
 def plot_CSF_precipitation_rate_difference_composites(binned_csf_precipitation_rate_dataset_baseline,
                                                       binned_csf_precipitation_rate_dataset_other, min_number_of_obs,
                                                       save_fig_boolean=False, figure_path_and_name='untitled.png'):
