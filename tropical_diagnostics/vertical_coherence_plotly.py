@@ -231,9 +231,8 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                       )
 
     for j in [1, 3]:
-        for i in range(int(np.ceil(nplot / 2))):
-            fig.update_xaxes(title_text='coh^2', range=[xlim[0], xlim[1]], row=(i+1), col=j)
-            fig.update_xaxes(title_text='phase angle', range=[-180, 180], dtick=90, row=(i+1), col=(j+1))
+        fig.update_xaxes(title_text='coh^2', range=[xlim[0], xlim[1]], row=int(np.ceil(nplot / 2)), col=j)
+        fig.update_xaxes(title_text='phase angle', range=[-180, 180], dtick=90, row=int(np.ceil(nplot / 2)), col=(j+1))
 
     for i in range(int(np.ceil(nplot / 2))):
         fig.update_yaxes(range=[100, 1000], dtick=100, title_text='hPa', autorange="reversed", row=(i+1), col=1)
