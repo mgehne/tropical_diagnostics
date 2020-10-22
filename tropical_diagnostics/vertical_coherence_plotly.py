@@ -138,7 +138,6 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
     #sources1 = ds_plot['sources1']
     #sources2 = ds_plot['sources2']
     nplot = int(ds_plot.attrs['nplot'])
-    print(nplot)
     varnames = ds_plot.data_vars
 
     # compute phase angle (in degrees) from x-y components.
@@ -157,7 +156,7 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
     symbols = ['circle', 'square', 'diamond', 'x', 'triangle-up']
 
     scope = PlotlyScope()
-    fig = make_subplots(rows=nplot/2, cols=4, shared_yaxes=True, horizontal_spacing=0.04)
+    fig = make_subplots(rows=int(np.ceil(nplot/2)), cols=4, shared_yaxes=True, horizontal_spacing=0.04)
 
     for pp in np.arange(0, nplot/2):
         coh = ds_plot[varnames[pp*nplot]]
