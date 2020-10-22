@@ -161,18 +161,20 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
     for pp in np.arange(0, int(np.ceil(nplot/2))):
         coh = ds_plot[varnames[pp*nplot]]
         if any(coh.dims) == 'plev':
-            coh.rename({'plev': 'level'})
+            levels = coh['plev']
+        else:
+            levels = coh['level']
         px = ds_plot[varnames[pp*nplot+1]]
         py = ds_plot[varnames[pp * nplot + 2]]
         angle = np.arctan2(angcnst * px, py) * 180 / np.pi
 
         for ll in np.arange(0, nlines):
-            fig.add_trace(go.Scatter(x=coh[ll, :], y=coh['level'],
+            fig.add_trace(go.Scatter(x=coh[ll, :], y=levels,
                                     mode='lines',
                                     name=labels[ll],
                                     line=dict(color=colors[ll], width=2)),
                         row=pp+1, col=1)
-            fig.add_trace(go.Scatter(x=angle[ll, :], y=coh['level'],
+            fig.add_trace(go.Scatter(x=angle[ll, :], y=levels,
                                     mode='markers',
                                     showlegend=False,
                                     marker=dict(color=colors[ll], size=8,
@@ -180,18 +182,20 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                         row=pp+1, col=2)
         coh = ds_plot[varnames[(pp+1) * int(np.ceil(nplot/2))]]
         if any(coh.dims) == 'plev':
-            coh.rename({'plev': 'level'})
+            levels = coh['plev']
+        else:
+            levels = coh['level']
         px = ds_plot[varnames[(pp+1) * int(np.ceil(nplot/2)) + 1]]
         py = ds_plot[varnames[(pp+1) * int(np.ceil(nplot/2)) + 2]]
         angle = np.arctan2(angcnst * px, py) * 180 / np.pi
 
         for ll in np.arange(0, nlines):
-            fig.add_trace(go.Scatter(x=coh[ll, :], y=coh['level'],
+            fig.add_trace(go.Scatter(x=coh[ll, :], y=levels,
                                      mode='lines',
                                      name=labels[ll],
                                      line=dict(color=colors[ll], width=2)),
                           row=pp+1, col=3)
-            fig.add_trace(go.Scatter(x=angle[ll, :], y=coh['level'],
+            fig.add_trace(go.Scatter(x=angle[ll, :], y=levels,
                                      mode='markers',
                                      showlegend=False,
                                      marker=dict(color=colors[ll], size=8,
