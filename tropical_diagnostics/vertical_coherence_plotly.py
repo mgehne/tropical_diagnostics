@@ -226,7 +226,7 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                 opacity=0.8
             )
 
-    fig.update_layout(title=titlestr + ' ' + latstring, width=900, height=600,
+    fig.update_layout(title=titlestr + ' ' + latstring, width=1800, height=1800,
                       legend=dict(yanchor="bottom", y=0.01, xanchor="left", x=0.01)
                       )
 
