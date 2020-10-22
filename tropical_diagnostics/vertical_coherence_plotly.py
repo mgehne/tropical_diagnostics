@@ -160,7 +160,8 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
 
     for pp in np.arange(0, int(np.ceil(nplot/2))):
         coh = ds_plot[varnames[pp*nplot]]
-        coh.rename({'plev': 'levels'})
+        if any(coh.dims) == 'plev':
+            coh.rename({'plev': 'levels'})
         px = ds_plot[varnames[pp*nplot+1]]
         py = ds_plot[varnames[pp * nplot + 2]]
         angle = np.arctan2(angcnst * px, py) * 180 / np.pi
