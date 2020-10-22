@@ -137,7 +137,7 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
 
     #sources1 = ds_plot['sources1']
     #sources2 = ds_plot['sources2']
-    nplot = ds_plot.attrs['plot']
+    nplot = ds_plot.attrs['nplot']
     varnames = ds_plot.data_vars
 
     # compute phase angle (in degrees) from x-y components.
