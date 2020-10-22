@@ -139,6 +139,7 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
     #sources2 = ds_plot['sources2']
     nplot = int(ds_plot.attrs['nplot'])
     varnames = list(ds_plot.data_vars)
+    sourcenames = ds_plot.attrs["sourcenames"]
 
     # compute phase angle (in degrees) from x-y components.
     angcnst = 1.
@@ -202,35 +203,48 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                                                  symbol=symbols[ll])),
                           row=pp+1, col=4)
 
-        fig.add_annotation(
-            x=-90,
-            y=50,
-            xref="x2",
-            yref="y2",
-            text="precip lags",
-            showarrow=False,
-            bgcolor="white",
-            opacity=0.8
-        )
-        fig.add_annotation(
-            x=90,
-            y=50,
-            xref="x2",
-            yref="y2",
-            text="precip leads",
-            showarrow=False,
-            bgcolor="white",
-            opacity=0.8
-        )
+        for i in np.arange(2, int(np.ceil(nplot/2))*4+1, 2):
+            istr = str(i)
+            fig.add_annotation(
+                x=-90,
+                y=50,
+                xref="x"+istr,
+                yref="y"+istr,
+                text="precip lags",
+                showarrow=False,
+                bgcolor="white",
+                opacity=0.8
+            )
+            fig.add_annotation(
+                x=90,
+                y=50,
+                xref="x"+istr,
+                yref="y"+istr,
+                text="precip leads",
+                showarrow=False,
+                bgcolor="white",
+                opacity=0.8
+            )
 
     fig.update_layout(title=titlestr + ' ' + latstring, width=900, height=600,
                       legend=dict(yanchor="bottom", y=0.01, xanchor="left", x=0.01)
                       )
 
-    fig.update_xaxes(title_text='coh^2', range=[xlim[0], xlim[1]], row=1, col=1)
-    fig.update_xaxes(title_text='phase angle', range=[-180, 180], dtick=90, row=1, col=2)
-    fig.update_yaxes(range=[100, 1000], dtick=100, title_text='hPa', autorange="reversed", row=1, col=1)
-    fig.update_yaxes(range=[100, 1000], dtick=100, autorange="reversed", row=1, col=2)
+    for j in [1, 3]:
+        for i in range(int(np.ceil(nplot / 2))):
+            fig.update_xaxes(title_text='coh^2', range=[xlim[0], xlim[1]], row=(i+1), col=j)
+            fig.update_xaxes(title_text='phase angle', range=[-180, 180], dtick=90, row=(i+1), col=(j+1))
+
+    for i in range(int(np.ceil(nplot / 2))):
+        fig.update_yaxes(range=[100, 1000], dtick=100, title_text='hPa', autorange="reversed", row=(i+1), col=1)
+        for j in np.arange(2, 5):
+            fig.update_yaxes(range=[100, 1000], dtick=100, autorange="reversed", row=(i+1), col=j)
+
+    # set subplot titles
+    nn = 0
+    for name in sourcenames:
+        fig['layout']['annotations'][nn].update(text=name)
+        nn += 1
 
     with open(plotname, "wb") as f:
         f.write(scope.transform(fig, format=plttype))
