@@ -239,10 +239,13 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
         for j in np.arange(2, 5):
             fig.update_yaxes(range=[100, 1000], dtick=100, autorange="reversed", row=(i+1), col=j)
 
+    fig.update_yaxes(range=[100, 1000], dtick=100, title_text='hPa', autorange="reversed", row=1, col=1)
+    fig.update_yaxes(range=[100, 1000], dtick=100, title_text='hPa', autorange="reversed", row=2, col=1)
+    fig.update_yaxes(range=[100, 1000], dtick=100, title_text='hPa', autorange="reversed", row=3, col=1)
     # set subplot titles
     nn = 0
     for name in sourcenames:
-        fig['layout']['annotations'][nn].update(text=name)
+        fig['layout']['title'][nn].update(text=name)
         nn += 1
 
     with open(plotname, "wb") as f:
