@@ -158,7 +158,7 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
     scope = PlotlyScope()
     fig = make_subplots(rows=int(np.ceil(nplot/2)), cols=4, shared_yaxes=True, horizontal_spacing=0.04)
 
-    for pp in np.arange(0, nplot/2):
+    for pp in np.arange(0, int(np.ceil(nplot/2))):
         coh = ds_plot[varnames[pp*nplot]]
         coh.rename({'plev': 'levels'})
         px = ds_plot[varnames[pp*nplot+1]]
