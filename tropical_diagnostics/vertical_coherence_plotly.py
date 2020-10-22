@@ -160,10 +160,9 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
 
     for pp in np.arange(0, int(np.ceil(nplot/2))):
         coh = ds_plot[varnames[pp*nplot]]
-        if any(list(coh.dims)) == 'plev':
+        try:
             levels = coh['plev']
-        else:
-            print(coh.dims)
+        except KeyError:
             levels = coh['level']
         px = ds_plot[varnames[pp*nplot+1]]
         py = ds_plot[varnames[pp * nplot + 2]]
@@ -182,9 +181,9 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                                                 symbol=symbols[ll])),
                         row=pp+1, col=2)
         coh = ds_plot[varnames[(pp+1) * int(np.ceil(nplot/2))]]
-        if any(list(coh.dims)) == 'plev':
+        try:
             levels = coh['plev']
-        else:
+        except KeyError:
             levels = coh['level']
         px = ds_plot[varnames[(pp+1) * int(np.ceil(nplot/2)) + 1]]
         py = ds_plot[varnames[(pp+1) * int(np.ceil(nplot/2)) + 2]]
