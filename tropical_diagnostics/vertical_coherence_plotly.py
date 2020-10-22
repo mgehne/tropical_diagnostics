@@ -163,6 +163,7 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
         if any(coh.dims) == 'plev':
             levels = coh['plev']
         else:
+            print(coh.dims)
             levels = coh['level']
         px = ds_plot[varnames[pp*nplot+1]]
         py = ds_plot[varnames[pp * nplot + 2]]
