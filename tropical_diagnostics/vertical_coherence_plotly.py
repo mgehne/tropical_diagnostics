@@ -171,13 +171,13 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                                     mode='lines',
                                     name=labels[ll],
                                     line=dict(color=colors[ll], width=2)),
-                        row=pp, col=1)
+                        row=pp+1, col=1)
             fig.add_trace(go.Scatter(x=angle[ll, :], y=coh['level'],
                                     mode='markers',
                                     showlegend=False,
                                     marker=dict(color=colors[ll], size=8,
                                                 symbol=symbols[ll])),
-                        row=pp, col=2)
+                        row=pp+1, col=2)
         coh = ds_plot[varnames[(pp+1) * nplot/2]]
         coh.rename({'plev': 'level'})
         px = ds_plot[varnames[(pp+1) * nplot/2 + 1]]
@@ -189,13 +189,13 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                                      mode='lines',
                                      name=labels[ll],
                                      line=dict(color=colors[ll], width=2)),
-                          row=pp, col=1)
+                          row=pp+1, col=3)
             fig.add_trace(go.Scatter(x=angle[ll, :], y=coh['level'],
                                      mode='markers',
                                      showlegend=False,
                                      marker=dict(color=colors[ll], size=8,
                                                  symbol=symbols[ll])),
-                          row=pp, col=2)
+                          row=pp+1, col=4)
 
         fig.add_annotation(
             x=-90,
