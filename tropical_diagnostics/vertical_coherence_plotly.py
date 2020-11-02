@@ -7,6 +7,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from kaleido.scopes.plotly import PlotlyScope
+import string
 
 def get_latstring(lats, latn):
     """
