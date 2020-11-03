@@ -246,66 +246,6 @@ def coher_sig_bg(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, sigleve
     return CohSig
 
 
-def coher_sig_bg_lev(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, siglevel, N):
-    """
-    Compute random noise coh2 N times and add to background coh2. Sort and
-    find siglevel values. Return significant coh2 values at each level and
-    for both symmetric and anti-symmetric parts.
-    :param data1: single level filtered precipitation input data
-    :param data2: multi-level dynamical variable, dimension 1 needs to match the levels
-    given in levels
-    :param levels: vertical levels to compute coherence at
-    :param nDayWin: number of time steps per window
-    :param nDaySkip: number of time steps to overlap per window
-    :param CohBGMat: background coherence matrix (lev x 2 x freq x wave)
-    :param spd: number of time steps per day
-    :param siglevel: significance level
-    :param N: number of random samples for the background coherence estimation
-    :return:
-    """
-    # compute standard deviation
-    xstd = np.std(data1, axis=0)
-    ystd = np.std(data2, axis=0)
-
-    # generate random samples and compute coherence spectra
-    for rr in np.arange(0, N, 1):
-        print('computing sample '+str(rr)+' out of '+str(N))
-        xrand = np.random.normal(0, xstd, data1.shape)
-        yrand = np.random.normal(0, ystd, data2.shape)
-        for ll in np.arange(0, len(levels)):
-            resultR = st.mjo_cross(xrand, np.squeeze(yrand[:, ll, :, :]), nDayWin, nDaySkip)
-            tmpR = resultR['STC']
-            try:
-                CohR
-            except NameError:
-                freq = resultR['freq']
-                freq = freq * spd
-                wnum = resultR['wave']
-                dims = tmpR.shape
-                CohR = xr.DataArray(np.empty([N, len(levels), dims[1], dims[2]]),
-                                dims=['sample', 'level', 'freq', 'wave'],
-                                coords={'sample': np.arange(0, N, 1), 'level': levels, 'freq': freq, 'wave': wnum})
-
-            CohR[rr, ll, :, :] = tmpR[4]
-
-    # expand dimensions of random sample coherence
-    tmpC = CohR.values
-    tmpR = tmpC[:, :, np.newaxis, :, :]
-    tmpR = np.tile(tmpR, (1, 1, 2, 1, 1))
-
-    # add background and random sample coherence
-    CohDist = np.broadcast_to(CohBGMat, (N, len(levels), 2, dims[1], dims[2])) + tmpR
-
-    # sort coherence distribution
-    CohDist = np.sort(CohDist, axis=0)
-
-    # find siglevel index and get significant coherence
-    isig = int(np.floor(N * siglevel))
-    CohSig = CohDist[isig, :, :, :, :]
-
-    return CohSig
-
-
 def cross_phase_2d(Cross):
     """
     Compute phase angles from cross spectra.
