@@ -270,7 +270,7 @@ def coher_sig_bg_lev(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, sig
         xrand = np.random.normal(0, xstd, data1.shape)
         yrand = np.random.normal(0, ystd, data2.shape)
         for ll in np.arange(0, len(levels)):
-            resultR = st.mjo_cross(xrand, yrand, nDayWin, nDaySkip)
+            resultR = st.mjo_cross(xrand, yrand[ll, :, :], nDayWin, nDaySkip)
             tmpR = resultR['STC']
             try:
                 CohR
