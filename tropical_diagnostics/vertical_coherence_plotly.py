@@ -198,13 +198,14 @@ def plot_vertcoh_panel(ds_plot, labels, titlestr, plotname, plotpath, lats, latn
                                      marker=dict(color=colors[ll], size=8,
                                                  symbol=symbols[ll])),
                           row=pp + 1, col=2)
-        coh = ds_plot[varnames[(pp + 1) * int(np.ceil(nplot / 2))]]
+
+        coh = ds_plot[varnames[pp * nplot + int(np.ceil(nplot / 2))]]
         try:
             levels = coh['plev']
         except KeyError:
             levels = coh['level']
-        px = ds_plot[varnames[(pp + 1) * int(np.ceil(nplot / 2)) + 1]]
-        py = ds_plot[varnames[(pp + 1) * int(np.ceil(nplot / 2)) + 2]]
+        px = ds_plot[varnames[pp * nplot + int(np.ceil(nplot / 2)) + 1]]
+        py = ds_plot[varnames[pp * nplot + int(np.ceil(nplot / 2)) + 2]]
         angle = np.arctan2(angcnst * px, py) * 180 / np.pi
 
         for ll in np.arange(0, nlines):
