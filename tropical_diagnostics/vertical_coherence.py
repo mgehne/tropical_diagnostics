@@ -266,9 +266,10 @@ def coher_sig_bg_lev(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, sig
 
     # generate random samples and compute coherence spectra
     for rr in np.arange(0, N, 1):
+        print('computing sample '+str(rr)+' out of '+str(N))
         xrand = np.random.normal(0, xstd, data1.shape)
-        for ll in np.arange(0,len(levels)):
-            yrand = np.random.normal(0, ystd[ll, :, :], data1.shape)
+        yrand = np.random.normal(0, ystd, data2.shape)
+        for ll in np.arange(0, len(levels)):
             resultR = st.mjo_cross(xrand, yrand, nDayWin, nDaySkip)
             tmpR = resultR['STC']
             try:
