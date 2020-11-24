@@ -226,6 +226,47 @@ def calculate_backward_forward_center_difference(variable_to_difference):
 
     return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
 
+def calculate_backward_forward_center_difference_byFH(variable_to_difference):
+    """
+    Calculate backwards, forwards and center differences of a variable with respect to lead time.
+    Input variable needs to have a leadtime dimension to difference. In practice this can be all of 3 points long
+    when we compute the difference at one leadtime.
+    :param variable_to_difference: input data array with leadtime dimension
+    :return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable:
+    """
+
+    first_time = variable_to_difference.isel(leadtime=0)
+    last_time = variable_to_difference.isel(leadtime=-1)
+
+    first_time.values = np.full(np.shape(first_time), np.nan)
+    last_time.values = np.full(np.shape(last_time), np.nan)
+
+    # Leading (backwards difference)
+    backwards_differenced_variable = variable_to_difference.isel(leadtime=slice(1, len(
+        variable_to_difference.time) + 1)).copy()  # Careful to assign backwards differenced data to correct time step
+    backwards_differenced_variable.values = variable_to_difference.isel(
+        leadtime=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(
+        leadtime=slice(0, -1)).values  # Slice indexing is (inclusive start, exclusive stop)
+    backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'leadtime')
+
+    # Lagging (forwards difference)
+    forwards_differenced_variable = variable_to_difference.isel(
+        leadtime=slice(0, -1)).copy()  # Careful to assign forwards differenced data to correct time step
+    forwards_differenced_variable.values = variable_to_difference.isel(
+        leadtime=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(
+        leadtime=slice(0, -1)).values
+    forwards_differenced_variable = xr.concat((forwards_differenced_variable, last_time), 'leadtime')
+
+    # Centered (center difference)
+    center_differenced_variable = variable_to_difference.isel(
+        leadtime=slice(1, -1)).copy()  # Careful to assign center differenced data to correct time step
+    center_differenced_variable.values = variable_to_difference.isel(
+        leadtime=slice(2, len(variable_to_difference.time))).values - variable_to_difference.isel(
+        leadtime=slice(0, -2)).values
+    center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'leadtime')
+
+    return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
+
 
 def bin_by_one_variable(variable_to_be_binned, BV1, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector):
     """
@@ -337,13 +378,14 @@ def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_ve
     return bin_mean_variable, bin_number_pos_variable, bin_number_of_samples
 
 
-def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets_for_simulation):
+def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets_for_simulation, diffdim):
     """
     Main computational routine to bin precipitation and column saturation fraction. Save results as netcdf files.
     :param csf: column saturation fraction data array
     :param precipitation_rate: precipitation data array
     :param year: year to process
     :param fname_datasets_for_simulation: filename for output file
+    :param diffdim: dimension to take the difference over, can be 'time' or 'leadtime'
     :return: no return, results are saved to netcdf file
     """
     current_year_string = str(year)
@@ -355,9 +397,15 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     ####  Calculate Backwards, Forwards and Center Differences of CSF and Precipitation Rate  ####
     ##############################################################################################
     print('Calculating Differences')
-    delta_csf_leading, delta_csf_lagging, delta_csf_centered = calculate_backward_forward_center_difference(csf)
-    delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+    if diffdim=='time':
+        delta_csf_leading, delta_csf_lagging, delta_csf_centered = calculate_backward_forward_center_difference(csf)
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
         calculate_backward_forward_center_difference(precipitation_rate)
+    elif diffdim=='leadtime':
+        delta_csf_leading, delta_csf_lagging, delta_csf_centered = \
+            calculate_backward_forward_center_difference_byFH(csf)
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+            calculate_backward_forward_center_difference_byFH(precipitation_rate)
 
     #########################################
     ####  Bin Precipitation Rate By CSF  ####

@@ -17,6 +17,7 @@ colors = [(10, 50, 120), (15, 75, 165), (30, 110, 200), (60, 160, 240), (80, 180
 for list_index in range(len(colors)):
     colors[list_index] = tuple(tuple_element / 255. for tuple_element in colors[list_index])
 
+abcstrings = list(string.ascii_lowercase)
 
 def plot_csf_binned_precipitation_rate(csf_binned_precipitation_rate_dataset, min_number_of_obs, save_fig_boolean=False,
                                        figure_path_and_name='untitled.png'):
