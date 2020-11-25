@@ -642,14 +642,18 @@ def process_multiyear_binned_single_variable_dataset(list_of_files):
     return binned_dataset
 
 
-def process_binned_csf_precipitation_rate_dataset(filename):
+def process_binned_csf_precipitation_rate_dataset(filename, opt):
     """
     Read data binned by two variables (e.g. precipitation and csf) and compute mean across all years.
     :param filename: input filename containing binned data
+    :param opt: is the input a filename or dataset
     :return binned_csf_precipitation_rate_dataset: dataset containing mean binned data
     """
     # binned_csf_precipitation_rate_dataset = xr.open_mfdataset(list_of_files, combine="by_coords")
-    binned_csf_precipitation_rate_dataset = xr.open_dataset(filename)
+    if opt=='file':
+        binned_csf_precipitation_rate_dataset = xr.open_dataset(filename)
+    elif opt=='dataset':
+        binned_csf_precipitation_rate_dataset = filename
 
     # Calculate the bin means over all years #
     more_than_zero_obs_mask_precipitation_rate = \
