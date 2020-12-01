@@ -248,7 +248,6 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
         leadtime=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(
         leadtime=slice(0, -1)).values  # Slice indexing is (inclusive start, exclusive stop)
     backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'leadtime')
-    backwards_differenced_variable.transpose(variable_to_difference.dims)
 
     # Lagging (forwards difference)
     forwards_differenced_variable = variable_to_difference.isel(
@@ -257,7 +256,6 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
         leadtime=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(
         leadtime=slice(0, -1)).values
     forwards_differenced_variable = xr.concat((forwards_differenced_variable, last_time), 'leadtime')
-    forwards_differenced_variable = forwards_differenced_variable.transpose(variable_to_difference.dims)
 
     # Centered (center difference)
     center_differenced_variable = variable_to_difference.isel(
@@ -266,7 +264,6 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
         leadtime=slice(2, len(variable_to_difference.time))).values - variable_to_difference.isel(
         leadtime=slice(0, -2)).values
     center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'leadtime')
-    center_differenced_variable = center_differenced_variable.transpose(variable_to_difference.dims)
 
     return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
 
