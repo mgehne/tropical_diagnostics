@@ -168,7 +168,7 @@ def plot_B_L_binned_precipitation_rate(binned_B_L_dataset, min_number_of_obs, sa
 
 
 def plot_CSF_precipitation_rate_composites(binned_csf_precipitation_rate_dataset, min_number_of_obs,
-                                           save_fig_boolean=False, figure_path_and_name='untitled.png'):
+                                           save_fig_boolean=False, figure_path_and_name='untitled.png', ymax=75, xmin=0.3):
     """
     Plot composite evolution of precipitation and CSF.
     :param binned_csf_precipitation_rate_dataset: binned data set
@@ -182,8 +182,7 @@ def plot_CSF_precipitation_rate_composites(binned_csf_precipitation_rate_dataset
     bin_mean_delta_precipitation_rate_centered = binned_csf_precipitation_rate_dataset[
         'bin_mean_delta_precipitation_rate_centered']
     bin_number_pos_delta_csf_centered = binned_csf_precipitation_rate_dataset['bin_number_pos_delta_csf_centered']
-    bin_number_pos_delta_precipitation_rate_centered = binned_csf_precipitation_rate_dataset[
-        'bin_number_pos_delta_precipitation_rate_centered']
+    bin_number_pos_delta_precipitation_rate_centered = binned_csf_precipitation_rate_dataset['bin_number_pos_delta_precipitation_rate_centered']
 
     # Create mask for regions with insufficient obs #
     insufficient_obs_mask = bin_number_of_samples_centered < min_number_of_obs
@@ -199,8 +198,8 @@ def plot_CSF_precipitation_rate_composites(binned_csf_precipitation_rate_dataset
     ax = fig.add_subplot(1, 1, 1)
     ax.set_xlabel('Column Saturation Fraction', fontdict={'size': 24, 'weight': 'bold'})
     ax.set_ylabel('Precipitation Rate [mm day$^{-1}$]', fontdict={'size': 24, 'weight': 'bold'})
-    ax.set(xlim=(0.3, bin_number_of_samples_centered.BV1_bin_midpoint.max()),
-           ylim=(bin_number_of_samples_centered.BV2_bin_midpoint.min(), 75))
+    ax.set(xlim=(xmin, bin_number_of_samples_centered.BV1_bin_midpoint.max()),
+           ylim=(bin_number_of_samples_centered.BV2_bin_midpoint.min(), ymax))
 
     # Axis Ticks #
     ax.tick_params(axis="x", direction="in", length=12, width=3, color="black")
