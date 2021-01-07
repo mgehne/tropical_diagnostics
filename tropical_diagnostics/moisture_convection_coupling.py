@@ -501,7 +501,8 @@ def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_ve
     return bin_mean_variable, bin_number_pos_variable, bin_number_of_samples
 
 
-def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets_for_simulation, diffdim):
+def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets_for_simulation,
+                                                  diffdim):
     """
     Main computational routine to bin precipitation and column saturation fraction. Save results as netcdf files.
     :param csf: column saturation fraction data array
@@ -520,11 +521,11 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     ####  Calculate Backwards, Forwards and Center Differences of CSF and Precipitation Rate  ####
     ##############################################################################################
     print('Calculating Differences')
-    if diffdim=='time':
+    if diffdim == 'time':
         delta_csf_leading, delta_csf_lagging, delta_csf_centered = calculate_backward_forward_center_difference(csf)
         delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
         calculate_backward_forward_center_difference(precipitation_rate)
-    elif diffdim=='leadtime':
+    elif diffdim == 'leadtime':
         delta_csf_leading, delta_csf_lagging, delta_csf_centered = \
             calculate_backward_forward_center_difference_byFH(csf)
         delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
@@ -1210,7 +1211,7 @@ def compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturat
 
 
 def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L, year,
-                                                      fname_datasets_for_simulation):
+                                                      fname_datasets_for_simulation, diffdim):
     """
 
     :param precipitation_rate:
@@ -1219,6 +1220,7 @@ def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, u
     :param dilution_of_B_L:
     :param year:
     :param fname_datasets_for_simulation:
+    :param diffdim:
     :return:
     """
     current_year_string = str(year)
@@ -1231,17 +1233,24 @@ def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, u
     ##############################################################################################
 
     print('Calculating Differences')
-
-    delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
-        calculate_backward_forward_center_difference(precipitation_rate)
-
-    delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = calculate_backward_forward_center_difference(B_L)
-
-    delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
-        calculate_backward_forward_center_difference(undilute_B_L)
-
-    delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
-        calculate_backward_forward_center_difference(dilution_of_B_L)
+    if diffdim == 'time':
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+            calculate_backward_forward_center_difference(precipitation_rate)
+        delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = \
+            calculate_backward_forward_center_difference(B_L)
+        delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
+            calculate_backward_forward_center_difference(undilute_B_L)
+        delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
+            calculate_backward_forward_center_difference(dilution_of_B_L)
+    elif diffdim == 'leadtime':
+        delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = \
+            calculate_backward_forward_center_difference_byFH(B_L)
+        delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
+            calculate_backward_forward_center_difference_byFH(undilute_B_L)
+        delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
+            calculate_backward_forward_center_difference_byFH(dilution_of_B_L)
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+            calculate_backward_forward_center_difference_byFH(precipitation_rate)
 
 
     #########################################
