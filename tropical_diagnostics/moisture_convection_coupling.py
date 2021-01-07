@@ -246,6 +246,7 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
     backwards_differenced_variable[dict(leadtime=slice(1, len(variable_to_difference.time) + 1))] = \
         variable_to_difference.isel(leadtime=slice(1, len(variable_to_difference.time)+1)).values - \
         variable_to_difference.isel(leadtime=slice(0, len(variable_to_difference.time))).values
+    backwards_differenced_variable[dict(leadtime=0)] = np.nan
     #backwards_differenced_variable = variable_to_difference.isel(leadtime=slice(1, len(
     #    variable_to_difference.time) + 1)).copy()  # Careful to assign backwards differenced data to correct time step
     #backwards_differenced_variable.values = \
