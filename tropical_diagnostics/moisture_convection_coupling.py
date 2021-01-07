@@ -253,7 +253,7 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
     forwards_differenced_variable = variable_to_difference.isel(
         leadtime=slice(0, -1)).copy()  # Careful to assign forwards differenced data to correct time step
     forwards_differenced_variable.values = variable_to_difference.isel(
-        leadtime=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(
+        leadtime=slice(1, len(variable_to_difference.time)+1)).values - variable_to_difference.isel(
         leadtime=slice(0, -1)).values
     forwards_differenced_variable = xr.concat((forwards_differenced_variable, last_time), 'leadtime')
 
@@ -261,7 +261,7 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
     center_differenced_variable = variable_to_difference.isel(
         leadtime=slice(1, -1)).copy()  # Careful to assign center differenced data to correct time step
     center_differenced_variable.values = variable_to_difference.isel(
-        leadtime=slice(2, len(variable_to_difference.time))).values - variable_to_difference.isel(
+        leadtime=slice(2, len(variable_to_difference.time)+1)).values - variable_to_difference.isel(
         leadtime=slice(0, -2)).values
     center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'leadtime')
 
