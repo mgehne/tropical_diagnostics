@@ -269,7 +269,7 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
 
     # Centered (center difference)
     center_differenced_variable = variable_to_difference.copy()
-    center_differenced_variable[dict(leadtime=slice(1, -1))] = \
+    center_differenced_variable[dict(leadtime=slice(1, len(variable_to_difference.time)))] = \
         variable_to_difference.isel(leadtime=slice(2, len(variable_to_difference.time) + 1)).values - \
         variable_to_difference.isel(leadtime=slice(0, len(variable_to_difference.time)-1)).values
     center_differenced_variable[dict(leadtime=0)] = np.nan
