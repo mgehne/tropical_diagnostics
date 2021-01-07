@@ -621,26 +621,26 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
         bin_by_two_variables(precipitation_rate, csf, precipitation_rate, lower_BV1_bin_limit_vector,
                              upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
-    bin_mean_delta_csf_leading, bin_number_pos_delta_csf_leading, bin_number_of_samples_leading = bin_by_two_variables(
-        delta_csf_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
-        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
-    bin_mean_delta_precipitation_rate_leading, bin_number_pos_delta_precipitation_rate_leading, _ = bin_by_two_variables(
-        delta_precipitation_rate_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector,
-        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_csf_leading, bin_number_pos_delta_csf_leading, bin_number_of_samples_leading = \
+        bin_by_two_variables(delta_csf_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_precipitation_rate_leading, bin_number_pos_delta_precipitation_rate_leading, _ = \
+        bin_by_two_variables(delta_precipitation_rate_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
-    bin_mean_delta_csf_lagging, bin_number_pos_delta_csf_lagging, bin_number_of_samples_lagging = bin_by_two_variables(
-        delta_csf_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
-        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
-    bin_mean_delta_precipitation_rate_lagging, bin_number_pos_delta_precipitation_rate_lagging, _ = bin_by_two_variables(
-        delta_precipitation_rate_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector,
-        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_csf_lagging, bin_number_pos_delta_csf_lagging, bin_number_of_samples_lagging = \
+        bin_by_two_variables(delta_csf_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_precipitation_rate_lagging, bin_number_pos_delta_precipitation_rate_lagging, _ =\
+        bin_by_two_variables(delta_precipitation_rate_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
-    bin_mean_delta_csf_centered, bin_number_pos_delta_csf_centered, bin_number_of_samples_centered = bin_by_two_variables(
-        delta_csf_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
-        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
-    bin_mean_delta_precipitation_rate_centered, bin_number_pos_delta_precipitation_rate_centered, _ = bin_by_two_variables(
-        delta_precipitation_rate_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector,
-        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_csf_centered, bin_number_pos_delta_csf_centered, bin_number_of_samples_centered = \
+        bin_by_two_variables(delta_csf_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_precipitation_rate_centered, bin_number_pos_delta_precipitation_rate_centered, _ = \
+        bin_by_two_variables(delta_precipitation_rate_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
     ####  Output Data as NetCDF  ####
 
