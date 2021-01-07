@@ -246,7 +246,7 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
         variable_to_difference.time) + 1)).copy()  # Careful to assign backwards differenced data to correct time step
     backwards_differenced_variable.values = \
         variable_to_difference.isel(leadtime=slice(1, len(variable_to_difference.time))).values - \
-        variable_to_difference.isel(leadtime=slice(0, -1)).values  # Slice indexing is (inclusive start, exclusive stop)
+        variable_to_difference.isel(leadtime=slice(0, len(variable_to_difference.time)-1)).values  # Slice indexing is (inclusive start, exclusive stop)
     backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'leadtime')
 
     # Lagging (forwards difference)
