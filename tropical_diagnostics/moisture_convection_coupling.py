@@ -242,12 +242,16 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
     last_time.values = np.full(np.shape(last_time), np.nan)
 
     # Leading (backwards difference)
-    backwards_differenced_variable = variable_to_difference.isel(leadtime=slice(1, len(
-        variable_to_difference.time) + 1)).copy()  # Careful to assign backwards differenced data to correct time step
-    backwards_differenced_variable.values = \
+    backwards_differenced_variable = variable_to_difference.copy()
+    backwards_differenced_variable[dict(leadtime=slice(1, len(variable_to_difference.time) + 1))] = \
         variable_to_difference.isel(leadtime=slice(1, len(variable_to_difference.time)+1)).values - \
-        variable_to_difference.isel(leadtime=slice(0, len(variable_to_difference.time))).values  # Slice indexing is (inclusive start, exclusive stop)
-    backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'leadtime')
+        variable_to_difference.isel(leadtime=slice(0, len(variable_to_difference.time))).values
+    #backwards_differenced_variable = variable_to_difference.isel(leadtime=slice(1, len(
+    #    variable_to_difference.time) + 1)).copy()  # Careful to assign backwards differenced data to correct time step
+    #backwards_differenced_variable.values = \
+    #    variable_to_difference.isel(leadtime=slice(1, len(variable_to_difference.time)+1)).values - \
+    #    variable_to_difference.isel(leadtime=slice(0, len(variable_to_difference.time))).values  # Slice indexing is (inclusive start, exclusive stop)
+    #backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'leadtime')
 
     # Lagging (forwards difference)
     forwards_differenced_variable = variable_to_difference.isel(
