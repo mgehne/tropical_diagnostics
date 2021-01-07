@@ -141,6 +141,170 @@ def plot_CSF_precipitation_rate_composites_panel(binned_csf_precipitation_rate_d
                     orientation='portrait', papertype=None, format='png',
                     transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
+
+def plot_undilute_B_L_VS_dilution_composites_panel(binned_undilute_B_L_dilution_dataset, labels, min_number_of_obs,
+                                                   save_fig_boolean=False, figure_path_and_name='untitled.png'):
+    """
+    Plot composite evolution of precipitation and CSF.
+    :param binned_csf_precipitation_rate_dataset: binned data set
+    :param labels: labels for the subplots
+    :param min_number_of_obs: minimum number of obs in bin for plotting
+    :param save_fig_boolean: save figure True/ False
+    :param figure_path_and_name: path and filename to save figure to
+    :return:
+    """
+
+    nplot = len(labels)
+
+    n_bin = 200
+    cmap_name = 'colors'
+    colormap_colors = LinearSegmentedColormap.from_list(cmap_name, colors, N=n_bin)
+
+    arrow_scale_factor = 3.
+
+    x_axis_limit = (-0.2, 0)
+    x_tick_spacing = 0.04
+    y_axis_limit = (-0.1, 0.1)
+    y_tick_spacing = 0.04
+
+    # Create "centered" figure #
+    # fig = plt.figure(figsize=(10, 10))
+    fig, axes = plt.subplots(figsize=(15 * nplot, 10), nrows=1, ncols=nplot)
+
+    for pp in range(nplot):
+
+        # Ask for, out of a 1x1 grid, the first axes #
+        # ax = fig.add_subplot(1, nplot, (pp+1))
+        ax = axes[pp]
+
+        # Load data
+        bin_number_of_samples = binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_of_samples']
+        bin_mean_precipitation_rate = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_mean_precipitation_rate']
+
+        bin_mean_delta_dilution_leading = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_mean_delta_dilution_leading']
+        bin_mean_delta_undilute_B_L_leading = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_leading']
+        bin_number_pos_delta_dilution_leading = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_number_pos_delta_dilution_leading']
+        bin_number_pos_delta_undilute_B_L_leading = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_leading']
+
+        bin_mean_delta_dilution_lagging = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_mean_delta_dilution_lagging']
+        bin_mean_delta_undilute_B_L_lagging = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_lagging']
+        bin_number_pos_delta_dilution_lagging = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_number_pos_delta_dilution_lagging']
+        bin_number_pos_delta_undilute_B_L_lagging = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_lagging']
+
+        bin_mean_delta_dilution_centered = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_mean_delta_dilution_centered']
+        bin_mean_delta_undilute_B_L_centered = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_centered']
+        bin_number_pos_delta_dilution_centered = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_number_pos_delta_dilution_centered']
+        bin_number_pos_delta_undilute_B_L_centered = binned_undilute_B_L_dilution_dataset[
+            labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_centered']
+
+        # Create mask for regions with insufficient obs #
+        insufficient_obs_mask = bin_number_of_samples < min_number_of_obs
+
+        ax.set_title(abcstrings[pp] + ')   ' + labels[pp], fontdict={'size': 24, 'weight': 'bold'})
+        ax.set_xlabel('Dilution of B$_{L}$ [m s$^{-2}$]', fontdict={'size': 24, 'weight': 'bold'})
+        ax.set_ylabel('Undilute B$_{L}$  [m s$^{-2}$]', fontdict={'size': 24, 'weight': 'bold'})
+        ax.set(xlim=(x_axis_limit[0], x_axis_limit[1]), ylim=(y_axis_limit[0], y_axis_limit[1]))
+
+        ax.set(xticks=np.arange(x_axis_limit[0], x_axis_limit[1] + x_tick_spacing, x_tick_spacing))
+        ax.set(yticks=np.arange(y_axis_limit[0], y_axis_limit[1] + y_tick_spacing, y_tick_spacing))
+
+        # Axis Ticks #
+        ax.tick_params(axis="x", direction="in", length=12, width=3, color="black")
+        ax.tick_params(axis="y", direction="in", length=12, width=3, color="black")
+
+        ax.tick_params(axis="x", labelsize=18, labelrotation=0, labelcolor="black")
+        ax.tick_params(axis="y", labelsize=18, labelrotation=90, labelcolor="black")
+
+        for tick in ax.xaxis.get_majorticklabels():
+            tick.set_fontsize(18)
+            tick.set_fontweight('bold')
+
+        for tick in ax.yaxis.get_majorticklabels():
+            tick.set_fontsize(18)
+            tick.set_fontweight('bold')
+
+        # Create "meshgrid" for contour plotting #
+        BV1_bin_midpoint_meshgrid, BV2_bin_midpoint_meshgrid = np.meshgrid(bin_number_of_samples.BV1_bin_midpoint,
+                                                                           bin_number_of_samples.BV2_bin_midpoint)
+
+        BV1_bin_midpoint_meshgrid_DA = bin_number_of_samples.copy()
+        BV1_bin_midpoint_meshgrid_DA.values = BV1_bin_midpoint_meshgrid
+
+        BV2_bin_midpoint_meshgrid_DA = bin_number_of_samples.copy()
+        BV2_bin_midpoint_meshgrid_DA.values = BV2_bin_midpoint_meshgrid
+
+        # Contourf bin mean precipitation rate#
+        c = ax.contourf(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA,
+                        bin_mean_precipitation_rate.where(~insufficient_obs_mask), levels=np.arange(0, 21, 1),
+                        cmap=colormap_colors, vmin=0.0, vmax=20.0, extend='max')
+
+        # Contour bin mean B_L #
+        c2 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA, (
+                    BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) + BV2_bin_midpoint_meshgrid_DA.where(
+                ~insufficient_obs_mask)), \
+                        levels=np.arange(-1, 0, 0.05), colors='k', linestyles='dashed', linewidths=3)
+
+        c3 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA, (
+                    BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) + BV2_bin_midpoint_meshgrid_DA.where(
+                ~insufficient_obs_mask)), \
+                        levels=0, colors='k', linestyles='solid', linewidths=6)
+
+        c4 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA, (
+                    BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) + BV2_bin_midpoint_meshgrid_DA.where(
+                ~insufficient_obs_mask)), \
+                        levels=np.arange(0.1, 2.1, 0.05), colors='k', linestyles='solid', linewidths=3)
+
+        # ax.clabel(c2, fontsize=16, inline=1)
+
+        # Speckle regions with insufficient observations #
+        ax.plot(BV1_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask),
+                BV2_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask), 'ko', ms=1);
+
+        # Mark the mode of observations #
+        ax.plot(BV1_bin_midpoint_meshgrid_DA.where(bin_number_of_samples == bin_number_of_samples.max()),
+                BV2_bin_midpoint_meshgrid_DA.where(bin_number_of_samples == bin_number_of_samples.max()), 'ks', ms=20,
+                color=[0.7, 0.7, 0.7], fillstyle='full', markeredgecolor='k', markeredgewidth=3);
+
+        # Quiver the bin mean centered tendency #
+        q = ax.quiver(BV1_bin_midpoint_meshgrid_DA[::2, ::2], BV2_bin_midpoint_meshgrid_DA[::2, ::2], \
+                      bin_mean_delta_dilution_centered.where(~insufficient_obs_mask)[::2, ::2],
+                      bin_mean_delta_undilute_B_L_centered.where(~insufficient_obs_mask)[::2, ::2], width=0.007, \
+                      angles='xy', scale_units='xy', scale=(1 / arrow_scale_factor),
+                      pivot='mid')  # Very important to have "angles" and "scale_units" set to "xy". "pivot=mid" shifts so arrow center at bin center. other options are "tail" and "tip"
+
+        # Very important to have "angles" and "scale_units" set to "xy". "pivot=mid" shifts so arrow center at bin center.
+        # other options are "tail" and "tip"
+        # ax.quiverkey(q, X=0, Y=0, U=10, label='Quiver key, length = 1', labelpos='E')
+
+    cbar = fig.colorbar(c, ax=axes.ravel().tolist(), orientation="vertical", pad=0.02)
+    cbar.set_ticks(np.arange(0, 22, 2))
+    cbar.ax.get_xaxis().labelpad = 0
+    cbar.set_label('Precipitation Rate [mm day$^{-1}$]', rotation=90, fontdict={'size': 18, 'weight': 'bold'})
+    for tick in cbar.ax.yaxis.get_majorticklabels():
+        tick.set_fontsize(18)
+        tick.set_fontweight('bold')
+    cbar_ax = fig.axes[-1]
+    cbar_ax.tick_params(length=10, direction='in')
+
+    # Save figure #
+    if save_fig_boolean:
+        plt.savefig(figure_path_and_name, dpi=300, facecolor='w', edgecolor='w',
+                    orientation='portrait', papertype=None, format='png',
+                    transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
+
+
 def plot_csf_binned_precipitation_rate(csf_binned_precipitation_rate_dataset, min_number_of_obs, save_fig_boolean=False,
                                        figure_path_and_name='untitled.png'):
     """
