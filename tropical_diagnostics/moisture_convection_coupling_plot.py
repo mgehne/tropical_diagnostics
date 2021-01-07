@@ -52,12 +52,12 @@ def plot_CSF_precipitation_rate_composites_panel(binned_csf_precipitation_rate_d
             labels[pp] + '_' + 'bin_number_of_samples_centered']
         bin_mean_delta_csf_centered = binned_csf_precipitation_rate_dataset[
             labels[pp] + '_' + 'bin_mean_delta_csf_centered']
-        bin_mean_delta_precipitation_rate_centered = binned_csf_precipitation_rate_dataset[labels[pp] + '_' +
-                                                                                           'bin_mean_delta_precipitation_rate_centered']
-        bin_number_pos_delta_csf_centered = binned_csf_precipitation_rate_dataset[
-            labels[pp] + '_' + 'bin_number_pos_delta_csf_centered']
-        bin_number_pos_delta_precipitation_rate_centered = binned_csf_precipitation_rate_dataset[labels[pp] + '_' +
-                                                                                                 'bin_number_pos_delta_precipitation_rate_centered']
+        bin_mean_delta_precipitation_rate_centered = \
+            binned_csf_precipitation_rate_dataset[labels[pp] + '_' + 'bin_mean_delta_precipitation_rate_centered']
+        bin_number_pos_delta_csf_centered = \
+            binned_csf_precipitation_rate_dataset[labels[pp] + '_' + 'bin_number_pos_delta_csf_centered']
+        bin_number_pos_delta_precipitation_rate_centered = \
+            binned_csf_precipitation_rate_dataset[labels[pp] + '_' + 'bin_number_pos_delta_precipitation_rate_centered']
 
         # Create mask for regions with insufficient obs #
         insufficient_obs_mask = bin_number_of_samples_centered < min_number_of_obs
@@ -101,7 +101,7 @@ def plot_CSF_precipitation_rate_composites_panel(binned_csf_precipitation_rate_d
 
         # Speckle regions with insufficient observations #
         ax.plot(CSF_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask),
-                precip_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask), 'ko', ms=1);
+                precip_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask), 'ko', ms=1)
 
         # Quiver the bin mean leading tendency # Use this if you want to reduce number of quivers plotted
         # y_quiver_plotting_indices = list(np.arange(0,12,2)) +
@@ -146,7 +146,7 @@ def plot_undilute_B_L_VS_dilution_composites_panel(binned_undilute_B_L_dilution_
                                                    save_fig_boolean=False, figure_path_and_name='untitled.png'):
     """
     Plot composite evolution of precipitation and CSF.
-    :param binned_csf_precipitation_rate_dataset: binned data set
+    :param binned_undilute_B_L_dilution_dataset: binned data set
     :param labels: labels for the subplots
     :param min_number_of_obs: minimum number of obs in bin for plotting
     :param save_fig_boolean: save figure True/ False
@@ -179,35 +179,35 @@ def plot_undilute_B_L_VS_dilution_composites_panel(binned_undilute_B_L_dilution_
 
         # Load data
         bin_number_of_samples = binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_of_samples']
-        bin_mean_precipitation_rate = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_mean_precipitation_rate']
+        bin_mean_precipitation_rate = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_mean_precipitation_rate']
 
-        bin_mean_delta_dilution_leading = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_mean_delta_dilution_leading']
-        bin_mean_delta_undilute_B_L_leading = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_leading']
-        bin_number_pos_delta_dilution_leading = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_number_pos_delta_dilution_leading']
-        bin_number_pos_delta_undilute_B_L_leading = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_leading']
+        bin_mean_delta_dilution_leading = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_mean_delta_dilution_leading']
+        bin_mean_delta_undilute_B_L_leading = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_leading']
+        bin_number_pos_delta_dilution_leading = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_pos_delta_dilution_leading']
+        bin_number_pos_delta_undilute_B_L_leading = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_leading']
 
-        bin_mean_delta_dilution_lagging = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_mean_delta_dilution_lagging']
-        bin_mean_delta_undilute_B_L_lagging = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_lagging']
-        bin_number_pos_delta_dilution_lagging = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_number_pos_delta_dilution_lagging']
-        bin_number_pos_delta_undilute_B_L_lagging = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_lagging']
+        bin_mean_delta_dilution_lagging = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_mean_delta_dilution_lagging']
+        bin_mean_delta_undilute_B_L_lagging = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_lagging']
+        bin_number_pos_delta_dilution_lagging = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_pos_delta_dilution_lagging']
+        bin_number_pos_delta_undilute_B_L_lagging = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_lagging']
 
-        bin_mean_delta_dilution_centered = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_mean_delta_dilution_centered']
-        bin_mean_delta_undilute_B_L_centered = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_centered']
-        bin_number_pos_delta_dilution_centered = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_number_pos_delta_dilution_centered']
-        bin_number_pos_delta_undilute_B_L_centered = binned_undilute_B_L_dilution_dataset[
-            labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_centered']
+        bin_mean_delta_dilution_centered = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_mean_delta_dilution_centered']
+        bin_mean_delta_undilute_B_L_centered = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_mean_delta_undilute_B_L_centered']
+        bin_number_pos_delta_dilution_centered = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_pos_delta_dilution_centered']
+        bin_number_pos_delta_undilute_B_L_centered = \
+            binned_undilute_B_L_dilution_dataset[labels[pp] + '_' + 'bin_number_pos_delta_undilute_B_L_centered']
 
         # Create mask for regions with insufficient obs #
         insufficient_obs_mask = bin_number_of_samples < min_number_of_obs
@@ -251,36 +251,36 @@ def plot_undilute_B_L_VS_dilution_composites_panel(binned_undilute_B_L_dilution_
                         cmap=colormap_colors, vmin=0.0, vmax=20.0, extend='max')
 
         # Contour bin mean B_L #
-        c2 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA, (
-                    BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) + BV2_bin_midpoint_meshgrid_DA.where(
-                ~insufficient_obs_mask)), \
+        c2 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA,
+                        (BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) +
+                         BV2_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask)),
                         levels=np.arange(-1, 0, 0.05), colors='k', linestyles='dashed', linewidths=3)
 
-        c3 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA, (
-                    BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) + BV2_bin_midpoint_meshgrid_DA.where(
-                ~insufficient_obs_mask)), \
+        c3 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA,
+                        (BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) +
+                         BV2_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask)),
                         levels=0, colors='k', linestyles='solid', linewidths=6)
 
-        c4 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA, (
-                    BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) + BV2_bin_midpoint_meshgrid_DA.where(
-                ~insufficient_obs_mask)), \
+        c4 = ax.contour(BV1_bin_midpoint_meshgrid_DA, BV2_bin_midpoint_meshgrid_DA,
+                        (BV1_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask) +
+                         BV2_bin_midpoint_meshgrid_DA.where(~insufficient_obs_mask)),
                         levels=np.arange(0.1, 2.1, 0.05), colors='k', linestyles='solid', linewidths=3)
 
         # ax.clabel(c2, fontsize=16, inline=1)
 
         # Speckle regions with insufficient observations #
         ax.plot(BV1_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask),
-                BV2_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask), 'ko', ms=1);
+                BV2_bin_midpoint_meshgrid_DA.where(insufficient_obs_mask), 'ko', ms=1)
 
         # Mark the mode of observations #
         ax.plot(BV1_bin_midpoint_meshgrid_DA.where(bin_number_of_samples == bin_number_of_samples.max()),
                 BV2_bin_midpoint_meshgrid_DA.where(bin_number_of_samples == bin_number_of_samples.max()), 'ks', ms=20,
-                color=[0.7, 0.7, 0.7], fillstyle='full', markeredgecolor='k', markeredgewidth=3);
+                color=[0.7, 0.7, 0.7], fillstyle='full', markeredgecolor='k', markeredgewidth=3)
 
         # Quiver the bin mean centered tendency #
-        q = ax.quiver(BV1_bin_midpoint_meshgrid_DA[::2, ::2], BV2_bin_midpoint_meshgrid_DA[::2, ::2], \
+        q = ax.quiver(BV1_bin_midpoint_meshgrid_DA[::2, ::2], BV2_bin_midpoint_meshgrid_DA[::2, ::2],
                       bin_mean_delta_dilution_centered.where(~insufficient_obs_mask)[::2, ::2],
-                      bin_mean_delta_undilute_B_L_centered.where(~insufficient_obs_mask)[::2, ::2], width=0.007, \
+                      bin_mean_delta_undilute_B_L_centered.where(~insufficient_obs_mask)[::2, ::2], width=0.007,
                       angles='xy', scale_units='xy', scale=(1 / arrow_scale_factor),
                       pivot='mid')  # Very important to have "angles" and "scale_units" set to "xy". "pivot=mid" shifts so arrow center at bin center. other options are "tail" and "tip"
 
