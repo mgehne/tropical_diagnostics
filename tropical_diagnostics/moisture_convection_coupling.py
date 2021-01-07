@@ -255,24 +255,35 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
     #backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'leadtime')
 
     # Lagging (forwards difference)
-    forwards_differenced_variable = variable_to_difference.isel(
-        leadtime=slice(0, -1)).copy()  # Careful to assign forwards differenced data to correct time step
-    forwards_differenced_variable.values = variable_to_difference.isel(
-        leadtime=slice(1, len(variable_to_difference.time)+1)).values - variable_to_difference.isel(
-        leadtime=slice(0, -1)).values
-    forwards_differenced_variable = xr.concat((forwards_differenced_variable, last_time), 'leadtime')
+    forwards_differenced_variable = variable_to_difference.copy()
+    forwards_differenced_variable[dict(leadtime=slice(0, -1))] = \
+        variable_to_difference.isel(leadtime=slice(1, len(variable_to_difference.time)+1)).values - \
+        variable_to_difference.isel(leadtime=slice(0, -1)).values
+    forwards_differenced_variable[dict(leadtime=-1)] = np.nan
+    #forwards_differenced_variable = variable_to_difference.isel(
+    #    leadtime=slice(0, -1)).copy()  # Careful to assign forwards differenced data to correct time step
+    #forwards_differenced_variable.values = variable_to_difference.isel(
+    #    leadtime=slice(1, len(variable_to_difference.time)+1)).values - variable_to_difference.isel(
+    #    leadtime=slice(0, -1)).values
+    #forwards_differenced_variable = xr.concat((forwards_differenced_variable, last_time), 'leadtime')
 
     # Centered (center difference)
-    center_differenced_variable = variable_to_difference.isel(
-        leadtime=slice(1, len(variable_to_difference.time))).copy()  # Careful to assign center differenced data to correct time step
-    center_differenced_variable.values = variable_to_difference.isel(
-        leadtime=slice(2, len(variable_to_difference.time)+1)).values - variable_to_difference.isel(
-        leadtime=slice(0, len(variable_to_difference.time)-1)).values
-    center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'leadtime')
+    center_differenced_variable = variable_to_difference.copy()
+    center_differenced_variable[dict(leadtime=slice(1, -1))] = \
+        variable_to_difference.isel(leadtime=slice(2, len(variable_to_difference.time) + 1)).values - \
+        variable_to_difference.isel(leadtime=slice(0, len(variable_to_difference.time)-1)).values
+    center_differenced_variable[dict(leadtime=0)] = np.nan
+    center_differenced_variable[dict(leadtime=-1)] = np.nan
+    #center_differenced_variable = variable_to_difference.isel(
+    #    leadtime=slice(1, len(variable_to_difference.time))).copy()  # Careful to assign center differenced data to correct time step
+    #center_differenced_variable.values = variable_to_difference.isel(
+    #    leadtime=slice(2, len(variable_to_difference.time)+1)).values - variable_to_difference.isel(
+    #    leadtime=slice(0, len(variable_to_difference.time)-1)).values
+    #center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'leadtime')
 
-    backwards_differenced_variable = backwards_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
-    forwards_differenced_variable = forwards_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
-    center_differenced_variable = center_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
+    #backwards_differenced_variable = backwards_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
+    #forwards_differenced_variable = forwards_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
+    #center_differenced_variable = center_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
 
     return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
 
