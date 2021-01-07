@@ -265,6 +265,10 @@ def calculate_backward_forward_center_difference_byFH(variable_to_difference):
         leadtime=slice(0, -2)).values
     center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'leadtime')
 
+    backwards_differenced_variable = backwards_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
+    forwards_differenced_variable = forwards_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
+    center_differenced_variable = center_differenced_variable.transpose('leadtime', 'time', 'lat', 'lon')
+
     return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
 
 

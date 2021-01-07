@@ -92,7 +92,6 @@ def plot_csf_binned_precipitation_rate(csf_binned_precipitation_rate_dataset, mi
                     orientation='portrait', papertype=None, format='png',
                     transparent=False, bbox_inches='tight', pad_inches=0.0, metadata=None)
 
-
 def plot_B_L_binned_precipitation_rate(binned_B_L_dataset, min_number_of_obs, save_fig_boolean=False,
                                        figure_path_and_name='untitled.png'):
     """
