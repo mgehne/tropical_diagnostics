@@ -599,7 +599,7 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     #################################################
     ####  Bin By Both Precipitation Rate and CSF ####
     #################################################
-    print('Binning and Compositing')
+    print('Binning and Compositing - 2 variables')
 
     # Define bins #
     lower_BV1_bin_limit_vector = np.arange(0.0, 0.95 + 0.05, 0.05)  # CSF
@@ -615,7 +615,7 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     bin_mean_precipitation_rate, bin_number_pos_precipitation_rate, bin_number_of_samples_precipitation_rate = \
         bin_by_two_variables(precipitation_rate, csf, precipitation_rate, lower_BV1_bin_limit_vector,
                              upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
-    print(delta_csf_leading.shape)
+
     bin_mean_delta_csf_leading, bin_number_pos_delta_csf_leading, bin_number_of_samples_leading = \
         bin_by_two_variables(delta_csf_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector,
                              upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
