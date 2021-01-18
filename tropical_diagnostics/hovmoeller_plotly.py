@@ -299,7 +299,7 @@ def plot_pattcorr(PC, labels, plotpath, lats, latn):
     fig.update_layout(title=latstring)
 
     fig.update_xaxes(ticks="", tick0=0, dtick=24, title_text='lead time (h)')
-    fig.update_yaxes(ticks="", tick0=0, dtick=0.1, title_text='correlation')
+    fig.update_yaxes(ticks="", range=[0, 1], dtick=0.1, title_text='correlation')
 
     with open(plotname, "wb") as f:
         f.write(scope.transform(fig, format=plttype))
