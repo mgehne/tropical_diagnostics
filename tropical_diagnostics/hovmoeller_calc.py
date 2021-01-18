@@ -25,7 +25,7 @@ def lat_avg(data, latmin, latmax):
     """
     data = data.sel(lat=slice(latmin, latmax))
     units = data.attrs['units']
-    data = data.mean(dim='lat')
+    data = np.nanmean(data, dim='lat')
     data.attrs['units'] = units
     data = data.squeeze()
 
