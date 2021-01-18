@@ -45,7 +45,7 @@ def pattern_corr(a, b):
     a1d = a.stack(lt=('time', 'lon'))
     b1d = b.stack(lt=('time', 'lon'))
 
-    corr = np.ma.corrcoef(a1d, b1d)
+    corr = np.corrcoef(a1d, b1d)
     corr = corr[0, 1]
 
     return corr
