@@ -118,7 +118,7 @@ for year in range(start_year, end_year + 1):
     print(B_L.shape)
 
     mcc.calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L,
-                                                          year, bin_fname_datasets[0])
+                                                          year, bin_fname_datasets[0], 'time')
 
 
 ########## plot results
