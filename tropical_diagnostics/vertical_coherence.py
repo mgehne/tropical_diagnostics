@@ -80,7 +80,7 @@ def vertical_coherence_comp(data1, data2, levels, nDayWin, nDaySkip, spd, siglev
     # return output
     return CrossAvg, CrossMask, CrossMat
 
-def vertical_coherence_comp_bgcoh(data1, data2, levels, nDayWin, nDaySkip, spd, siglevel, N = 100):
+def vertical_coherence_comp_bgcoh(data1, data2, levels, nDayWin, nDaySkip, spd, siglevel, N = 100, opt = 0):
     """
      Main driver to compute vertical coherence profile. This can be called from
      a script that reads in filtered data and level data. This function differs from the
@@ -137,7 +137,10 @@ def vertical_coherence_comp_bgcoh(data1, data2, levels, nDayWin, nDaySkip, spd, 
                 CohBGMat[ll, 1, :, :] = tmpBG[4]
 
     # compute significance levels
-    CohSig = coher_sig_bg(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, siglevel, N)
+    if opt == 0:
+        CohSig = coher_sig_bg(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, siglevel, N)
+    elif opt == 1:
+        CohSig = coher_sig_bg_lev(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, siglevel, N)
 
     # mask cross-spectra where coherence < siglevel
     MaskArray = CrossMat[:, 8:9, :, :]
@@ -241,6 +244,7 @@ def coher_sig_bg(data1, data2, levels, nDayWin, nDaySkip, CohBGMat, spd, sigleve
     CohSig = CohDist[isig, :, :, :, :]
 
     return CohSig
+
 
 def cross_phase_2d(Cross):
     """

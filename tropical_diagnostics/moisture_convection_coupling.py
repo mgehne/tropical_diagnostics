@@ -226,6 +226,89 @@ def calculate_backward_forward_center_difference(variable_to_difference):
 
     return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
 
+def calculate_backward_forward_center_difference_byFH(variable_to_difference):
+    """
+    Calculate backwards, forwards and center differences of a variable with respect to lead time.
+    Input variable needs to have a leadtime dimension to difference. In practice this can be all of 3 points long
+    when we compute the difference at one leadtime.
+    :param variable_to_difference: input data array with leadtime dimension
+    :return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable:
+    """
+
+    ntim = len(variable_to_difference.leadtime)
+
+    first_time = variable_to_difference.isel(leadtime=0)
+    last_time = variable_to_difference.isel(leadtime=-1)
+
+    first_time.values = np.full(np.shape(first_time), np.nan)
+    last_time.values = np.full(np.shape(last_time), np.nan)
+
+    # Leading (backwards difference)
+    backwards_differenced_variable = variable_to_difference.copy()
+    backwards_differenced_variable[dict(leadtime=slice(1, ntim))].values = \
+        variable_to_difference.isel(leadtime=slice(1, ntim)).values - \
+        variable_to_difference.isel(leadtime=slice(0, ntim - 1)).values
+    backwards_differenced_variable[dict(leadtime=0)].values = first_time.values
+
+    # Lagging (forwards difference)
+    forwards_differenced_variable = variable_to_difference.copy()
+    forwards_differenced_variable[dict(leadtime=slice(0, -1))].values = \
+        variable_to_difference.isel(leadtime=slice(1, ntim)).values - \
+        variable_to_difference.isel(leadtime=slice(0, -1)).values
+    forwards_differenced_variable[dict(leadtime=-1)].values = last_time.values
+
+    # Centered (center difference)
+    center_differenced_variable = variable_to_difference.copy()
+    center_differenced_variable.values = \
+        variable_to_difference.shift(leadtime=-1) - variable_to_difference.shift(leadtime=1)
+
+
+    return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
+
+
+# def bin_by_one_variable(variable_to_be_binned, BV1, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector):
+#     """
+#     Bin one variable by another. Find the mean of the first input variable within bins of the second input variable.
+#     :param variable_to_be_binned: variable to find the mean in each bin of BV1 (e.g. precipitation)
+#     :param BV1: variable used to create the bins (e.g. column saturation fraction)
+#     :param lower_BV1_bin_limit_vector: lower bin limits of BV1
+#     :param upper_BV1_bin_limit_vector: upper bin limits of BV1
+#     :return bin_mean_variable, bin_number_of_samples: mean variable in each bin, number of samples in each bin
+#     """
+#     # Define bins
+#     BV1_bin_midpoint = (lower_BV1_bin_limit_vector + upper_BV1_bin_limit_vector) / 2
+#
+#     lower_BV1_bin_limit_DA = xr.DataArray(lower_BV1_bin_limit_vector, coords=[BV1_bin_midpoint],
+#                                           dims=['BV1_bin_midpoint'])
+#     upper_BV1_bin_limit_DA = xr.DataArray(upper_BV1_bin_limit_vector, coords=[BV1_bin_midpoint],
+#                                           dims=['BV1_bin_midpoint'])
+#
+#     number_of_BV1_bins = len(BV1_bin_midpoint)
+#
+#     # Instantiate composite variable
+#     coords = {'BV1_bin_midpoint': BV1_bin_midpoint}
+#     dims = ['BV1_bin_midpoint']
+#
+#     bin_number_of_samples = xr.DataArray(np.full(len(lower_BV1_bin_limit_DA), np.nan), dims=dims, coords=coords)
+#
+#     # instantiate mean variable array
+#     bin_mean_variable = bin_number_of_samples.copy()
+#
+#     # Calculate bin mean and number of positive values in each bin
+#     for BV1_bin in BV1_bin_midpoint:
+#         bin_index = (BV1 >= lower_BV1_bin_limit_DA.where(lower_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin,
+#                                                          drop=True).values) & (
+#                                 BV1 <= upper_BV1_bin_limit_DA.where(upper_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin,
+#                                                                     drop=True).values)
+#
+#         bin_number_of_samples.loc[dict(BV1_bin_midpoint=BV1_bin)] = bin_index.sum()
+#
+#         if np.isfinite(variable_to_be_binned.where(bin_index)).sum() > 0:
+#             bin_mean_variable.loc[dict(BV1_bin_midpoint=BV1_bin)] = variable_to_be_binned.where(bin_index).mean()
+#         else:
+#             bin_mean_variable.loc[dict(BV1_bin_midpoint=BV1_bin)] = np.nan
+#
+#     return bin_mean_variable, bin_number_of_samples
 
 def bin_by_one_variable(variable_to_be_binned, BV1, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector):
     """
@@ -257,20 +340,83 @@ def bin_by_one_variable(variable_to_be_binned, BV1, lower_BV1_bin_limit_vector, 
 
     # Calculate bin mean and number of positive values in each bin
     for BV1_bin in BV1_bin_midpoint:
-        bin_index = (BV1 >= lower_BV1_bin_limit_DA.where(lower_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin,
-                                                         drop=True).values) & (
-                                BV1 <= upper_BV1_bin_limit_DA.where(upper_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin,
-                                                                    drop=True).values)
+        bin_index = np.ones(BV1.shape)
+        bv1_lower = lower_BV1_bin_limit_DA.where(lower_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin, drop=True).values
+        bv1_upper = upper_BV1_bin_limit_DA.where(upper_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin, drop=True).values
+        bin_index = np.where((BV1 >= bv1_lower[0]) & (BV1 <= bv1_upper[0]), bin_index, 0)
 
         bin_number_of_samples.loc[dict(BV1_bin_midpoint=BV1_bin)] = bin_index.sum()
-
-        if np.isfinite(variable_to_be_binned.where(bin_index)).sum() > 0:
-            bin_mean_variable.loc[dict(BV1_bin_midpoint=BV1_bin)] = variable_to_be_binned.where(bin_index).mean()
+        if np.where(bin_index == 1, variable_to_be_binned, 0).sum() > 0:
+            bin_mean_variable.loc[dict(BV1_bin_midpoint=BV1_bin)] = variable_to_be_binned.where(bin_index == 1).mean()
         else:
             bin_mean_variable.loc[dict(BV1_bin_midpoint=BV1_bin)] = np.nan
 
     return bin_mean_variable, bin_number_of_samples
 
+
+# def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
+#                          lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector):
+#     """
+#     Bin input variable by two other variables (2D version of the function above). BV1 and BV2 are the variables
+#     to be used to create the bins
+#     :param variable_to_be_binned: variable to find the mean in each bin of BV1 an BV2 (e.g. precipitation)
+#     :param BV1: first variable used to create the bins (e.g. column saturation fraction)
+#     :param BV2: second variable used to create the bins
+#     :param lower_BV1_bin_limit_vector: lower bin limits of BV1
+#     :param upper_BV1_bin_limit_vector: upper bin limits of BV1
+#     :param lower_BV2_bin_limit_vector: lower bin limits of BV2
+#     :param upper_BV2_bin_limit_vector: upper bin limits of BV2
+#     :return bin_mean_variable, bin_number_pos_variable, bin_number_of_samples:
+#     """
+#     # Define bins
+#     BV1_bin_midpoint = (lower_BV1_bin_limit_vector + upper_BV1_bin_limit_vector) / 2
+#
+#     lower_BV1_bin_limit_DA = xr.DataArray(lower_BV1_bin_limit_vector, coords=[BV1_bin_midpoint],
+#                                           dims=['BV1_bin_midpoint'])
+#     upper_BV1_bin_limit_DA = xr.DataArray(upper_BV1_bin_limit_vector, coords=[BV1_bin_midpoint],
+#                                           dims=['BV1_bin_midpoint'])
+#     number_of_BV1_bins = len(BV1_bin_midpoint)
+#
+#     BV2_bin_midpoint = (lower_BV2_bin_limit_vector + upper_BV2_bin_limit_vector) / 2;
+#
+#     lower_BV2_bin_limit_DA = xr.DataArray(lower_BV2_bin_limit_vector, coords=[BV2_bin_midpoint],
+#                                           dims=['BV2_bin_midpoint'])
+#     upper_BV2_bin_limit_DA = xr.DataArray(upper_BV2_bin_limit_vector, coords=[BV2_bin_midpoint],
+#                                           dims=['BV2_bin_midpoint'])
+#     number_of_BV2_bins = len(BV2_bin_midpoint);
+#
+#     # Instantiate composite variable
+#     coords = {'BV2_bin_midpoint': BV2_bin_midpoint, 'BV1_bin_midpoint': BV1_bin_midpoint}
+#     dims = ['BV2_bin_midpoint', 'BV1_bin_midpoint']
+#
+#     bin_number_of_samples = xr.DataArray(
+#         np.full((len(lower_BV2_bin_limit_vector), len(lower_BV1_bin_limit_DA)), np.nan), dims=dims, coords=coords)
+#     bin_mean_variable = bin_number_of_samples.copy()
+#     bin_number_pos_variable = bin_number_of_samples.copy()
+#
+#     # Calculate bin mean and number of positive values in each bin
+#     for BV1_bin in BV1_bin_midpoint:
+#         for BV2_bin in BV2_bin_midpoint:
+#             bin_index = (BV1 >= lower_BV1_bin_limit_DA.where(lower_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin,
+#                                                              drop=True).values) & (BV1 <= upper_BV1_bin_limit_DA.where(
+#                 upper_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin, drop=True).values) & (
+#                                     BV2 >= lower_BV2_bin_limit_DA.where(
+#                                 lower_BV2_bin_limit_DA.BV2_bin_midpoint == BV2_bin, drop=True).values) & (
+#                                     BV2 <= upper_BV2_bin_limit_DA.where(
+#                                 upper_BV2_bin_limit_DA.BV2_bin_midpoint == BV2_bin, drop=True).values)
+#             bin_number_of_samples.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = bin_index.sum()
+#
+#             if np.isfinite(variable_to_be_binned.where(bin_index)).sum() > 0:
+#                 bin_mean_variable.loc[
+#                     dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = variable_to_be_binned.where(
+#                     bin_index).mean()
+#                 bin_number_pos_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = (
+#                             variable_to_be_binned.where(bin_index) > 0).sum()
+#             else:
+#                 bin_mean_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = np.nan
+#                 bin_number_pos_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = np.nan
+#
+#     return bin_mean_variable, bin_number_pos_variable, bin_number_of_samples
 
 def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
                          lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector):
@@ -295,13 +441,13 @@ def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_ve
                                           dims=['BV1_bin_midpoint'])
     number_of_BV1_bins = len(BV1_bin_midpoint)
 
-    BV2_bin_midpoint = (lower_BV2_bin_limit_vector + upper_BV2_bin_limit_vector) / 2;
+    BV2_bin_midpoint = (lower_BV2_bin_limit_vector + upper_BV2_bin_limit_vector) / 2
 
     lower_BV2_bin_limit_DA = xr.DataArray(lower_BV2_bin_limit_vector, coords=[BV2_bin_midpoint],
                                           dims=['BV2_bin_midpoint'])
     upper_BV2_bin_limit_DA = xr.DataArray(upper_BV2_bin_limit_vector, coords=[BV2_bin_midpoint],
                                           dims=['BV2_bin_midpoint'])
-    number_of_BV2_bins = len(BV2_bin_midpoint);
+    number_of_BV2_bins = len(BV2_bin_midpoint)
 
     # Instantiate composite variable
     coords = {'BV2_bin_midpoint': BV2_bin_midpoint, 'BV1_bin_midpoint': BV1_bin_midpoint}
@@ -315,21 +461,33 @@ def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_ve
     # Calculate bin mean and number of positive values in each bin
     for BV1_bin in BV1_bin_midpoint:
         for BV2_bin in BV2_bin_midpoint:
-            bin_index = (BV1 >= lower_BV1_bin_limit_DA.where(lower_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin,
-                                                             drop=True).values) & (BV1 <= upper_BV1_bin_limit_DA.where(
-                upper_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin, drop=True).values) & (
-                                    BV2 >= lower_BV2_bin_limit_DA.where(
-                                lower_BV2_bin_limit_DA.BV2_bin_midpoint == BV2_bin, drop=True).values) & (
-                                    BV2 <= upper_BV2_bin_limit_DA.where(
-                                upper_BV2_bin_limit_DA.BV2_bin_midpoint == BV2_bin, drop=True).values)
-            bin_number_of_samples.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = bin_index.sum()
+            bin_index = np.ones(BV1.shape)
+            bv1_upper = \
+                upper_BV1_bin_limit_DA.where(upper_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin, drop=True).values
+            bv1_lower = \
+                lower_BV1_bin_limit_DA.where(lower_BV1_bin_limit_DA.BV1_bin_midpoint == BV1_bin, drop=True).values
+            bv2_lower = \
+                lower_BV2_bin_limit_DA.where(lower_BV2_bin_limit_DA.BV2_bin_midpoint == BV2_bin, drop=True).values
+            bv2_upper = \
+                upper_BV2_bin_limit_DA.where(upper_BV2_bin_limit_DA.BV2_bin_midpoint == BV2_bin, drop=True).values
 
-            if np.isfinite(variable_to_be_binned.where(bin_index)).sum() > 0:
-                bin_mean_variable.loc[
-                    dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = variable_to_be_binned.where(
-                    bin_index).mean()
-                bin_number_pos_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = (
-                            variable_to_be_binned.where(bin_index) > 0).sum()
+            bin_index = np.where((BV1 >= bv1_lower[0]), bin_index, 0)
+            bin_index = np.where(BV1 <= bv1_upper[0], bin_index, 0)
+            bin_index = np.where((BV2 >= bv2_lower[0]), bin_index, 0)
+            bin_index = np.where(BV2 <= bv2_upper[0], bin_index, 0)
+            bin_number_of_samples.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = \
+                (variable_to_be_binned.where(bin_index == 1) > 0).sum() + (variable_to_be_binned.where(bin_index == 1) <= 0).sum()
+
+            if (variable_to_be_binned.where(bin_index == 1).sum() < 0) or \
+                    (variable_to_be_binned.where(bin_index == 1).sum() > 0) or \
+                    (variable_to_be_binned.where(bin_index == 1).sum() == 0):
+                bin_mean_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = \
+                    variable_to_be_binned.where(bin_index == 1).mean()
+                if variable_to_be_binned.where(bin_index == 1).sum() > 0:
+                    bin_number_pos_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = \
+                        (variable_to_be_binned.where(bin_index == 1) > 0).sum()
+                else:
+                    bin_number_pos_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = np.nan
             else:
                 bin_mean_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = np.nan
                 bin_number_pos_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = np.nan
@@ -337,13 +495,15 @@ def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_ve
     return bin_mean_variable, bin_number_pos_variable, bin_number_of_samples
 
 
-def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets_for_simulation):
+def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets_for_simulation,
+                                                  diffdim):
     """
     Main computational routine to bin precipitation and column saturation fraction. Save results as netcdf files.
     :param csf: column saturation fraction data array
     :param precipitation_rate: precipitation data array
     :param year: year to process
     :param fname_datasets_for_simulation: filename for output file
+    :param diffdim: dimension to take the difference over, can be 'time' or 'leadtime'
     :return: no return, results are saved to netcdf file
     """
     current_year_string = str(year)
@@ -355,9 +515,15 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     ####  Calculate Backwards, Forwards and Center Differences of CSF and Precipitation Rate  ####
     ##############################################################################################
     print('Calculating Differences')
-    delta_csf_leading, delta_csf_lagging, delta_csf_centered = calculate_backward_forward_center_difference(csf)
-    delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+    if diffdim == 'time':
+        delta_csf_leading, delta_csf_lagging, delta_csf_centered = calculate_backward_forward_center_difference(csf)
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
         calculate_backward_forward_center_difference(precipitation_rate)
+    elif diffdim == 'leadtime':
+        delta_csf_leading, delta_csf_lagging, delta_csf_centered = \
+            calculate_backward_forward_center_difference_byFH(csf)
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+            calculate_backward_forward_center_difference_byFH(precipitation_rate)
 
     #########################################
     ####  Bin Precipitation Rate By CSF  ####
@@ -433,7 +599,7 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
     #################################################
     ####  Bin By Both Precipitation Rate and CSF ####
     #################################################
-    print('Binning and Compositing')
+    print('Binning and Compositing - 2 variables')
 
     # Define bins #
     lower_BV1_bin_limit_vector = np.arange(0.0, 0.95 + 0.05, 0.05)  # CSF
@@ -450,26 +616,26 @@ def calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year,
         bin_by_two_variables(precipitation_rate, csf, precipitation_rate, lower_BV1_bin_limit_vector,
                              upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
-    bin_mean_delta_csf_leading, bin_number_pos_delta_csf_leading, bin_number_of_samples_leading = bin_by_two_variables(
-        delta_csf_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
-        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
-    bin_mean_delta_precipitation_rate_leading, bin_number_pos_delta_precipitation_rate_leading, _ = bin_by_two_variables(
-        delta_precipitation_rate_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector,
-        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_csf_leading, bin_number_pos_delta_csf_leading, bin_number_of_samples_leading = \
+        bin_by_two_variables(delta_csf_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_precipitation_rate_leading, bin_number_pos_delta_precipitation_rate_leading, _ = \
+        bin_by_two_variables(delta_precipitation_rate_leading, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
-    bin_mean_delta_csf_lagging, bin_number_pos_delta_csf_lagging, bin_number_of_samples_lagging = bin_by_two_variables(
-        delta_csf_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
-        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
-    bin_mean_delta_precipitation_rate_lagging, bin_number_pos_delta_precipitation_rate_lagging, _ = bin_by_two_variables(
-        delta_precipitation_rate_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector,
-        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_csf_lagging, bin_number_pos_delta_csf_lagging, bin_number_of_samples_lagging = \
+        bin_by_two_variables(delta_csf_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_precipitation_rate_lagging, bin_number_pos_delta_precipitation_rate_lagging, _ =\
+        bin_by_two_variables(delta_precipitation_rate_lagging, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
-    bin_mean_delta_csf_centered, bin_number_pos_delta_csf_centered, bin_number_of_samples_centered = bin_by_two_variables(
-        delta_csf_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector, upper_BV1_bin_limit_vector,
-        lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
-    bin_mean_delta_precipitation_rate_centered, bin_number_pos_delta_precipitation_rate_centered, _ = bin_by_two_variables(
-        delta_precipitation_rate_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector,
-        upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_csf_centered, bin_number_pos_delta_csf_centered, bin_number_of_samples_centered = \
+        bin_by_two_variables(delta_csf_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
+    bin_mean_delta_precipitation_rate_centered, bin_number_pos_delta_precipitation_rate_centered, _ = \
+        bin_by_two_variables(delta_precipitation_rate_centered, csf, precipitation_rate, lower_BV1_bin_limit_vector,
+                             upper_BV1_bin_limit_vector, lower_BV2_bin_limit_vector, upper_BV2_bin_limit_vector)
 
     ####  Output Data as NetCDF  ####
 
@@ -594,14 +760,18 @@ def process_multiyear_binned_single_variable_dataset(list_of_files):
     return binned_dataset
 
 
-def process_binned_csf_precipitation_rate_dataset(filename):
+def process_binned_csf_precipitation_rate_dataset(filename, opt):
     """
     Read data binned by two variables (e.g. precipitation and csf) and compute mean across all years.
     :param filename: input filename containing binned data
+    :param opt: is the input a filename or dataset
     :return binned_csf_precipitation_rate_dataset: dataset containing mean binned data
     """
     # binned_csf_precipitation_rate_dataset = xr.open_mfdataset(list_of_files, combine="by_coords")
-    binned_csf_precipitation_rate_dataset = xr.open_dataset(filename)
+    if opt=='file':
+        binned_csf_precipitation_rate_dataset = xr.open_dataset(filename)
+    elif opt=='dataset':
+        binned_csf_precipitation_rate_dataset = filename
 
     # Calculate the bin means over all years #
     more_than_zero_obs_mask_precipitation_rate = \
@@ -1035,7 +1205,7 @@ def compute_B_L(mwa_ME_surface_to_850, mwa_ME_saturation_850_to_500, mwa_saturat
 
 
 def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, undilute_B_L, dilution_of_B_L, year,
-                                                      fname_datasets_for_simulation):
+                                                      fname_datasets_for_simulation, diffdim):
     """
 
     :param precipitation_rate:
@@ -1044,6 +1214,7 @@ def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, u
     :param dilution_of_B_L:
     :param year:
     :param fname_datasets_for_simulation:
+    :param diffdim:
     :return:
     """
     current_year_string = str(year)
@@ -1056,17 +1227,24 @@ def calculate_undilute_B_L_dilution_binned_composites(precipitation_rate, B_L, u
     ##############################################################################################
 
     print('Calculating Differences')
-
-    delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
-        calculate_backward_forward_center_difference(precipitation_rate)
-
-    delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = calculate_backward_forward_center_difference(B_L)
-
-    delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
-        calculate_backward_forward_center_difference(undilute_B_L)
-
-    delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
-        calculate_backward_forward_center_difference(dilution_of_B_L)
+    if diffdim == 'time':
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+            calculate_backward_forward_center_difference(precipitation_rate)
+        delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = \
+            calculate_backward_forward_center_difference(B_L)
+        delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
+            calculate_backward_forward_center_difference(undilute_B_L)
+        delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
+            calculate_backward_forward_center_difference(dilution_of_B_L)
+    elif diffdim == 'leadtime':
+        delta_B_L_leading, delta_B_L_lagging, delta_B_L_centered = \
+            calculate_backward_forward_center_difference_byFH(B_L)
+        delta_undilute_B_L_leading, delta_undilute_B_L_lagging, delta_undilute_B_L_centered = \
+            calculate_backward_forward_center_difference_byFH(undilute_B_L)
+        delta_dilution_leading, delta_dilution_lagging, delta_dilution_centered = \
+            calculate_backward_forward_center_difference_byFH(dilution_of_B_L)
+        delta_precipitation_rate_leading, delta_precipitation_rate_lagging, delta_precipitation_rate_centered = \
+            calculate_backward_forward_center_difference_byFH(precipitation_rate)
 
 
     #########################################

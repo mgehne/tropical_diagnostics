@@ -413,7 +413,8 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     switch = True
     while switch:
         ntLast = ntStrt + segLen
-        if (ntLast > (ntim - 1)):
+        #if (ntLast > (ntim - 1)):
+        if ntLast > ntim:
             switch = False
             continue
 

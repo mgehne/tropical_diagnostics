@@ -159,7 +159,7 @@ for year in range(start_year, end_year + 1):
     csf = ci_q / ci_q_sat
 
     # Calculate CSF Precipitation Rate Composites and save to file
-    mcc.calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets[0])
+    mcc.calculate_csf_precipitation_binned_composites(csf, precipitation_rate, year, fname_datasets[0], 'time')
 
 #######################################################
 ####  Plot composites ####
