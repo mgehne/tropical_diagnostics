@@ -476,7 +476,9 @@ def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_ve
             bin_index = np.where((BV2 >= bv2_lower[0]), bin_index, 0)
             bin_index = np.where(BV2 <= bv2_upper[0], bin_index, 0)
             bin_number_of_samples.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = \
-                (variable_to_be_binned.where(bin_index == 1) > 0).sum() + (variable_to_be_binned.where(bin_index == 1) <= 0).sum()
+                (variable_to_be_binned.where(bin_index == 1) > 0).sum() + \
+                (variable_to_be_binned.where(bin_index == 1) < 0).sum() + \
+                (variable_to_be_binned.where(bin_index == 1) == 0).sum()
 
             if (variable_to_be_binned.where(bin_index == 1).sum() < 0) or \
                     (variable_to_be_binned.where(bin_index == 1).sum() > 0) or \
