@@ -27,7 +27,7 @@ datelast = "2017-12-31"
 # set the wave to filter for
 waveName = 'Kelvin'
 
-# filename for filtered datra
+# filename for filtered data
 fileout = filein+'.'+waveName
 
 # parameters for filtering the data
