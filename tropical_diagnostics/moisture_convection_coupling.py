@@ -195,6 +195,7 @@ def calculate_backward_forward_center_difference(variable_to_difference):
     :param variable_to_difference: input data array with time dimension
     :return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable:
     """
+    ntim = len(variable_to_difference.time)
 
     first_time = variable_to_difference.isel(time=0)
     last_time = variable_to_difference.isel(time=-1)
@@ -203,26 +204,42 @@ def calculate_backward_forward_center_difference(variable_to_difference):
     last_time.values = np.full(np.shape(last_time), np.nan)
 
     # Leading (backwards difference)
-    backwards_differenced_variable = variable_to_difference.isel(time=slice(1, len(
-        variable_to_difference.time) + 1)).copy()  # Careful to assign backwards differenced data to correct time step
-    backwards_differenced_variable.values = variable_to_difference.isel(
-        time=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(
-        time=slice(0, -1)).values  # Slice indexing is (inclusive start, exclusive stop)
-    backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'time')
+    backwards_differenced_variable = variable_to_difference.copy()
+    backwards_differenced_variable[dict(time=slice(1, ntim))].values = \
+        variable_to_difference.isel(time=slice(1, ntim)).values - \
+        variable_to_difference.isel(time=slice(0, ntim - 1)).values
+    backwards_differenced_variable[dict(time=0)].values = first_time.values
+
+    # backwards_differenced_variable = variable_to_difference.isel(time=slice(1, len(
+    #    variable_to_difference.time) + 1)).copy()  # Careful to assign backwards differenced data to correct time step
+    # backwards_differenced_variable.values = variable_to_difference.isel(
+    #    time=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(
+    #    time=slice(0, -1)).values  # Slice indexing is (inclusive start, exclusive stop)
+    # backwards_differenced_variable = xr.concat((first_time, backwards_differenced_variable), 'time')
 
     # Lagging (forwards difference)
-    forwards_differenced_variable = variable_to_difference.isel(
-        time=slice(0, -1)).copy()  # Careful to assign forwards differenced data to correct time step
-    forwards_differenced_variable.values = variable_to_difference.isel(
-        time=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(time=slice(0, -1)).values
-    forwards_differenced_variable = xr.concat((forwards_differenced_variable, last_time), 'time')
+    forwards_differenced_variable = variable_to_difference.copy()
+    forwards_differenced_variable[dict(time=slice(0, -1))].values = \
+        variable_to_difference.isel(time=slice(1, ntim)).values - \
+        variable_to_difference.isel(time=slice(0, -1)).values
+    forwards_differenced_variable[dict(time=-1)].values = last_time.values
+
+    # forwards_differenced_variable = variable_to_difference.isel(
+    #    time=slice(0, -1)).copy()  # Careful to assign forwards differenced data to correct time step
+    # forwards_differenced_variable.values = variable_to_difference.isel(
+    #    time=slice(1, len(variable_to_difference.time))).values - variable_to_difference.isel(time=slice(0, -1)).values
+    # forwards_differenced_variable = xr.concat((forwards_differenced_variable, last_time), 'time')
 
     # Centered (center difference)
-    center_differenced_variable = variable_to_difference.isel(
-        time=slice(1, -1)).copy()  # Careful to assign center differenced data to correct time step
-    center_differenced_variable.values = variable_to_difference.isel(
-        time=slice(2, len(variable_to_difference.time))).values - variable_to_difference.isel(time=slice(0, -2)).values
-    center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'time')
+    center_differenced_variable = variable_to_difference.copy()
+    center_differenced_variable.values = \
+        variable_to_difference.shift(time=-1) - variable_to_difference.shift(time=1)
+
+    # center_differenced_variable = variable_to_difference.isel(
+    #    time=slice(1, -1)).copy()  # Careful to assign center differenced data to correct time step
+    # center_differenced_variable.values = variable_to_difference.isel(
+    #    time=slice(2, len(variable_to_difference.time))).values - variable_to_difference.isel(time=slice(0, -2)).values
+    # center_differenced_variable = xr.concat((first_time, center_differenced_variable, last_time), 'time')
 
     return backwards_differenced_variable, forwards_differenced_variable, center_differenced_variable
 
