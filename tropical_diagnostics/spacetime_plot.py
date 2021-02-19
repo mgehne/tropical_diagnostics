@@ -258,7 +258,7 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
 
     # plot resources
     #wkstype = wkstype
-    reswks = Ngl.Resources()
+    reswks = ngl.Resources()
     reswks.wkWidth = 3000
     reswks.wkHeight = 3000
 
