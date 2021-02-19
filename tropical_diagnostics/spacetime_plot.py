@@ -258,7 +258,11 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
 
     # plot resources
     #wkstype = wkstype
-    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_")
+    reswks = Ngl.Resources()
+    reswks.wkWidth = 3000
+    reswks.wkHeight = 3000
+
+    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_", reswks)
     plots = []
 
     # coherence2 plot resources
