@@ -502,7 +502,7 @@ def bin_by_two_variables(variable_to_be_binned, BV1, BV2, lower_BV1_bin_limit_ve
                     (variable_to_be_binned.where(bin_index == 1).sum() == 0):
                 bin_mean_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = \
                     variable_to_be_binned.where(bin_index == 1).mean()
-                if variable_to_be_binned.where(bin_index == 1).sum() > 0:
+                if (variable_to_be_binned.where(bin_index == 1) > 0).sum() > 0:
                     bin_number_pos_variable.loc[dict(BV2_bin_midpoint=BV2_bin, BV1_bin_midpoint=BV1_bin)] = \
                         (variable_to_be_binned.where(bin_index == 1) > 0).sum()
                 else:
