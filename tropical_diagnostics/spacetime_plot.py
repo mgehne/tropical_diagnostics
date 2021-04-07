@@ -343,7 +343,11 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
 
 
 def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0.5, nWavePlt=20, cmin=0.05, cmax=0.55,
-               cspc=0.05, nplot=1, N=[1, 2]):
+               cspc=0.05, plotxy=[1, 1], N=[1, 2]):
+
+    dims = cohsq.shape
+    nplot = dims[0]
+
     FillMode = "AreaFill"
 
     # text labels
@@ -419,7 +423,7 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
         pp += 1
 
         # panel plots
-    ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], resP)
+    ngl.panel(wks, plots, plotxy, resP)
     ngl.delete_wks(wks)
     #ngl.end()
 
