@@ -382,10 +382,12 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
     while pp < nplot:
         if nplot == 1:
             coh2 = Pow
-            Symmetry = symmetry
         else:
             coh2 = Pow[pp, :, :]
+        if len(symmetry) == nplot:
             Symmetry = symmetry[pp]
+        else:
+            Symmetry = symmetry
 
         res.tiMainString = source + "    log10( Power(" + var1 + "))           " + Symmetry
         plot = ngl.contour(wks, coh2, res)
