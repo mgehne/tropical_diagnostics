@@ -195,7 +195,7 @@ def waveproj(data_anom: object, eofseas: object):
 
 def wave_skill(act):
     """
-
+    Compute skill correlation between first entry and all others
     :param act:
     :type act:
     :return:
@@ -210,6 +210,71 @@ def wave_skill(act):
             skill[ff, ll] = tmpskill[0, 1]
 
     return skill
+
+def wave_skill_ci(act, ci=90, n_boots=1000):
+    """
+    Compute bootstrap confidence intervals for skill correlation.
+    :param act:
+    :type act:
+    :param ci: confidence level 0 - 100
+    :param n_boots: number of bootstrap samples to use
+    :return:
+    :rtype:
+    """
+    nfchr, nlines, ntim = act.shape
+    skill_ci = act[:, 1::, 0:1]
+
+    for ff in np.arange(nfchr):
+        for ll in np.arange(nlines - 1):
+            ci_lower, ci_upper = pearson_ci(act[ff, ll + 1, :], act[ff, 0, :], ci, n_boots)
+            skill[ff, ll, 0] = ci_lower
+            skill[ff, ll, 1] = ci_upper
+
+    return skill_ci
+
+def pearson_ci(a, b, ci=90, n_boots=1000):
+    """
+    Compute bootstrap confidence intervals for skill correlation.
+    :param a: 1D array
+    :param b: 1D array
+    :param ci: confidence level 0 - 100
+    :param n_boots: number of bootstrap samples to use
+    :return:
+    :rtype:
+    """
+    x = np.asarray(a)
+    y = np.asarray(b)
+
+    xorig = x
+    x = x[~np.isnan(xorig)]
+    y = y[~np.isnan(xorig)]
+    yorig = y
+    x = x[~np.isnan(yorig)]
+    y = y[~np.isnan(yorig)]
+
+    del xorig, yorig
+
+    # (n_boots, n_observations) paired arrays
+    rand_ixs = np.random.randint(0, x.shape[0], size=(n_boots, x.shape[0]))
+    x_boots = x[rand_ixs]
+    y_boots = y[rand_ixs]
+
+    # differences from mean
+    x_mdiffs = x_boots - np.nanmean(x_boots, axis=1)[:, None]
+    y_mdiffs = y_boots - np.nanmean(y_boots, axis=1)[:, None]
+
+    # sums of squares
+    x_ss = np.einsum('ij, ij -> i', x_mdiffs, x_mdiffs)
+    y_ss = np.einsum('ij, ij -> i', y_mdiffs, y_mdiffs)
+
+    # pearson correlations
+    r_boots = np.einsum('ij, ij -> i', x_mdiffs, y_mdiffs) / np.sqrt(x_ss * y_ss)
+
+    # upper and lower bounds for confidence interval
+    ci_low = np.percentile(r_boots, (100 - ci) / 2)
+    ci_high = np.percentile(r_boots, (ci + 100) / 2)
+
+    return ci_low, ci_high
 
 def get_timestr(time):
     """
