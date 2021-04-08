@@ -227,8 +227,8 @@ def wave_skill_ci(act, ci=90, n_boots=1000):
     for ff in np.arange(nfchr):
         for ll in np.arange(nlines - 1):
             ci_lower, ci_upper = pearson_ci(act[ff, ll + 1, :], act[ff, 0, :], ci, n_boots)
-            skill[ff, ll, 0] = ci_lower
-            skill[ff, ll, 1] = ci_upper
+            skill_ci[ff, ll, 0] = ci_lower
+            skill_ci[ff, ll, 1] = ci_upper
 
     return skill_ci
 
