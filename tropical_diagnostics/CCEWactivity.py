@@ -222,7 +222,7 @@ def wave_skill_ci(act, ci=90, n_boots=1000):
     :rtype:
     """
     nfchr, nlines, ntim = act.shape
-    skill_ci = act[:, 1::, 0:1]
+    skill_ci = act[:, 1::, 0:2]
 
     for ff in np.arange(nfchr):
         for ll in np.arange(nlines - 1):
