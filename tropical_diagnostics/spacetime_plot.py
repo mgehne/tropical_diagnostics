@@ -258,7 +258,10 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
 
     # plot resources
     #wkstype = wkstype
-    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_")
+    reswks = ngl.Resources()
+    reswks.wkWidth = 3000
+    reswks.wkHeight = 3000
+    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_", reswks)
     plots = []
 
     # coherence2 plot resources
@@ -340,7 +343,11 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
 
 
 def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0.5, nWavePlt=20, cmin=0.05, cmax=0.55,
-               cspc=0.05, nplot=1, N=[1, 2]):
+               cspc=0.05, plotxy=[1, 1], N=[1, 2]):
+
+    dims = Pow.shape
+    nplot = dims[0]
+
     FillMode = "AreaFill"
 
     # text labels
@@ -375,10 +382,12 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
     while pp < nplot:
         if nplot == 1:
             coh2 = Pow
-            Symmetry = symmetry
         else:
             coh2 = Pow[pp, :, :]
+        if len(symmetry) == nplot:
             Symmetry = symmetry[pp]
+        else:
+            Symmetry = symmetry
 
         res.tiMainString = source + "    log10( Power(" + var1 + "))           " + Symmetry
         plot = ngl.contour(wks, coh2, res)
@@ -416,7 +425,7 @@ def plot_power(Pow, symmetry=("symm"), source="", var1="", plotpath="./", flim=0
         pp += 1
 
         # panel plots
-    ngl.panel(wks, plots, [nplot // 2 + 1, nplot // 2 + 1], resP)
+    ngl.panel(wks, plots, plotxy, resP)
     ngl.delete_wks(wks)
     #ngl.end()
 
