@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Gehne
+    given-names: Maria
+    orcid: https://orcid.org/0000-0002-7267-8676
+title: "Tropical Diagnostics Toolbox for Numerical Weather Forecasts"
+version: 1.2
+date-released: 2021-01-19
