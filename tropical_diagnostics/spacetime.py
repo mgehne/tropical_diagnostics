@@ -75,41 +75,41 @@ def mjo_cross_segment(XX, YY, opt=False):
     # test if time and longitude are odd or even, fft algorithm
     # returns the Nyquist frequency once for even NT or NL and twice
     # if they are odd
-    if NT % 2 == 1:
-        nfreq = NT
+    if NT % 2 == 1:  # odd number of time values
+        nfreq = int((NT+1)/2)
         if NL % 2 == 1:
             nwave = NL
             STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :NT, :NL] = PX
-            STC[1, :NT, :NL] = PY
-            STC[2, :NT, :NL] = CXY
-            STC[3, :NT, :NL] = QXY
+            STC[0, :nfreq, :NL] = PX
+            STC[1, :nfreq, :NL] = PY
+            STC[2, :nfreq, :NL] = CXY
+            STC[3, :nfreq, :NL] = QXY
         else:
             nwave = NL + 1
             STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :NT, 1:NL + 1] = PX
-            STC[1, :NT, 1:NL + 1] = PY
-            STC[2, :NT, 1:NL + 1] = CXY
-            STC[3, :NT, 1:NL + 1] = QXY
+            STC[0, :nfreq, 1:NL + 1] = PX
+            STC[1, :nfreq, 1:NL + 1] = PY
+            STC[2, :nfreq, 1:NL + 1] = CXY
+            STC[3, :nfreq, 1:NL + 1] = QXY
             STC[:, :, 0] = STC[:, :, NL]
     else:
-        nfreq = NT + 1
+        nfreq = int(NT/2) + 1
         if NL % 2 == 1:
             nwave = NL
             STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :NT, :NL] = PX
-            STC[1, :NT, :NL] = PY
-            STC[2, :NT, :NL] = CXY
-            STC[3, :NT, :NL] = QXY
-            STC[:, NT, :] = STC[:, 0, :]
+            STC[0, :nfreq, :NL] = PX
+            STC[1, :nfreq, :NL] = PY
+            STC[2, :nfreq, :NL] = CXY
+            STC[3, :nfreq, :NL] = QXY
+            #STC[:, nfreq, :] = STC[:, 0, :]
         else:
             nwave = NL + 1
             STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :NT, 1:NL + 1] = PX
-            STC[1, :NT, 1:NL + 1] = PY
-            STC[2, :NT, 1:NL + 1] = CXY
-            STC[3, :NT, 1:NL + 1] = QXY
-            STC[0, NT, :] = STC[0, 0, :]
+            STC[0, :nfreq, 1:NL + 1] = PX
+            STC[1, :nfreq, 1:NL + 1] = PY
+            STC[2, :nfreq, 1:NL + 1] = CXY
+            STC[3, :nfreq, 1:NL + 1] = QXY
+            #STC[:, nfreq, :] = STC[:, 0, :]
             STC[:, :, 0] = STC[:, :, NL]
 
     return STC
