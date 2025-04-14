@@ -9,6 +9,12 @@ mjo_cross:
   result = mjo_cross(X,Y,nperseg,segoverlap). This splits the data in X and Y
   into segments of length nperseg, the segments overlap by segoverlap.
 
+mjo_cross_fortran:
+  The main function to compute cross-spectra is called as
+  result = mjo_cross_fortran(X,Y,nperseg,segoverlap,opt=sum). This splits the data in X and Y
+  into segments of length nperseg, the segments overlap by segoverlap. Matches the original
+  fortran computation of the spectra.
+
 mjo_cross_segment:
 
 get_symmasymm:
@@ -20,6 +26,10 @@ smooth121:
 smooth121_1D:
 
 window_cosbell:
+
+tapertozero:
+
+smoothBG:
 
 kf_filter_mask:
 
@@ -453,6 +463,35 @@ def window_cosbell(N, pct, opt=False):
 
     return x
 
+def tapertozero(ts,N,nmi,nn,tp):
+    """
+    default call for this is tapertozero(ts,NT,1,NT,10)
+    "taper" the first and last 'tp' members of 'ts' by multiplication by
+    c a segment of the cosine curve so that the ends of the series
+    c taper toward zero. This satisfies the
+    c periodic requirement of the FFT.
+    c Only the data from nmi to nmi+nn-1 is deemed useful, and
+    c the rest is set to zero. (There are nn points of useful data)
+    """
+    if ((N<25) | (nn<25)):
+        print('No use doing the tapering if less than 25 values!')
+        return ts
+    if ((nmi+nn-1)>N):
+        print('ERROR as nmi+nn-1 > N')
+        return ts
+
+    for i in np.arange(0,N):
+        j=i-nmi+2
+        if ((j<=0) | (j>nn)):
+            ts[i]=0.
+        elif (j<=tp):
+            ts[i]= ts[i]*0.5*(1.-np.cos((j-1)*np.pi/tp))
+        elif ((j>(nn-tp)) & (j<=nn)):
+            ts[i]= ts[i]*0.5*(1.-np.cos((nn-j)*np.pi /tp))
+        else:
+            ts[i]= ts[i]
+    return ts
+
 
 def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     """
@@ -552,6 +591,163 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
     prob_coh2 = 1 - (1 - np.power(p, (0.5 * dof - 1)))
 
     return {'STC': STC, 'freq': freq, 'wave': wave, 'nseg': kseg, 'dof': dof, 'p': prob, 'prob_coh2': prob_coh2}
+
+def mjo_cross_fortran(X, Y, segLen, segOverLap, opt='sum'):
+    """
+    MJO cross spectrum function. This function calls the above functions to compute
+    cross spectral estimates for each segment of length segLen. Segments overlap by
+    segOverLap. This function mirrors the NCL routine mjo_cross.
+    Return value is a dictionary.
+    :param X: Input data 3D array ( time, lat, lon).
+    :param Y: Input data 3D array ( time, lat, lon).
+    :param segLen: Length of the time segments.
+    :param segOverLap: Length of the overlap between time segments.
+    :param opt: Optional parameter. Set to sum or avg to either sum s=power across latitudes or average. Summing is the default and
+    matches the original fortran code results.
+    :return dict: Dictionary containing the spectral array (STC), frequency array (freq), zonal wavenumber array (wave),
+    the number of segments used (nseg), the estimated degrees of freedom (dof), the probability levels (p),
+    the coherence squared values corresponding to the probability levels (prob_coh2)
+    """
+
+    ntim, nlat, mlon = X.shape
+    ntim1, nlat1, mlon1 = Y.shape
+
+    if any([ntim - ntim1, nlat - nlat1, mlon - mlon1]) != 0:
+        print("mjo_cross: X and Y must be same size")
+        print("           dimX=" + [ntim, nlat, mlon] + "   dimY=" + [ntim1, nlat1, mlon1])
+        return
+
+    # make a local copy (time,lat,lon)
+    x = X.copy()
+    y = Y.copy()
+
+    # generate window, taper 10% of series
+    window = tapertozero(np.ones(segLen, dtype='double'),segLen,1,segLen,10)
+    window = np.tile(window, [1, 1, 1])
+    window = np.transpose(window)
+    window = np.tile(window, [1, nlat, mlon])
+
+    # set number of frequency bins
+    if (segLen) % 2 == 1:
+        nfreq = int((segLen+1)/2)
+    else:
+        nfreq = int(segLen/2) + 1
+    if mlon % 2 == 1:
+        nwave = mlon
+    else:
+        nwave = mlon + 1
+    
+    # initialize spectrum array
+    STC = np.zeros([8, nfreq, nwave], dtype='double')
+    wave = np.arange(-int(nwave / 2), int(nwave / 2)+1, 1.)
+    if segLen % 2 == 1:
+        #nfreq = int((ntim+1)/2)
+        freq = np.linspace(0, 0.5*(segLen-1)/segLen, num=nfreq)
+    else:
+        #nfreq = int(ntim/2) + 1
+        freq = np.linspace(0, 0.5, num=nfreq)
+
+    # loop through segments and compute cross-spectra
+    kseg = 0
+    ntStrt = 0
+    switch = True
+    while switch:
+        ntLast = ntStrt + segLen
+        if ntLast > ntim:
+            switch = False
+            continue
+
+        xtmp = x[ntStrt:ntLast, :, :].copy()  
+        ytmp = y[ntStrt:ntLast, :, :].copy()    
+        xtmp[:,xtmp['lat']>=0,:] = get_symmasymm(x[ntStrt:ntLast, :, :],x['lat'],'symm')
+        xtmp[:,xtmp['lat']<0,:] = get_symmasymm(x[ntStrt:ntLast, :, :],x['lat'],'asymm')
+        ytmp[:,ytmp['lat']>=0,:] = get_symmasymm(y[ntStrt:ntLast, :, :],y['lat'],'symm')
+        ytmp[:,ytmp['lat']<0,:] = get_symmasymm(y[ntStrt:ntLast, :, :],y['lat'],'asymm')   
+  
+        xxtmp = signal.detrend(xtmp, axis=0, type='linear') 
+        yytmp = signal.detrend(ytmp, axis=0, type='linear') 
+
+        # get symmetric/ anti-symmetric parts
+        XX = x[ntStrt:ntLast, :, :]  
+        YY = y[ntStrt:ntLast, :, :] 
+        XX.values = xxtmp * window
+        YY.values = yytmp * window
+  
+        STCseg = mjo_cross_segment_realfft(XX, YY, opt=opt)
+        # sum segment spectra
+        STC = STC + STCseg
+
+        kseg = kseg + 1
+        ntStrt = ntLast + segOverLap - 1
+
+    #print(kseg)
+    STC = STC / kseg
+
+    # compute phase and coherence from averaged spectra
+    st.mjo_cross_coh2pha(STC[0,:,:,:])
+    st.mjo_cross_coh2pha(STC[1,:,:,:])
+    st.mjo_cross_coh2pha(STC[2,:,:,:])
+
+    # conservative estimate for DOFs, 2.667 is for 1-2-1 smoother
+    dof = 2.667 * kseg
+    p = [0.80, 0.85, 0.90, 0.925, 0.95, 0.99]  # probability levels
+    prob = p
+    prob_coh2 = 1 - (1 - np.power(p, (0.5 * dof - 1)))
+
+    return {'STC': STC, 'freq': freq, 'wave': wave, 'nseg': kseg, 'dof': dof, 'p': prob, 'prob_coh2': prob_coh2}
+
+def smoothBG(STCbg):
+  """
+  Smooth the background (the output of mjo_cross_fortran) spectrum. This should match the background smoother 
+  from the original fortran code.
+  """
+    nvar, nfreq, nwave = STCbg.shape
+    freq = STCbg.freq
+
+    ifstrt = 0
+    indf = np.where(freq<0.1)
+    for a in np.arange(0,5):
+        tmp = STCbg.values
+        for fv in range(0, len(indf)):
+            STCbg[0:4,ifstrt+fv, 0] = (3*tmp[0:4, ifstrt+fv,0] + tmp[0:4,ifstrt+fv, 1] )/4
+            STCbg[0:4,ifstrt+fv, 1:-2] = (tmp[0:4, ifstrt+fv,0:-3] + 2*tmp[0:4,ifstrt+fv, 1:-2] + tmp[0:4, ifstrt+fv,2:-1] )/4
+            STCbg[0:4,ifstrt+fv, -1] = (3*tmp[0:4, ifstrt+fv, -1] + tmp[0:4,ifstrt+fv, -2] )/4
+
+    ifstrt = ifstrt+len(indf)        
+    indf = np.where((freq<0.2) & (freq>=0.1))
+    for a in np.arange(0,10):  
+        tmp = STCbg.values      
+        for fv in range(0, ):
+            STCbg[0:4,ifstrt+fv, 0] = (3*tmp[0:4, ifstrt+fv,0] + tmp[0:4,ifstrt+fv, 1] )/4
+            STCbg[0:4,ifstrt+fv, 1:-2] = (tmp[0:4, ifstrt+fv,0:-3] + 2*tmp[0:4,ifstrt+fv, 1:-2] + tmp[0:4, ifstrt+fv,2:-1] )/4
+            STCbg[0:4,ifstrt+fv, -1] = (3*tmp[0:4, ifstrt+fv, -1] + tmp[0:4,ifstrt+fv, -2] )/4
+
+    ifstrt = ifstrt+len(indf)        
+    indf = np.where((freq<0.3) & (freq>=0.2))        
+    for a in np.arange(0,20):  
+        tmp = STCbg.values      
+        for fv in range(0, len(indf)):
+            STCbg[0:4,ifstrt+fv, 0] = (3*tmp[0:4, ifstrt+fv,0] + tmp[0:4,ifstrt+fv, 1] )/4
+            STCbg[0:4,ifstrt+fv, 1:-2] = (tmp[0:4, ifstrt+fv,0:-3] + 2*tmp[0:4,ifstrt+fv, 1:-2] + tmp[0:4, ifstrt+fv,2:-1] )/4
+            STCbg[0:4,ifstrt+fv, -1] = (3*tmp[0:4, ifstrt+fv, -1] + tmp[0:4,ifstrt+fv, -2] )/4  
+
+    ifstrt = ifstrt+len(indf)        
+    indf = np.where((freq>=0.3))        
+    for a in np.arange(0,40):
+        tmp = STCbg.values        
+        for fv in range(0, len(indf)):
+            STCbg[0:4,ifstrt+fv, 0] = (3*tmp[0:4, ifstrt+fv,0] + tmp[0:4,ifstrt+fv, 1] )/4
+            STCbg[0:4,ifstrt+fv, 1:-2] = (tmp[0:4, ifstrt+fv,0:-3] + 2*tmp[0:4,ifstrt+fv, 1:-2] + tmp[0:4, ifstrt+fv,2:-1] )/4
+            STCbg[0:4,ifstrt+fv, -1] = (3*tmp[0:4, ifstrt+fv, -1] + tmp[0:4,ifstrt+fv, -2] )/4              
+            
+    for a in np.arange(0,10):
+        tmp = STCbg.values
+        for wv in range(0, nwave):
+            STCbg[0:4, 0, wv] = (3*tmp[0:4, 0, wv] + tmp[0:4, 1, wv] )/4
+            STCbg[0:4, 1:-2, wv] = (tmp[0:4, 0:-3, wv] + 2*tmp[0:4, 1:-2, wv] + tmp[0:4, 2:-1, wv] )/4
+            STCbg[0:4, -1, wv] = (3*tmp[0:4, -1, wv] + tmp[0:4, -2, wv] )/4
+
+    return STCbg
 
 
 def kf_filter_mask(fftIn, obsPerDay, tMin, tMax, kMin, kMax, hMin, hMax, waveName):
