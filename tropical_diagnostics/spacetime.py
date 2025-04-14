@@ -47,7 +47,7 @@ omega = 7.292e-05  # Angular speed of rotation of Earth [rad s^{-1}]
 beta = 2. * omega / re  # beta parameter at the equator
 
 
-def mjo_cross_segment(XX, YY, opt='sum'):
+def mjo_cross_segment(XX, YY, opt='both', optS='sum'):
     """
     Compute the FFT to get the power and cross-spectra for one time segment.
     :param XX: Input array (time, lat, lon)
@@ -95,7 +95,7 @@ def mjo_cross_segment(XX, YY, opt='sum'):
         PXYasymm = np.conj(Xfft[:,xlat<0,:]) * Yfft[:,ylat<0,:] 
         PXYbg = np.conj(Xfft[:,xlat!=0,:]) * Yfft[:,ylat!=0,:]
 
-        if opt=='sum':
+        if optS=='sum':
             # compute symmetric and anti-symmetric spectrum
             PXsymm = 2*np.sum(np.square(np.abs(Xfft[:,xlat>0,:])), axis=1) 
             PXasymm = 2*np.sum(np.square(np.abs(Xfft[:,xlat<0,:])), axis=1)
@@ -111,7 +111,7 @@ def mjo_cross_segment(XX, YY, opt='sum'):
             QXYasymm = 2*np.sum(np.imag(PXYasymm), axis=1)
             CXYbg = np.sum(np.real(PXYbg), axis=1)
             QXYbg = np.sum(np.imag(PXYbg), axis=1)
-        elif opt=='avg':
+        elif optS=='avg':
             # compute symmetric and anti-symmetric spectrum
             PXsymm = np.average(np.square(np.abs(Xfft[:,xlat>0,:])), axis=1) 
             PXasymm = np.average(np.square(np.abs(Xfft[:,xlat<0,:])), axis=1)
@@ -180,13 +180,13 @@ def mjo_cross_segment(XX, YY, opt='sum'):
         # compute co- and quadrature spectrum
         PXY = np.conj(Xfft) * Yfft
 
-        if opt=='sum':
+        if optS=='sum':
             # compute symmetric and anti-symmetric spectrum
             PX = 2*np.sum(np.square(np.abs(Xfft)), axis=1) 
             PY = 2*np.sum(np.square(np.abs(Yfft)), axis=1)
             CXY = 2*np.sum(np.real(PXY), axis=1)
             QXY = 2*np.sum(np.imag(PXY), axis=1)
-        elif opt=='avg':    
+        elif optS=='avg':    
             PX = np.average(np.square(np.abs(Xfft)), axis=1)
             PY = np.average(np.square(np.abs(Yfft)), axis=1)
             CXY = np.average(np.real(PXY), axis=1)
@@ -592,7 +592,7 @@ def mjo_cross(X, Y, segLen, segOverLap, opt=False):
 
     return {'STC': STC, 'freq': freq, 'wave': wave, 'nseg': kseg, 'dof': dof, 'p': prob, 'prob_coh2': prob_coh2}
 
-def mjo_cross_fortran(X, Y, segLen, segOverLap, opt='sum'):
+def mjo_cross_fortran(X, Y, segLen, segOverLap, opt='both', optS='sum'):
     """
     MJO cross spectrum function. This function calls the above functions to compute
     cross spectral estimates for each segment of length segLen. Segments overlap by
@@ -673,7 +673,7 @@ def mjo_cross_fortran(X, Y, segLen, segOverLap, opt='sum'):
         XX.values = xxtmp * window
         YY.values = yytmp * window
   
-        STCseg = mjo_cross_segment_realfft(XX, YY, opt=opt)
+        STCseg = mjo_cross_segment(XX, YY, opt=opt, optS=optS)
         # sum segment spectra
         STC = STC + STCseg
 
