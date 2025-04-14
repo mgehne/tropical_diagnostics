@@ -37,80 +37,195 @@ omega = 7.292e-05  # Angular speed of rotation of Earth [rad s^{-1}]
 beta = 2. * omega / re  # beta parameter at the equator
 
 
-def mjo_cross_segment(XX, YY, opt=False):
+def mjo_cross_segment(XX, YY, opt='sum'):
     """
     Compute the FFT to get the power and cross-spectra for one time segment.
     :param XX: Input array (time, lat, lon)
     :param YY: Input array (time, lat, lon)
-    :param opt: Optional parameter, not currently used. Set to False.
+    :param opt: Optional parameter. Set to sum or avg to either sum s=power across latitudes or average. Summing is the default and
+    matches the original fortran code results.
     :return STC: Spectra array of shape (8, nfreq, nwave). Last 4 entries are blank and need to be computed by calling
     mjo_cross_coh2pha. The first 4 entries contain power spectra for XX, power spectra for YY, co-spectra between XX
     and YY, quadrature spectra between XX and YY.
     """
     NT, NM, NL = XX.shape
+    xlat = XX['lat']
+    ylat = YY['lat']
+
+    # use 2D FFT to compute spectral coefficients in time and longitude
+    XX = np.transpose(XX, axes=[1, 2, 0])  # is now (lat, lon, time)
+    YY = np.transpose(YY, axes=[1, 2, 0])  # is now (lat, lon, time)
+
     # compute fourier decomposition in time and longitude
-    Xfft = np.fft.fft2(XX, axes=(0, 2))
-    Yfft = np.fft.fft2(YY, axes=(0, 2))
-    # normalize by # time samples
-    Xfft = Xfft / (NT * NL)
-    Yfft = Yfft / (NT * NL)
-    # shift 0 frequency and 0 wavenumber to the center
-    Xfft = np.fft.fftshift(Xfft, axes=(0, 2))
-    Yfft = np.fft.fftshift(Yfft, axes=(0, 2))
+    Xfft = np.fft.rfft2(XX, axes=(1, 2))  # (lat, nlon, ntim)
+    Yfft = np.fft.rfft2(YY, axes=(1, 2))   # (lat, nlon, ntim)
+
+    # return array to (time, lat, lon)
+    Xfft = np.transpose(Xfft, axes=[2, 0, 1])
+    Yfft = np.transpose(Yfft, axes=[2, 0, 1])
+
+    # normalize by # time and longitude samples
+    Xfft = Xfft / (NL*NT)
+    Yfft = Yfft / (NL*NT)
+
+    # shift 0 wavenumber to the center
+    Xfft = np.fft.fftshift(Xfft, axes=2)
+    Yfft = np.fft.fftshift(Yfft, axes=2)
 
     # average the power spectra across all latitudes
-    PX = np.average(np.square(np.abs(Xfft)), axis=1)
-    PY = np.average(np.square(np.abs(Yfft)), axis=1)
+    if opt=='both': # array contains both symmetric and anti-symmetric parts
 
-    # compute co- and quadrature spectrum
-    PXY = np.average(np.conj(Yfft) * Xfft, axis=1)
-    CXY = np.real(PXY)
-    QXY = np.imag(PXY)
+        if NT % 2 == 1:  # odd number of time values
+            nfreq = int((NT+1)/2)
+        else:
+            nfreq = int(NT/2) + 1
+        
+        # compute co- and quadrature spectrum
+        PXYsymm = np.conj(Xfft[:,xlat>0,:]) * Yfft[:,ylat>0,:]
+        PXYasymm = np.conj(Xfft[:,xlat<0,:]) * Yfft[:,ylat<0,:] 
+        PXYbg = np.conj(Xfft[:,xlat!=0,:]) * Yfft[:,ylat!=0,:]
 
-    PX = PX[:, ::-1]
-    PY = PY[:, ::-1]
-    CXY = CXY[:, ::-1]
-    QXY = QXY[:, ::-1]
+        if opt=='sum':
+            # compute symmetric and anti-symmetric spectrum
+            PXsymm = 2*np.sum(np.square(np.abs(Xfft[:,xlat>0,:])), axis=1) 
+            PXasymm = 2*np.sum(np.square(np.abs(Xfft[:,xlat<0,:])), axis=1)
+            PYsymm = 2*np.sum(np.square(np.abs(Yfft[:,ylat>0,:])), axis=1)
+            PYasymm = 2*np.sum(np.square(np.abs(Yfft[:,ylat<0,:])), axis=1)
+            # compute background spectrum
+            PXbg = np.sum(np.square(np.abs(Xfft[:,xlat!=0,:])), axis=1)
+            PYbg = np.sum(np.square(np.abs(Yfft[:,ylat!=0,:])), axis=1)
+            
+            CXYsymm = 2*np.sum(np.real(PXYsymm), axis=1)
+            QXYsymm = 2*np.sum(np.imag(PXYsymm), axis=1)
+            CXYasymm = 2*np.sum(np.real(PXYasymm), axis=1)
+            QXYasymm = 2*np.sum(np.imag(PXYasymm), axis=1)
+            CXYbg = np.sum(np.real(PXYbg), axis=1)
+            QXYbg = np.sum(np.imag(PXYbg), axis=1)
+        elif opt=='avg':
+            # compute symmetric and anti-symmetric spectrum
+            PXsymm = np.average(np.square(np.abs(Xfft[:,xlat>0,:])), axis=1) 
+            PXasymm = np.average(np.square(np.abs(Xfft[:,xlat<0,:])), axis=1)
+            PYsymm = np.average(np.square(np.abs(Yfft[:,ylat>0,:])), axis=1)
+            PYasymm = np.average(np.square(np.abs(Yfft[:,ylat<0,:])), axis=1)
+            # compute background spectrum
+            PXbg = np.average(np.square(np.abs(Xfft[:,xlat!=0,:])), axis=1)
+            PYbg = np.average(np.square(np.abs(Yfft[:,ylat!=0,:])), axis=1)
+            
+            CXYsymm = np.average(np.real(PXYsymm), axis=1)
+            QXYsymm = np.average(np.imag(PXYsymm), axis=1)
+            CXYasymm = np.average(np.real(PXYasymm), axis=1)
+            QXYasymm = np.average(np.imag(PXYasymm), axis=1)
+            CXYbg = np.average(np.real(PXYbg), axis=1)
+            QXYbg = np.average(np.imag(PXYbg), axis=1)    
 
-    # test if time and longitude are odd or even, fft algorithm
-    # returns the Nyquist frequency once for even NT or NL and twice
-    # if they are odd
-    if NT % 2 == 1:  # odd number of time values
-        nfreq = int((NT+1)/2)
+        # switch east and westward wavenumbers
+        PXsymm = PXsymm[:nfreq, ::-1]
+        PYsymm = PYsymm[:nfreq, ::-1]
+        CXYsymm = CXYsymm[:nfreq, ::-1]
+        QXYsymm = QXYsymm[:nfreq, ::-1]
+        # switch east and westward wavenumbers
+        PXasymm = PXasymm[:nfreq, ::-1]
+        PYasymm = PYasymm[:nfreq, ::-1]
+        CXYasymm = CXYasymm[:nfreq, ::-1]
+        QXYasymm = QXYasymm[:nfreq, ::-1]
+        # switch east and westward wavenumbers
+        PXbg = PXbg[:nfreq, ::-1]
+        PYbg = PYbg[:nfreq, ::-1]
+        CXYbg = CXYbg[:nfreq, ::-1]
+        QXYbg = QXYbg[:nfreq, ::-1]
+
         if NL % 2 == 1:
             nwave = NL
-            STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :nfreq, :NL] = PX
-            STC[1, :nfreq, :NL] = PY
-            STC[2, :nfreq, :NL] = CXY
-            STC[3, :nfreq, :NL] = QXY
+            STC = np.zeros([3, 8, nfreq, nwave], dtype='double')
+            STC[0, 0, :nfreq, :NL] = PXsymm
+            STC[0, 1, :nfreq, :NL] = PYsymm
+            STC[0, 2, :nfreq, :NL] = CXYsymm
+            STC[0, 3, :nfreq, :NL] = QXYsymm
+            STC[1, 0, :nfreq, :NL] = PXasymm
+            STC[1, 1, :nfreq, :NL] = PYasymm
+            STC[1, 2, :nfreq, :NL] = CXYasymm
+            STC[1, 3, :nfreq, :NL] = QXYasymm
+            STC[2, 0, :nfreq, :NL] = PXbg
+            STC[2, 1, :nfreq, :NL] = PYbg
+            STC[2, 2, :nfreq, :NL] = CXYbg
+            STC[2, 3, :nfreq, :NL] = QXYbg
         else:
             nwave = NL + 1
-            STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :nfreq, 1:NL + 1] = PX
-            STC[1, :nfreq, 1:NL + 1] = PY
-            STC[2, :nfreq, 1:NL + 1] = CXY
-            STC[3, :nfreq, 1:NL + 1] = QXY
-            STC[:, :, 0] = STC[:, :, NL]
-    else:
-        nfreq = int(NT/2) + 1
-        if NL % 2 == 1:
-            nwave = NL
-            STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :nfreq, :NL] = PX
-            STC[1, :nfreq, :NL] = PY
-            STC[2, :nfreq, :NL] = CXY
-            STC[3, :nfreq, :NL] = QXY
-            #STC[:, nfreq, :] = STC[:, 0, :]
+            STC = np.zeros([3, 8, nfreq, nwave], dtype='double')
+            STC[0, 0, :nfreq, 1:NL + 1] = PXsymm
+            STC[0, 1, :nfreq, 1:NL + 1] = PYsymm
+            STC[0, 2, :nfreq, 1:NL + 1] = CXYsymm
+            STC[0, 3, :nfreq, 1:NL + 1] = QXYsymm   
+            STC[1, 0, :nfreq, 1:NL + 1] = PXasymm
+            STC[1, 1, :nfreq, 1:NL + 1] = PYasymm
+            STC[1, 2, :nfreq, 1:NL + 1] = CXYasymm
+            STC[1, 3, :nfreq, 1:NL + 1] = QXYasymm     
+            STC[2, 0, :nfreq, 1:NL + 1] = PXbg
+            STC[2, 1, :nfreq, 1:NL + 1] = PYbg
+            STC[2, 2, :nfreq, 1:NL + 1] = CXYbg
+            STC[2, 3, :nfreq, 1:NL + 1] = QXYbg   
+            STC[:, :, :, 0] = STC[:, :, :, NL]    
+        
+    else:    
+        # compute co- and quadrature spectrum
+        PXY = np.conj(Xfft) * Yfft
+
+        if opt=='sum':
+            # compute symmetric and anti-symmetric spectrum
+            PX = 2*np.sum(np.square(np.abs(Xfft)), axis=1) 
+            PY = 2*np.sum(np.square(np.abs(Yfft)), axis=1)
+            CXY = 2*np.sum(np.real(PXY), axis=1)
+            QXY = 2*np.sum(np.imag(PXY), axis=1)
+        elif opt=='avg':    
+            PX = np.average(np.square(np.abs(Xfft)), axis=1)
+            PY = np.average(np.square(np.abs(Yfft)), axis=1)
+            CXY = np.average(np.real(PXY), axis=1)
+            QXY = np.average(np.imag(PXY), axis=1)
+
+        PX = PX[:, ::-1]
+        PY = PY[:, ::-1]
+        CXY = CXY[:, ::-1]
+        QXY = QXY[:, ::-1]
+
+        # test if time and longitude are odd or even, fft algorithm
+        # returns the Nyquist frequency once for even NT or NL and twice
+        # if they are odd
+        if NT % 2 == 1:  # odd number of time values
+            nfreq = int((NT+1)/2)
+            if NL % 2 == 1:
+                nwave = NL
+                STC = np.zeros([8, nfreq, nwave], dtype='double')
+                STC[0, :nfreq, :NL] = PX
+                STC[1, :nfreq, :NL] = PY
+                STC[2, :nfreq, :NL] = CXY
+                STC[3, :nfreq, :NL] = QXY
+            else:
+                nwave = NL + 1
+                STC = np.zeros([8, nfreq, nwave], dtype='double')
+                STC[0, :nfreq, 1:NL + 1] = PX
+                STC[1, :nfreq, 1:NL + 1] = PY
+                STC[2, :nfreq, 1:NL + 1] = CXY
+                STC[3, :nfreq, 1:NL + 1] = QXY          
+                STC[:, :, 0] = STC[:, :, NL]
         else:
-            nwave = NL + 1
-            STC = np.zeros([8, nfreq, nwave], dtype='double')
-            STC[0, :nfreq, 1:NL + 1] = PX
-            STC[1, :nfreq, 1:NL + 1] = PY
-            STC[2, :nfreq, 1:NL + 1] = CXY
-            STC[3, :nfreq, 1:NL + 1] = QXY
-            #STC[:, nfreq, :] = STC[:, 0, :]
-            STC[:, :, 0] = STC[:, :, NL]
+            nfreq = int(NT/2) + 1
+            if NL % 2 == 1:
+                nwave = NL
+                STC = np.zeros([8, nfreq, nwave], dtype='double')
+                STC[0, :nfreq, :NL] = PX
+                STC[1, :nfreq, :NL] = PY
+                STC[2, :nfreq, :NL] = CXY
+                STC[3, :nfreq, :NL] = QXY
+                #STC[:, nfreq, :] = STC[:, 0, :]
+            else:
+                nwave = NL + 1
+                STC = np.zeros([8, nfreq, nwave], dtype='double')
+                STC[0, :nfreq, 1:NL + 1] = PX
+                STC[1, :nfreq, 1:NL + 1] = PY
+                STC[2, :nfreq, 1:NL + 1] = CXY
+                STC[3, :nfreq, 1:NL + 1] = QXY
+                #STC[:, nfreq, :] = STC[:, 0, :]
+                STC[:, :, 0] = STC[:, :, NL]
 
     return STC
 
@@ -215,22 +330,14 @@ def get_symmasymm(X, lat, opt=False):
     if opt:
         NT, NM, NL = X.shape
         if opt == 'symm':
-            x = X[:, lat[:] >= 0, :]
-            if len(lat) % 2 == 1:
-                for ll in range(NM // 2 + 1):
-                    x[:, ll, :] = 0.5 * (X[:, ll, :] + X[:, NM - ll - 1, :])
-            else:
-                for ll in range(NM // 2):
-                    x[:, ll, :] = 0.5 * (X[:, ll, :] + X[:, NM - ll - 1, :])
+            x = X + X[:, ::-1, :].values
+            x = x /2
+            x = x[:, lat[:] >= 0, :]
         else:
             if opt == 'asymm' or opt == 'anti-symm':
-                x = X[:, lat[:] > 0, :]
-                if len(lat) % 2 == 1:
-                    for ll in range(NM // 2):
-                        x[:, ll, :] = 0.5 * (X[:, ll, :] - X[:, NM - ll - 1, :])
-                else:
-                    for ll in range(NM // 2):
-                        x[:, ll, :] = 0.5 * (X[:, ll, :] - X[:, NM - ll - 1, :])
+                x = X - X[:, ::-1, :].values
+                x = x /2
+                x = x[:, lat[:] < 0, :]
     else:
         print("Please provide a valid option: symm or asymm.")
 
