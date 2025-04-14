@@ -697,13 +697,13 @@ def mjo_cross_fortran(X, Y, segLen, segOverLap, opt='both', optS='sum'):
     return {'STC': STC, 'freq': freq, 'wave': wave, 'nseg': kseg, 'dof': dof, 'p': prob, 'prob_coh2': prob_coh2}
 
 def smoothBG(STCbg):
-  """
-  Smooth the background (the output of mjo_cross_fortran) spectrum. This should match the background smoother 
-  from the original fortran code.
-  """
+    """
+    Smooth the background (the output of mjo_cross_fortran) spectrum. This should match the background smoother 
+    from the original fortran code.
+    """
     nvar, nfreq, nwave = STCbg.shape
     freq = STCbg.freq
-
+    
     ifstrt = 0
     indf = np.where(freq<0.1)
     for a in np.arange(0,5):
@@ -712,7 +712,7 @@ def smoothBG(STCbg):
             STCbg[0:4,ifstrt+fv, 0] = (3*tmp[0:4, ifstrt+fv,0] + tmp[0:4,ifstrt+fv, 1] )/4
             STCbg[0:4,ifstrt+fv, 1:-2] = (tmp[0:4, ifstrt+fv,0:-3] + 2*tmp[0:4,ifstrt+fv, 1:-2] + tmp[0:4, ifstrt+fv,2:-1] )/4
             STCbg[0:4,ifstrt+fv, -1] = (3*tmp[0:4, ifstrt+fv, -1] + tmp[0:4,ifstrt+fv, -2] )/4
-
+    
     ifstrt = ifstrt+len(indf)        
     indf = np.where((freq<0.2) & (freq>=0.1))
     for a in np.arange(0,10):  
@@ -721,7 +721,7 @@ def smoothBG(STCbg):
             STCbg[0:4,ifstrt+fv, 0] = (3*tmp[0:4, ifstrt+fv,0] + tmp[0:4,ifstrt+fv, 1] )/4
             STCbg[0:4,ifstrt+fv, 1:-2] = (tmp[0:4, ifstrt+fv,0:-3] + 2*tmp[0:4,ifstrt+fv, 1:-2] + tmp[0:4, ifstrt+fv,2:-1] )/4
             STCbg[0:4,ifstrt+fv, -1] = (3*tmp[0:4, ifstrt+fv, -1] + tmp[0:4,ifstrt+fv, -2] )/4
-
+    
     ifstrt = ifstrt+len(indf)        
     indf = np.where((freq<0.3) & (freq>=0.2))        
     for a in np.arange(0,20):  
@@ -730,7 +730,7 @@ def smoothBG(STCbg):
             STCbg[0:4,ifstrt+fv, 0] = (3*tmp[0:4, ifstrt+fv,0] + tmp[0:4,ifstrt+fv, 1] )/4
             STCbg[0:4,ifstrt+fv, 1:-2] = (tmp[0:4, ifstrt+fv,0:-3] + 2*tmp[0:4,ifstrt+fv, 1:-2] + tmp[0:4, ifstrt+fv,2:-1] )/4
             STCbg[0:4,ifstrt+fv, -1] = (3*tmp[0:4, ifstrt+fv, -1] + tmp[0:4,ifstrt+fv, -2] )/4  
-
+    
     ifstrt = ifstrt+len(indf)        
     indf = np.where((freq>=0.3))        
     for a in np.arange(0,40):
@@ -746,7 +746,7 @@ def smoothBG(STCbg):
             STCbg[0:4, 0, wv] = (3*tmp[0:4, 0, wv] + tmp[0:4, 1, wv] )/4
             STCbg[0:4, 1:-2, wv] = (tmp[0:4, 0:-3, wv] + 2*tmp[0:4, 1:-2, wv] + tmp[0:4, 2:-1, wv] )/4
             STCbg[0:4, -1, wv] = (3*tmp[0:4, -1, wv] + tmp[0:4, -2, wv] )/4
-
+    
     return STCbg
 
 
