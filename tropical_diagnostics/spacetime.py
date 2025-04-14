@@ -684,9 +684,9 @@ def mjo_cross_fortran(X, Y, segLen, segOverLap, opt='both', optS='sum'):
     STC = STC / kseg
 
     # compute phase and coherence from averaged spectra
-    st.mjo_cross_coh2pha(STC[0,:,:,:])
-    st.mjo_cross_coh2pha(STC[1,:,:,:])
-    st.mjo_cross_coh2pha(STC[2,:,:,:])
+    mjo_cross_coh2pha(STC[0,:,:,:])
+    mjo_cross_coh2pha(STC[1,:,:,:])
+    mjo_cross_coh2pha(STC[2,:,:,:])
 
     # conservative estimate for DOFs, 2.667 is for 1-2-1 smoother
     dof = 2.667 * kseg
