@@ -1,5 +1,5 @@
 # tropical-diagnostics
-Python scripts for tropical diagnostics of NWP forecasts.
+Tropical Diagnostics Toolbox: Python scripts for tropical diagnostics of NWP forecasts.
 
 The diagnostics are meant to be applied to gridded forecast data and example scripts are provided to show how
 to apply the diagnostics at different lead times.
