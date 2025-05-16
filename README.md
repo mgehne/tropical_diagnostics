@@ -1,7 +1,6 @@
-# tropical-diagnostics
-Tropical Diagnostics Toolbox: Python scripts for tropical diagnostics of NWP forecasts.
+# Tropical Diagnostics Toolbox: Python scripts for diagnostics of convection in the Tropics in NWP forecasts.
 
-The diagnostics are meant to be applied to gridded forecast data and example scripts are provided to show how
+The diagnostics in `tropical_diagnostics` are meant to be applied to gridded forecast data and example scripts are provided to show how
 to apply the diagnostics at different lead times.
 
 Required model output is primarily precipitation. This is enough to compute Hovmoeller diagrams and
